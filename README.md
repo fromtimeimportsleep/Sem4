@@ -9,7 +9,7 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Thursday
 
 - **CS 208** - Basics of Logic and Automata, how they form frameworks to solve problems
-- **CS 218** - How to come up with Algorithms, and what do we look for in them, binary search and its variants
+- **CS 218** - How to come up with Algorithms and what do we look for in them, binary search and its variants
 
 # Timetable
 
