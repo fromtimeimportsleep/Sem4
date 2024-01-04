@@ -6,6 +6,10 @@ Quizzes/Deadline dates here, along with syllabus
 
 Summary of what happened (topics covered) in classes this week could go here
 
+## Thursday
+- **CS 208** - Basics of Logic and Automata, how they form frameworks to solve problems
+- **CS 218** - How to come up with Algorithms, and what do we look for in them, binary search and its variants
+
 # Timetable
 
 | Time                | Monday          | Tuesday         | Wednesday       | Thursday        | Friday         |
@@ -21,3 +25,15 @@ Summary of what happened (topics covered) in classes this week could go here
 # Course Policies
 
 Weightage of everything for grades
+
+## CS 208
+- Homework Assignment - 10%
+- Quizzes - 15%
+- Midsem - 25%
+- Endsem - 50%
+
+## CS 218
+- 3 Homework Assignments - 5% each
+- 2 Quizzes - 10% each
+- Midsem - 25%
+- Endsem - 40%
