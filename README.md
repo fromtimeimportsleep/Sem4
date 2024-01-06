@@ -22,6 +22,13 @@ Summary of what happened (topics covered) in classes this week could go here
 
 - **CS 217** - History of AI/ML
 
+## Monday
+
+- **CS 218** - Continuation of Binary Search, discussion of subarray sum and square root questions
+- **CS 219** - High-level overview of the course, basic terminologies
+- **CS 208** - How to model timetable scheduling problem, Syntax and Semantics of Logic
+- **CS 240** - Familiarization with numpy, pandas, scipy
+
 # Timetable
 
 | Time                | Monday          | Tuesday         | Wednesday       | Thursday        | Friday         |
@@ -58,6 +65,16 @@ Weightage of everything for grades
 - 2 Quizzes - 10% each
 - Midsem - 25%
 - Endsem - 40%
+
+## CS 219
+
+- 2 Quizzes - 15% each
+- Midsem - 30%
+- Endsem - 40%
+
+## CS 236
+
+- 4 Lab Exams - 25% each (Weekly labs ungraded)
 
 ## CS 240
   
