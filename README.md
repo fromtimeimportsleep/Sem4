@@ -2,6 +2,13 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
+- **Jan 31 (Wednesday)** - CS 218 quiz 1
+- **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
+- **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
+- **Mar 27 (Wednesday)** - CS 218 quiz 2
+- **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
+- **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
+
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
