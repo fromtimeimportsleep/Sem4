@@ -29,6 +29,12 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208** - How to model timetable scheduling problem, Syntax and Semantics of Logic
 - **CS 240** - Familiarization with numpy, pandas, scipy
 
+## Tuesday
+
+- **CS 208** - More on Syntax and Semantics, various terminologies
+- **CS 218** - Applications of binary search, big O notation, how to describe algorithms
+- **CS 219** - More overview, lot of terminologies
+
 # Timetable
 
 | Time                | Monday          | Tuesday         | Wednesday       | Thursday        | Friday         |
