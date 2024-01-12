@@ -2,6 +2,7 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
+- **Jan 19 (Friday), 23:59** - CS 208 HW1 submission
 - **Jan 31 (Wednesday)** - CS 218 quiz 1
 - **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
@@ -12,15 +13,6 @@ Quizzes/Deadline dates here, along with syllabus
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Thursday
-
-- **CS 208** - Basics of Logic and Automata, how they form frameworks to solve problems
-- **CS 218** - How to come up with Algorithms and what do we look for in them, binary search and its variants
-
-## Friday
-
-- **CS 217** - History of AI/ML
 
 ## Monday
 
@@ -34,6 +26,21 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208** - More on Syntax and Semantics, various terminologies
 - **CS 218** - Applications of binary search, big O notation, how to describe algorithms
 - **CS 219** - More overview, lot of terminologies
+
+## Wednesday
+
+- **CS 217** - Basics of optimization, intro to linear programming
+
+## Thursday
+
+- **CS 219** - How does OS manage processes, Boot Disk and BIOS
+- **CS 208** - Formulation of all rules of timetable scheduling problem, few proof rules
+- **CS 218** - Big O notation examples, reducing problem to smaller input
+- **CS 236** - Linux tools and Debugging tools
+
+## Friday
+
+- **CS 217** - Linear programming, graphical and simplex (tableau) method, intro to convex optimization
 
 # Timetable
 
