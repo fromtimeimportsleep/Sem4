@@ -60,10 +60,11 @@ Weightage of everything for grades
 
 ## CS 208
 
-- Homework Assignment - 10%
-- Quizzes - 15%
+- Scribing - 3%
+- Homework Assignment - 18%
+- Quizzes - 14%
 - Midsem - 25%
-- Endsem - 50%
+- Endsem - 40%
 
 ## CS 217
 
