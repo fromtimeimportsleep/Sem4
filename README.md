@@ -14,13 +14,6 @@ Quizzes/Deadline dates here, along with syllabus
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Monday
-
-- **CS 218** - Continuation of Binary Search, discussion of subarray sum and square root questions
-- **CS 219** - High-level overview of the course, basic terminologies
-- **CS 208** - How to model timetable scheduling problem, Syntax and Semantics of Logic
-- **CS 240** - Familiarization with numpy, pandas, scipy
-
 ## Tuesday
 
 - **CS 208** - More on Syntax and Semantics, various terminologies
@@ -41,6 +34,13 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Friday
 
 - **CS 217** - Linear programming, graphical and simplex (tableau) method, intro to convex optimization
+
+## Monday
+
+- **CS 218** - Interval containment problem, divide and conquer, skyline problem
+- **CS 219** - System calls and APIs, process related syscalls, fork, exit, wait
+- **CS 208** - All proof rules, and how to use them to show semantic equivalence
+- **CS 240** - Implementation of simplex tableau, quadratic programming and least square fitting
 
 # Timetable
 

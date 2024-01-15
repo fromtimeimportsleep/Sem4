@@ -1,0 +1,14 @@
+x = [10/3, 10/3, 40/3]
+optimal_obj_val = 90
+pivot_list = [2, 2, 2.25]
+
+Your output will look as follows for q1_pulp.py:
+3.333333
+3.333333
+13.33333
+90
+
+Your output will look as follows for q1_simplex.py:
+2
+2
+2.25

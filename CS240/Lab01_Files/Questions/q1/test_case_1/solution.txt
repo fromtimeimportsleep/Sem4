@@ -1,0 +1,12 @@
+x = [0, 3, 0]
+optimal_obj_val = 12
+pivot_list = [2]
+
+Your output will look as follows for q1_pulp.py:
+0
+3
+0
+12
+
+Your output will look as follows for q1_simplex.py:
+2
