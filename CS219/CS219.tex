@@ -216,7 +216,7 @@ The \texttt{fork()} returns 0 in the child process and returns the PID of child 
 using the different value returned by the \texttt{fork()} function. Note that \texttt{fork()} returns -1 when forking fails. This process seems to be generating different process running some redundant code. This is not the case usually
 due to reasons we will see later. Interestingly as of yet the parent also needn't run before the child since they are independent processes
 
-We can also have nested forks asin multiple forks() in a program. This will make a parent and the child each of which will also call another fork and so on.
+We can also have nested forks as in multiple forks() in a program. This will make a parent and the child each of which will also call another fork and so on.
 \\\textbf{xv6 fork() code:}
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item Allocates memory for new process and gets PID
@@ -234,12 +234,12 @@ Exit doesn't clean up the memory of a process and the process is in a dead \text
 Parent process of a child calls wait() syscall which cleans up the memory of a zombie child and returns the PID of said zombie process(or -1 if no child). If wait() is called in the
 parent before child is a zombie the parent is suspended and waits till the child is 
 running. You can also call waitpid() which reaps only a process with a particular pid whereas in normal 
-wait() all processes are killed. Note that one wait() reaps only one child. So we need a wait() for every fork().
+wait() some arbitrary process out of all zombied ones processes are reaped. Note that one wait() reaps only one child. So we need a wait() for every fork().
 
 
 What if parent dies without calling wait(). Then the child continues to run as an orphan process. In this case \texttt{init.} 
-adopts the orphan process and becomes its parent and eventually reaps\footnote{calls wait() and erases the memory of the zombie} it.This is done when the parent calls exit which makes all the parent
-pointers of its children point to \texttt{init.}. Note that \texttt{init.} comes into play iff the parent dies not when it is alive in anycase. So \texttt{init.} keeps
+adopts the orphan process and becomes its parent and eventually reaps\footnote{calls wait() and erases the memory of the zombie} it. This is done when the parent calls exit which makes all the parent
+pointers of its children point to \texttt{init.}. Note that \texttt{init.} comes into play iff the parent dies, not when it is alive in anycase. So \texttt{init.} keeps
 checking if there is an orphan to adopt and eventually reap.
 
 
