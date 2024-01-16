@@ -229,9 +229,27 @@ We can also have nested forks asin multiple forks() in a program. This will make
 
 \subsection{Exit and wait}
 When a process is done it calls exit() to terminate. Exit is called at the end of main() automatically.
-Exit does'nt clean up the memory of a process and the process is in a dead \textbf{Zombie} state.
+Exit doesn't clean up the memory of a process and the process is in a dead \textbf{Zombie} state.
 
-Parent process of a child calls wait() syscall which cleans up the memory of a zombie child. If wait() is called in the
-parent before child is a zombie the parent is suspended and waits till the child is done running.
+Parent process of a child calls wait() syscall which cleans up the memory of a zombie child and returns the PID of said zombie process(or -1 if no child). If wait() is called in the
+parent before child is a zombie the parent is suspended and waits till the child is 
+running. You can also call waitpid() which reaps only a process with a particular pid whereas in normal 
+wait() all processes are killed. Note that one wait() reaps only one child. So we need a wait() for every fork().
 
+
+What if parent dies without calling wait(). Then the child continues to run as an orphan process. In this case \texttt{init.} 
+adopts the orphan process and becomes its parent and eventually reaps\footnote{calls wait() and erases the memory of the zombie} it.This is done when the parent calls exit which makes all the parent
+pointers of its children point to \texttt{init.}. Note that \texttt{init.} comes into play iff the parent dies not when it is alive in anycase. So \texttt{init.} keeps
+checking if there is an orphan to adopt and eventually reap.
+
+
+\subsection{Exec}
+As we saw the fork() method seems complicated with if-else blocks for parents and children and there seems to be redundant code. We create
+child to do similar work as parents lots of times. If this is not the case (ie) parent, child are doing different things we can use \texttt{exec}.
+exec() is used to get a new memory image which is used to run an executable which it takes as an argument. It is similar to fork() but instead of copying
+parents memory image it copies the executable's memory image to create another process. The page table is also updated with the new details of the process\footnote{but the PID,PPID is the same}
+
+
+So whatever code is given after exec is never run by the child since it overwrites the parents memory image with the executable given as a argument. However if 
+exec fails then the parent's image copy only is present in the new process and thus all the code after exec in the parent is run by the child once it gets access to the CPU. 
 \end{document}
