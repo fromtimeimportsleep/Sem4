@@ -4,6 +4,7 @@ Quizzes/Deadline dates here, along with syllabus
 
 - **Jan 19 (Friday), 23:59** - CS 208 HW1 submission
 - **Jan 31 (Wednesday)** - CS 218 quiz 1
+- **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
 - **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
@@ -13,16 +14,6 @@ Quizzes/Deadline dates here, along with syllabus
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Tuesday
-
-- **CS 208** - More on Syntax and Semantics, various terminologies
-- **CS 218** - Applications of binary search, big O notation, how to describe algorithms
-- **CS 219** - More overview, lot of terminologies
-
-## Wednesday
-
-- **CS 217** - Basics of optimization, intro to linear programming
 
 ## Thursday
 
@@ -41,6 +32,16 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 219** - System calls and APIs, process related syscalls, fork, exit, wait
 - **CS 208** - All proof rules, and how to use them to show semantic equivalence
 - **CS 240** - Implementation of simplex tableau, quadratic programming and least square fitting
+
+## Tuesday
+
+- **CS 208** - Using nested boxes to prove formulae, synatactic entailment, soundness
+- **CS 218** - Merge sort like method for skyline problem, discussion of more methods
+- **CS 219** - Exit, wait, exec syscalls, as well as their code
+
+## Wednesday
+
+- **CS 217** - Regression, Error Functions, Least Square Optimization
 
 # Timetable
 
