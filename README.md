@@ -4,11 +4,14 @@ Quizzes/Deadline dates here, along with syllabus
 
 - **Jan 19 (Friday), 23:59** - CS 208 HW1 submission
 - **Jan 31 (Wednesday)** - CS 218 quiz 1
+- **Feb 1 (Thursday), 8:30-9:30 (Class Hours)** - CS 219 uiz 1, **Syllabus:** Everything covered
 - **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
 - **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
+- **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
 - **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
+- **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
 - **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
 
 # Weekly Recap
