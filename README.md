@@ -15,13 +15,6 @@ Quizzes/Deadline dates here, along with syllabus
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Thursday
-
-- **CS 219** - How does OS manage processes, Boot Disk and BIOS
-- **CS 208** - Formulation of all rules of timetable scheduling problem, few proof rules
-- **CS 218** - Big O notation examples, reducing problem to smaller input
-- **CS 236** - Linux tools and Debugging tools
-
 ## Friday
 
 - **CS 217** - Linear programming, graphical and simplex (tableau) method, intro to convex optimization
@@ -42,6 +35,13 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Wednesday
 
 - **CS 217** - Regression, Error Functions, Least Square Optimization
+
+## Thursday
+
+- **CS 219** - How does the shell/terminal work, background process, pipes and signals
+- **CS 208** - Syntactic entailment vs Semantic entailment, proof that they are equivalent
+- **CS 218** - Signficant inversion, BST with count, exponentiation by repeated squaring
+- **CS 236** - Coding the shell using syscalls
 
 # Timetable
 
