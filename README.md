@@ -4,32 +4,19 @@ Quizzes/Deadline dates here, along with syllabus
 
 - **Jan 19 (Friday), 23:59** - CS 208 HW1 submission
 - **Jan 31 (Wednesday)** - CS 218 quiz 1
+- **Feb 1 (Thursday), 8:30-9:30 (Class Hours)** - CS 219 quiz 1, **Syllabus:** Everything covered
+- **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
 - **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
+- **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
 - **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
+- **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
 - **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
 
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Tuesday
-
-- **CS 208** - More on Syntax and Semantics, various terminologies
-- **CS 218** - Applications of binary search, big O notation, how to describe algorithms
-- **CS 219** - More overview, lot of terminologies
-
-## Wednesday
-
-- **CS 217** - Basics of optimization, intro to linear programming
-
-## Thursday
-
-- **CS 219** - How does OS manage processes, Boot Disk and BIOS
-- **CS 208** - Formulation of all rules of timetable scheduling problem, few proof rules
-- **CS 218** - Big O notation examples, reducing problem to smaller input
-- **CS 236** - Linux tools and Debugging tools
 
 ## Friday
 
@@ -41,6 +28,23 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 219** - System calls and APIs, process related syscalls, fork, exit, wait
 - **CS 208** - All proof rules, and how to use them to show semantic equivalence
 - **CS 240** - Implementation of simplex tableau, quadratic programming and least square fitting
+
+## Tuesday
+
+- **CS 208** - Using nested boxes to prove formulae, synatactic entailment, soundness
+- **CS 218** - Merge sort like method for skyline problem, discussion of more methods
+- **CS 219** - Exit, wait, exec syscalls, as well as their code
+
+## Wednesday
+
+- **CS 217** - Regression, Error Functions, Least Square Optimization
+
+## Thursday
+
+- **CS 219** - How does the shell/terminal work, background process, pipes and signals
+- **CS 208** - Syntactic entailment vs Semantic entailment, proof that they are equivalent
+- **CS 218** - Signficant inversion, BST with count, exponentiation by repeated squaring
+- **CS 236** - Coding the shell using syscalls
 
 # Timetable
 
