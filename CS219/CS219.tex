@@ -1,6 +1,7 @@
 \documentclass[12pt]{article}
 \usepackage[margin=3cm]{geometry}
 \usepackage{enumitem}
+\usepackage{listings}
 \usepackage{graphicx}
 \title{OS CS219 Notes}
 \author{}
@@ -184,7 +185,7 @@ to the user constitute the \textbf{API},
 Two types of syscalls are:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item \textbf{Blocking:} Syscalls that block the process that called it\footnote{Like when you wanna read from disk which takes time} and the OS comes back to the user process after a while
-    \item \textbf{Non Blocking:} Syscalls that are called with the user instructions which acts along with user process without blocking the calling process\footnote{The process which calls the syscall} (eg. getpid())
+    \item \textbf{Non Blocking:} Syscalls that are called with the user instructions which acts along with user process without blocking the calling process\footnote{The process which calls the syscall}since they return immediately (eg. getpid())
 \end{itemize}
 
 
@@ -240,16 +241,71 @@ wait() some arbitrary process out of all zombied ones processes are reaped. Note
 What if parent dies without calling wait(). Then the child continues to run as an orphan process. In this case \texttt{init.} 
 adopts the orphan process and becomes its parent and eventually reaps\footnote{calls wait() and erases the memory of the zombie} it. This is done when the parent calls exit which makes all the parent
 pointers of its children point to \texttt{init.}. Note that \texttt{init.} comes into play iff the parent dies, not when it is alive in anycase. So \texttt{init.} keeps
-checking if there is an orphan to adopt and eventually reap.
+checking if there is an orphan to adopt and eventually reap. If parent is alive but doesn't call wait then system memory fills with zombies\footnote{ahhhhhhh}
 
 
 \subsection{Exec}
 As we saw the fork() method seems complicated with if-else blocks for parents and children and there seems to be redundant code. We create
-child to do similar work as parents lots of times. If this is not the case (ie) parent, child are doing different things we can use \texttt{exec}.
-exec() is used to get a new memory image which is used to run an executable which it takes as an argument. It is similar to fork() but instead of copying
-parents memory image it copies the executable's memory image to create another process. The page table is also updated with the new details of the process\footnote{but the PID,PPID is the same}
+child to do similar work as parents lots of times. If this is not the case (ie) parent, child are doing different things(and we don't want the parent around) we can use \texttt{exec}.
+exec() is used to get a new memory image(using that of the old process) which is used to run an executable which it takes as an argument. It is not similar to fork() since it doesn't create a new memory image
+it just replaces the parent's memory image and it copies the executable's memory image to run the executable. The page table is also updated with the new details of the process\footnote{but the PID,PPID is the same}
 
 
 So whatever code is given after exec is never run by the child since it overwrites the parents memory image with the executable given as a argument. However if 
 exec fails then the parent's image copy only is present in the new process and thus all the code after exec in the parent is run by the child once it gets access to the CPU. 
+
+\section{Shell}
+Shell is the process which handles accepting and executing terminal commands
+\begin{lstlisting}[language=C++,caption = Shell code]
+    while(1){
+        input(commands);
+        int ret =  fork();
+
+        if(ret == 0){
+            exec(command);
+        }
+        else{
+            wait();
+        }
+    }  
+\end{lstlisting}
+\newpage
+The basic working of the shell goes like this:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Shell forks a child which calls exec to run commands
+    \item Why doesn't the shell call exec() itself. This is since we want the shell program to keep running and not get replaced
+    \item Some commands have code written in the OS itself like \texttt{cd}, since they need to maintain the pwd*\footnote{present working dictionary} while others
+    have executables called by exec() like \texttt{ls}.
+    \item User commands run in \textit{foreground} (ie) can't accept next command till previous one is done
+    \item \textit{Background execution} is when we give a command followed by \& the shell runs command but doesn't wait for it to finish.
+    So reaping is taken care later by the shell using a method where wait is invoked without blocking parent.
+    \item We can also run multiple commands in \textit{foreground} sequentially(one after another) or parallely using $||$ 
+\end{itemize}
+
+Some things taken care by the shell:\\\\
+\textbf{I/O redirection:}
+Every process has some IO channels or "files" open which can be accessed by file descriptors\footnote{STDIN.STDOUT,STDERR}.
+Parent shell can manipulate these files descriptors of child before exec() to do stuff like I/O redirection (ie) by changing the STDOUT file to out desired file or STDIN to desired file.
+Basically the process still thinks its getting from STDIN or outputting to STDOUT but we change the file descriptors to point to files we want, essentially tricking the process to output/input to/from the desired file
+
+
+\textbf{Pipes:}
+Pipes are when the output of one command is given as input to another command.
+Shell creates a temporary buffer in OS called well a "pipe" and the STDIN-file descriptor of the other command process is made to point to the 
+"pipe". Basically pipe is redirected as input to the next commands.
+
+
+\textbf{Signals:}
+Signal is a way to send notifications to process.(eg. kill -9 PID\footnote{SIGKILL}). There are some standard signals available to each OS. SIGINT, SIGCHLD, SIGTERM, SIGKILL\footnote{Interrupt,signal to parent when child terminates,terminate,kill respectively}\\....etc.
+Note that the kill command can send all signals and which signal it sends is determined by id in "kill -id pid" which conveys the signal. The OS can also
+generate signals on its own and not from processes(eg. CTRL + C sends SIGINT).
+
+
+When we send a signal it is sent to all the processes in that process group. A process group is an organisation where sets of processes
+are treated as group. By default a process belongs to its parent's process group. CTRL + C sends SIGINT to all processes of the \textit{foreground} process group
+. The syscall \texttt{setpgid} can be used to change the process group of a process.
+
+
+Signals to a process are queued and delivered to the OS which handles them. It knows to ignore certain signals and to make some processes stop for certain others. User processes can also define their own signal handlers using the signal syscalls to overwrite default behaviour. The process jumps to the process's signal handler and back to the process if it exists after signal is taken care of.
+However note that some signals like SIGKILL can't be overriden by a process's signal handler
 \end{document}
