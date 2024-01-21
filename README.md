@@ -63,7 +63,7 @@ Summary of what happened (topics covered) in classes this week could go here
 Weightage of everything for grades
 
 ## CS 208
-
+### Logic, Automata and Theory of Computing
 - Scribing - 3%
 - Homework Assignment - 18%
 - Quizzes - 14%
@@ -71,31 +71,31 @@ Weightage of everything for grades
 - Endsem - 40%
 
 ## CS 217
-
+### Artificial Intelligence and Machine Learning
 - Scribing - 5%
 - 2 Quizzes - 15% each
 - Midsem - 30%
 - Endsem - 35%
 
-## CS 218
+## CS 240
+### Artificial Intelligence and Machine Learning Lab
+- Best 10 Weekly Labs - 3% each
+- Midsem - 35%
+- Endsem - 35%
 
+## CS 218
+### Design and Analysis of Algorithms
 - 3 Homework Assignments - 5% each
 - 2 Quizzes - 10% each
 - Midsem - 25%
 - Endsem - 40%
 
 ## CS 219
-
+### Operating Systems
 - 2 Quizzes - 15% each
 - Midsem - 30%
 - Endsem - 40%
 
 ## CS 236
-
+### Operating Systems Lab
 - 4 Lab Exams - 25% each (Weekly labs ungraded)
-
-## CS 240
-  
-- Best 10 Weekly Labs - 3% each
-- Midsem - 35%
-- Endsem - 35%
