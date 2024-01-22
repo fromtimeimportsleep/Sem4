@@ -13,6 +13,8 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows, positioning}
 
 \lstset{basicstyle=\ttfamily,
   commentstyle=\color{red},
@@ -117,14 +119,17 @@
 
   For the second part, we first sort the array, and calculate prefix and suffix sums (sums of the first $i$ elements
   on either sides). This overall takes $O(n \log n)$ time. Now for a fixed value of $f$, we first binary search for 
-  $f$ in our array to find how many elements are less than $f$. The extra land we need is summation of $f - $ every
-  element lower than $f$. This is just $f \times$ (no of elements lower than $f$) $-$ the corresponding prefix sum.
-  Now for any value of $c$, we can also get the extra land we get. We first binary search for $c$ and with the same 
-  method, we get corresponding suffix sum - $c \times$ (no of elements higher than $c$). If the land we get is more 
-  than the land we need, the optimal value of $c$ is higher. If we don't get enough extra land, the optimal value of 
-  $c$ is lower. So we can binary search for $c$, and the range for $c$ is from $f$ to the largest element of array.
-  So our final time complexity is $O(n \log n + \log n \log (\text{largest element} - f))$ as we have 
-  $ O(\log (\text{largest element} - f))$ queries and each query takes $O(\log n)$ time.
+  $f$ in our array to find how many elements are less than $f$. The extra land we need is summation of [$f - $ 
+  element lower than $f$]. This is just $f \times$ (no of elements lower than $f$) $-$ the corresponding prefix sum.
+  Now for any value of $c$, we can also get the extra land we get, it's equal to corresponding suffix sum - $c \times$ 
+  (no of elements higher than $c$). Let us first find between 
+  which 2 numbers in the array does $c$ lie. $c$ doesn't have to be a number in the array, but we can binary search 
+  assuming that for now. Choose an element in the array as $c$, and calculate the land we get, if it's too much, 
+  choose a larger element as $c$, and if it's too large, choose a smaller element as $c$. At the end of the binary 
+  search, we can tell between which 2 numbers in the array $c$ is. Once we have this, we can actually solve for $c$, 
+  as we have the equation: 
+  \[ \text{suffix sum} - c \times \text{no of elements higher than $c$} = f \]
+  We know all the quantities except $c$, so we can get $c$. 
 
   \item Walk to $2^k$ and back to $0$, $-2^k$ and back to $0$. Do this for every $k$ from $0$ until you find the
   treasure. If the treasure is at $N$ and $2^{n-1} < N \leq 2^n$, we walk a distance of $4(1+2+4+\dots+2^n) = 
@@ -183,7 +188,49 @@
   $n-1$ terms, we have got the relation $T(n) = T(n-1) + 2$. Here's how the computation looks for 3 terms: $a_0 + 
   (\alpha \times (a_1 + (\alpha \times (a_2 + (\alpha \times a_3)))))$
   
-  \item 
+  \item Let's convert this to some sort of a graph problem. For each $i$ in the domain, let's draw a directed edge
+  to $f(i)$. Since each number has 1 and only 1 outgoing edge, our graph only has cycles, and chains which merge into
+  a cycle.
+
+  \begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+    \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+    \tikzset{edge/.style = {->,> = latex'}}
+    % vertices
+    \node[vertex] (1) at (0,0) {1};
+    \node[vertex] (2) at (2,0) {2};
+    \node[vertex] (3) at (4,0) {3};
+    \node[vertex] (4) at (6,0) {4};
+    \node[vertex] (5) at (8,2) {5};
+    \node[vertex] (6) at (6,2) {6};
+    \node[vertex] (7) at (4,2) {7};
+    \node[vertex] (8) at (10,1) {8};
+    \node[vertex] (9) at (12,1) {9};
+    %edges
+    \draw[edge] (1) to (2);
+    \draw[edge] (2) to (3);
+    \draw[edge] (3) to (4);
+    \draw[edge] (4) to (6);
+    \draw[edge] (6) to (7);
+    \draw[edge] (7) to (3);
+    \draw[edge] (5) to (6);
+    \draw[edge] (8) to [bend right] (9);
+    \draw[edge] (9) to [bend right] (8);
+    \end{tikzpicture}
+    \caption*{Example Graph Picture for $n = 9$}
+  \end{figure}
+
+  Take the example above as our question. Clearly numbers like $1, 5$ can't be in our set, as nothing maps to them. Can
+  $2$ be in our set? Also no, as since $1$ isn't in our set, nothing maps to $2$. We can apply this reasoning many times, 
+  all linear chains, which aren't part of any cycle can't be in our set. And the remaining elements obviously satisfy our 
+  condition, as in every cycle there is 1 ingoing and outgoing edge for every number.
+
+  The algorithm to get the set can be like this: first create an frequency array holding how many times each number is an 
+  image. Then add all the numbers which have no image (value 0 in the array) into a queue. Now we dequeue $i$, and basically
+  mark it as not in solution set. We also have to decrease the frequency of $f(i)$, as $i$ is deleted. If $f(i)$'s frequency 
+  decreases to 0, we add $f(i)$ to our queue, it also has to be deleted (this corresponds to the case where $f(i)$ is also in 
+  a chain). We keep doing this until our queue is empty, and the elements we never visited are the ones in our final answer.
 
   \item We can first sort all the intervals in ascending order of left endpoint. If left endpoints are equal, sort in 
   descending order of right endpoint. This ordering has the following objective. No interval can be contained by an interval
