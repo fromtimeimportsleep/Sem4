@@ -13,6 +13,8 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows, positioning}
 
 \lstset{basicstyle=\ttfamily,
   commentstyle=\color{red},
@@ -33,7 +35,7 @@
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=cyan,
-    pdftitle={\Huge \textbf{Reinforcement Learning}},
+    pdftitle={\Huge \textbf{CS218 Solutions}},
     pdfpagemode=FullScreen,
 }
 \usepackage[utf8]{inputenc}
@@ -44,7 +46,7 @@
 \setlength{\parindent}{0pt}
 
 \begin{document}
-\subsection*{\Huge\bfseries Binary Search and Variants}
+\subsection*{\huge\bfseries Binary Search and Variants}
 \begin{enumerate}[label=\textbf{\arabic*.}]
 
   \item We first need to find a range before performing binary search. For this we can drop the egg at 
@@ -117,14 +119,17 @@
 
   For the second part, we first sort the array, and calculate prefix and suffix sums (sums of the first $i$ elements
   on either sides). This overall takes $O(n \log n)$ time. Now for a fixed value of $f$, we first binary search for 
-  $f$ in our array to find how many elements are less than $f$. The extra land we need is summation of $f - $ every
-  element lower than $f$. This is just $f \times$ (no of elements lower than $f$) $-$ the corresponding prefix sum.
-  Now for any value of $c$, we can also get the extra land we get. We first binary search for $c$ and with the same 
-  method, we get corresponding suffix sum - $c \times$ (no of elements higher than $c$). If the land we get is more 
-  than the land we need, the optimal value of $c$ is higher. If we don't get enough extra land, the optimal value of 
-  $c$ is lower. So we can binary search for $c$, and the range for $c$ is from $f$ to the largest element of array.
-  So our final time complexity is $O(n \log n + \log n \log (\text{largest element} - f))$ as we have 
-  $ O(\log (\text{largest element} - f))$ queries and each query takes $O(\log n)$ time.
+  $f$ in our array to find how many elements are less than $f$. The extra land we need is summation of [$f - $ 
+  element lower than $f$]. This is just $f \times$ (no of elements lower than $f$) $-$ the corresponding prefix sum.
+  Now for any value of $c$, we can also get the extra land we get, it's equal to corresponding suffix sum - $c \times$ 
+  (no of elements higher than $c$). Let us first find between 
+  which 2 numbers in the array does $c$ lie. $c$ doesn't have to be a number in the array, but we can binary search 
+  assuming that for now. Choose an element in the array as $c$, and calculate the land we get, if it's too much, 
+  choose a larger element as $c$, and if it's too large, choose a smaller element as $c$. At the end of the binary 
+  search, we can tell between which 2 numbers in the array $c$ is. Once we have this, we can actually solve for $c$, 
+  as we have the equation: 
+  \[ \text{suffix sum} - c \times \text{no of elements higher than $c$} = f \]
+  We know all the quantities except $c$, so we can get $c$. 
 
   \item Walk to $2^k$ and back to $0$, $-2^k$ and back to $0$. Do this for every $k$ from $0$ until you find the
   treasure. If the treasure is at $N$ and $2^{n-1} < N \leq 2^n$, we walk a distance of $4(1+2+4+\dots+2^n) = 
@@ -152,9 +157,10 @@
     \item True, $\log(n^3) = 3 \log n = O(\log n)$
   \end{itemize}
 
-  \item
-  \item
-  \item 
+  \item Out of syllabus
+  \item Out of syllabus
+  \item Out of syllabus
+  \subsection*{\huge\bfseries Reducing to a Subproblem}
   \item The same rectangle trick can work for both bounds
     
   \begin{figure}[htbp]
@@ -183,7 +189,49 @@
   $n-1$ terms, we have got the relation $T(n) = T(n-1) + 2$. Here's how the computation looks for 3 terms: $a_0 + 
   (\alpha \times (a_1 + (\alpha \times (a_2 + (\alpha \times a_3)))))$
   
-  \item 
+  \item Let's convert this to some sort of a graph problem. For each $i$ in the domain, let's draw a directed edge
+  to $f(i)$. Since each number has 1 and only 1 outgoing edge, our graph only has cycles, and chains which merge into
+  a cycle.
+
+  \begin{figure}[ht]
+  \centering
+  \begin{tikzpicture}
+    \tikzset{vertex/.style = {shape=circle,draw,minimum size=1.5em}}
+    \tikzset{edge/.style = {->,> = latex'}}
+    % vertices
+    \node[vertex] (1) at (0,0) {1};
+    \node[vertex] (2) at (2,0) {2};
+    \node[vertex] (3) at (4,0) {3};
+    \node[vertex] (4) at (6,0) {4};
+    \node[vertex] (5) at (8,2) {5};
+    \node[vertex] (6) at (6,2) {6};
+    \node[vertex] (7) at (4,2) {7};
+    \node[vertex] (8) at (10,1) {8};
+    \node[vertex] (9) at (12,1) {9};
+    %edges
+    \draw[edge] (1) to (2);
+    \draw[edge] (2) to (3);
+    \draw[edge] (3) to (4);
+    \draw[edge] (4) to (6);
+    \draw[edge] (6) to (7);
+    \draw[edge] (7) to (3);
+    \draw[edge] (5) to (6);
+    \draw[edge] (8) to [bend right] (9);
+    \draw[edge] (9) to [bend right] (8);
+    \end{tikzpicture}
+    \caption*{Example Graph Picture for $n = 9$}
+  \end{figure}
+
+  Take the example above as our question. Clearly numbers like $1, 5$ can't be in our set, as nothing maps to them. Can
+  $2$ be in our set? Also no, as since $1$ isn't in our set, nothing maps to $2$. We can apply this reasoning many times, 
+  all linear chains, which aren't part of any cycle can't be in our set. And the remaining elements obviously satisfy our 
+  condition, as in every cycle there is 1 ingoing and outgoing edge for every number.
+
+  The algorithm to get the set can be like this: first create an frequency array holding how many times each number is an 
+  image. Then add all the numbers which have no image (value 0 in the array) into a queue. Now we dequeue $i$, and basically
+  mark it as not in solution set. We also have to decrease the frequency of $f(i)$, as $i$ is deleted. If $f(i)$'s frequency 
+  decreases to 0, we add $f(i)$ to our queue, it also has to be deleted (this corresponds to the case where $f(i)$ is also in 
+  a chain). We keep doing this until our queue is empty, and the elements we never visited are the ones in our final answer.
 
   \item We can first sort all the intervals in ascending order of left endpoint. If left endpoints are equal, sort in 
   descending order of right endpoint. This ordering has the following objective. No interval can be contained by an interval
@@ -200,5 +248,41 @@
   $a_n$ is part of the terms or not. Our base cases are $f(1,1) = a_1$, $f(n,1) = a_n + f(n-1,1)$. We can just create an 
   $n \times k$ grid and calculate $f(i,j)$ and fill it in each cell, going in increasing order of $i$ and increasing order 
   of $j$ (there are more efficient ways space complexity wise but eh).
+
+  We can also achieve this recursion logically, not only just by mere observation. As per the hint, the given entity is the coefficient of $x^{n-k}$ in the polynomial $\prod_{i=1}^{n} (x + a_{i})$. Rewriting as $[\prod_{i=1}^{n-1} (x + a_{i})]*(x + a_{n}) = x*[\prod_{i=1}^{n-1} (x + a_{i})] + a_{n}*[\prod_{i=1}^{n-1} (x + a_{i})]$, we see that coefficient of $x^{n-k}$ in $\prod_{i=1}^{n} (x + a_{i})$ in LHS = sum of coefficients of $x^{n-k-1}$ in $\prod_{i=1}^{n-1} (x + a_{i})$ and $x^{n-k}$ in $a_{n}*\prod_{i=1}^{n-1} (x + a_{i})$ in RHS. Hence we get the recursion equation above.
+
+  \subsection*{\huge\bfseries Divide and Conquer}
+
+  \item This question is very similar to the interval containment problem. We consider $(a, b)$ to contain $(c, d)$ if $a \leq c$
+  and $b \geq d$, but dominate $(c, d)$ if $a \geq c$ and $b \geq d$. So the solution is again like this: sort in decreasing order 
+  of first coordinate, if it's equal decreasing order of 2nd coordinate. Then it's a single traversal of the array, by maintaining 
+  the max of the 2nd coordinate seen so far. If it's $\geq$ the current 2nd coordinate, the current point is dominated, else update the 
+  max of 2nd coordinate.
+
+  \item It's been given that the majority fingerprint occurs more than $n/2$ times. So if we split the array into 2, we
+  can say in at least one of the array, the fingerprint occurs more than $n/4$ times, and hence is the majority fingerprint for 
+  that subarray too. This observation is useful for a divide and conquer idea.
+
+  Let's say we have solved the subproblems for the two $n/2$ size arrays, and have kept the majority fingerprint of each subarray
+  at the beginning of them respectively. One of these fingerprints is going to be our final solution itself. We can just check how 
+  many times each one appears. Traverse both subarrays, and manually count how many times you see each of our candidate solutions.
+  Whichever you see more is our final solution, and keep it at the beginning of the whole array. This method will satisfy 
+  $T(n) = 2T(n/2) + O(n)$ so $T(n)$ is $O(n \log n)$.
+
+  \item We use a balanced BST for this. But we also store one extra thing in each node, the number of elements in the subtree with
+  root as that node. How do our functions for insert, delete, rotate change in order to maintain this data? While inserting, we just 
+  add 1 to every node on the path from the root to the new node. For deleting, we just subtract 1 from every node on the path to the
+  node to delete. Balancing is also not that hard; as we exchange subtrees between nodes, we also have to just exchange the data
+  which maintains the number of elements. But what's the point of maintaining this data? It helps us to find the number of elements 
+  smaller than a query in $O(\log n)$ time. Take the same path as if you are inserting the query. If you take a right turn, you know the 
+  root and the left subtree are all smaller than the query. If you take a left turn, the root and the right subtree are all larger than 
+  the query, so you have to add $1 + $ size of right subtree to your answer. Just keep doing this until you get to a leaf.
+
+  How do we use this data structure? We can iterate through the array and maintain this special BST of all elements we have seen, 
+  seen so far. Say we are at $A[j]$ we have to find number of $i < j$ and $A[i] > 2A[j]$. This is basically number of elements in the 
+  BST which are greater than the query $2A[j]$ which can be found in $O(\log n)$ time. And then we have to insert $A[j]$ which also takes
+  $O(\log n)$ time.
+  So this algorithm will take $O(n \log n)$ time.
+
   \end{enumerate}
 \end{document}

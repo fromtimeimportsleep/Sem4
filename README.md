@@ -18,17 +18,6 @@ Quizzes/Deadline dates here, along with syllabus
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Friday
-
-- **CS 217** - Linear programming, graphical and simplex (tableau) method, intro to convex optimization
-
-## Monday
-
-- **CS 218** - Interval containment problem, divide and conquer, skyline problem
-- **CS 219** - System calls and APIs, process related syscalls, fork, exit, wait
-- **CS 208** - All proof rules, and how to use them to show semantic equivalence
-- **CS 240** - Implementation of simplex tableau, quadratic programming and least square fitting
-
 ## Tuesday
 
 - **CS 208** - Using nested boxes to prove formulae, synatactic entailment, soundness
@@ -45,6 +34,14 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208** - Syntactic entailment vs Semantic entailment, proof that they are equivalent
 - **CS 218** - Signficant inversion, BST with count, exponentiation by repeated squaring
 - **CS 236** - Coding the shell using syscalls
+
+## Friday
+
+- **CS 217** - Linear Regression, Polynomial Fitting, Probabilistic Regression, Gradient Descent
+
+## Monday
+
+- **CS 240** - Linear Regression by closed form and gradient descent, polynomial fitting
 
 # Timetable
 
@@ -64,6 +61,8 @@ Weightage of everything for grades
 
 ## CS 208
 
+### Logic, Automata and Theory of Computing
+
 - Scribing - 3%
 - Homework Assignment - 18%
 - Quizzes - 14%
@@ -72,12 +71,24 @@ Weightage of everything for grades
 
 ## CS 217
 
+### Artificial Intelligence and Machine Learning
+
 - Scribing - 5%
 - 2 Quizzes - 15% each
 - Midsem - 30%
 - Endsem - 35%
 
+## CS 240
+
+### Artificial Intelligence and Machine Learning Lab
+
+- Best 10 Weekly Labs - 3% each
+- Midsem - 35%
+- Endsem - 35%
+
 ## CS 218
+
+### Design and Analysis of Algorithms
 
 - 3 Homework Assignments - 5% each
 - 2 Quizzes - 10% each
@@ -86,16 +97,14 @@ Weightage of everything for grades
 
 ## CS 219
 
+### Operating Systems
+
 - 2 Quizzes - 15% each
 - Midsem - 30%
 - Endsem - 40%
 
 ## CS 236
 
-- 4 Lab Exams - 25% each (Weekly labs ungraded)
+### Operating Systems Lab
 
-## CS 240
-  
-- Best 10 Weekly Labs - 3% each
-- Midsem - 35%
-- Endsem - 35%
+- 4 Lab Exams - 25% each (Weekly labs ungraded)

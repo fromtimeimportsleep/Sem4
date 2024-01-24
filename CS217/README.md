@@ -42,3 +42,8 @@
 15. Search: DP, uniform cost search, A*
 
 16. MDP: value iteration, reinforcement learning
+
+## How to take Derivative of a Matrix (Basics) ?
+
+This Youtube Video will be helpful in understanding last slide of Lec 3 and entire Lec 4 :-<br/>
+https://www.youtube.com/watch?v=e73033jZTCI
