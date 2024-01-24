@@ -3,6 +3,11 @@
 \usepackage{enumitem}
 \usepackage{listings}
 \usepackage{graphicx}
+\usepackage{tikz}
+
+\usetikzlibrary{quotes, angles, decorations.markings, intersections}
+\usetikzlibrary{calc,patterns,angles,quotes, 3d, intersections, positioning, shapes, automata, positioning}
+\newcommand{\tbox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
 \title{OS CS219 Notes}
 \author{}
 \date{\today}
@@ -10,6 +15,12 @@
 \maketitle
 \setlength{\parskip}{6pt}
 \setlength{\parindent}{0pt}
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 1}
+    \end{center}
+}
 \section{Introduction}
 \noindent An \textbf{OS}(operating system) alias \textbf{Master Control Program} alias \textbf{System software} is software than enables the user to access the hardware resources of a computer 
 in a controlled manner. It acts as a layer of abstraction allowing the user to not worry
@@ -77,7 +88,13 @@ allocate memory for the process continguosly it allocates them in chunks but ret
 address returned when the user requests the OS for an address of the data stored. Here again the OS lies to the process creating the illusion that it has access to continguos memory starting
 from some location
 
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 2}
+    \end{center}
+}
 \subsection{Isolation}
+    \label{section:Isolation}
     Now we understand that the OS allows multiple processes to run at the same time and share resources
     But this raises a huge issue since processes are supposed to be independent and processes being to affect other 
     processes would cause problems. The OS takes care of this too by maintaing strict control over access to hardware
@@ -177,7 +194,11 @@ from some location
     \textbf{BootLoader} must fit in 512 bytes of the Boot disk to be easily located which isn't sufficient to load up current complicated systems
 . So the 512 bytes(simple bootloader) load up a more complex BootLoader which loads OS onto the CPU 
 
-
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 3}
+    \end{center}
+}
 \section{API:Application Programming Interface}
 \textit{System calls} provide an interface to the OS called the Application Programming Interface (ie) the set of syscalls given
 to the user constitute the \textbf{API},
@@ -227,7 +248,12 @@ We can also have nested forks as in multiple forks() in a program. This will mak
     \item Child is made runnable and put on ptable and PID is returned in parent and 0 in child
 \end{itemize}
 
-
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 4}
+    \end{center}
+}
 \subsection{Exit and wait}
 When a process is done it calls exit() to terminate. Exit is called at the end of main() automatically.
 Exit doesn't clean up the memory of a process and the process is in a dead \textbf{Zombie} state.
@@ -254,6 +280,12 @@ it just replaces the parent's memory image and it copies the executable's memory
 So whatever code is given after exec is never run by the child since it overwrites the parents memory image with the executable given as a argument. However if 
 exec fails then the parent's image copy only is present in the new process and thus all the code after exec in the parent is run by the child once it gets access to the CPU. 
 
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 5}
+    \end{center}
+}
 \section{Shell}
 Shell is the process which handles accepting and executing terminal commands
 \begin{lstlisting}[language=C++,caption = Shell code]
@@ -269,7 +301,6 @@ Shell is the process which handles accepting and executing terminal commands
         }
     }  
 \end{lstlisting}
-\newpage
 The basic working of the shell goes like this:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item Shell forks a child which calls exec to run commands
@@ -306,6 +337,88 @@ are treated as group. By default a process belongs to its parent's process group
 . The syscall \texttt{setpgid} can be used to change the process group of a process.
 
 
-Signals to a process are queued and delivered to the OS which handles them. It knows to ignore certain signals and to make some processes stop for certain others. User processes can also define their own signal handlers using the signal syscalls to overwrite default behaviour. The process jumps to the process's signal handler and back to the process if it exists after signal is taken care of.
+Signals to a process are queued and delivered to the OS which handles them. It knows to ignore certain signals and to 
+make some processes stop for certain others. User processes can also define their own signal handlers using the signal syscalls to overwrite default behaviour.
+ The process jumps to the process's signal handler and back to the process if it exists after signal is taken care of.
 However note that some signals like SIGKILL can't be overriden by a process's signal handler
+\\
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 6}\\
+   \textit{work in progress not yet completed}
+    \end{center}
+}
+
+\section{Trap handling}
+
+As we saw before the CPU can execute instructions in User mode or Kernel mode with differing level of privileges\footnote{Refer \ref{section:Isolation}}.
+The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} the OS code.
+
+Note: Random doubt, How are interrupts and signals different. Interrupt is a message from a \textit{device} to the system which is handled by OS.
+Signal is a message sent from one process or another. When we give CTRL + C that is an \textit{interrupt} from the keyboard which the OS handles to create a \textit{SIGINT} signal to the running process
+
+Why is a sycall() even different from a function call??
+To understand lets see what happens when a function call is made
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Allocation of memory on stack for function arguments,local variables. Note that this doesn't happen during function definition.
+    \item Push return address and PC jumps to function code
+    \item Save register context of the calling process
+    \item Execute function code and once done pop return address and pop register context
+\end{itemize}
+
+In a syscall some similar things are done
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Push return address and PC jumps to function code(How does the user know where OS code is?)
+    \item Save register context for the calling process
+    \item Execute function code and once done pop return address and pop register context
+\end{itemize}
+
+But the important difference is \textit{where} the memory for the syscall() variables are allocated and what information is exposed to user.
+We can't expose the PC locations for various syscalls since they can be misused and abused by the User. It also completely takes away control from the OS and leaves the system vulnerable to attacks.
+Also the OS is \textit{paranoid} in the sense that it is designed to not trust the user. Since the User has access to the user stack the OS doesn't use that stack
+for allocating variables for its syscall(). It rather has its own secure \textbf{kernel stack} which is not accessible to the user. 
+
+\subsection{Kernel stack and IDT}
+The kernel stack is used for running all the OS code. There is a part of the PCB given to these secure OS processes which aren't accessible to the user.
+The context for a process calling a syscall is pushed onto the Kernel stack and is popped when the syscall is done.
+
+
+Again how does a process know which PC to jump for a syscall(). We have the \textbf{Interrupt descriptor Table} for this purpose.
+It is a special data structure which has the mapping to the PC at which each syscall()'s code is present. This PC is indexed by n which is the 
+argument passed to the \textit{trap} instruction\footnote{read further to know what a trap is}
+
+
+
+
+
+
+When the user wants to make a system call we can't do it with OS code directly since it involves changing permission to Kernel mode which the OS code needs anyway to run\footnote{problem of which rat will bell the cat}. We obviously can't make the user
+code do it due to \textit{lack of trust}. The only trust worthy entity which is capable of changing permission to run OS code is the hardware. The hardware creates an interrupt which calls a special "trap instruction" or (INT n) at the assembly code level with an argument which indicates the 
+type of trap(to indicate which syscall,interrupt,error is calling it). After this the CPU is finally capable of running OS code and thus OS can perform whatever the trap was called for.
+
+
+The \textbf{IDT} is setup during Bootup of a system to give the PC's of syscall() depending on which task is to be done.
+This PC is used by the interrupt instruction to jump to a syscall()'s PC thus maintaining security. Thus, note that the IDT is a very important data structure and 
+an ability to compromise it can give access to the entire system since we can locate where all the OS's code and virtual memory is and thus gain access to the entire system 
+
+
+How does trap make the privilege to Kernel mode? What all does it do?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item CPU privilege is increased
+    \item CPU shifts it's stack pointer to the kernel stack
+    \item The user context for the calling process is saved(for a syscall)
+    \item The PC (can be obtained from interrupt table) is changed 
+\end{itemize}
+
+
+Now we are in a position to start running the OS code. After the OS code is done handling the syscall/interrupt, it calls a return-from-trap
+instruction.
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item CPU privilege is decreased
+    \item CPU shifts it's stack pointer to the User stack
+    \item The user context for the calling process is copied to CPU
+\end{itemize}
+User is unaware that it was even suspended and continues as if nothing happened.
 \end{document}
+
