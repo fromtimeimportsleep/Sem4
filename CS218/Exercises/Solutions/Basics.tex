@@ -35,7 +35,7 @@
     linkcolor=blue,
     filecolor=magenta,
     urlcolor=cyan,
-    pdftitle={\Huge \textbf{Reinforcement Learning}},
+    pdftitle={\Huge \textbf{CS218 Solutions}},
     pdfpagemode=FullScreen,
 }
 \usepackage[utf8]{inputenc}
@@ -248,6 +248,8 @@
   $a_n$ is part of the terms or not. Our base cases are $f(1,1) = a_1$, $f(n,1) = a_n + f(n-1,1)$. We can just create an 
   $n \times k$ grid and calculate $f(i,j)$ and fill it in each cell, going in increasing order of $i$ and increasing order 
   of $j$ (there are more efficient ways space complexity wise but eh).
+
+  We can also achieve this recursion logically, not only just by mere observation. As per the hint, the given entity is the coefficient of $x^{n-k}$ in the polynomial $\prod_{i=1}^{n} (x + a_{i})$. Rewriting as $[\prod_{i=1}^{n-1} (x + a_{i})]*(x + a_{n}) = x*[\prod_{i=1}^{n-1} (x + a_{i})] + a_{n}*[\prod_{i=1}^{n-1} (x + a_{i})]$, we see that coefficient of $x^{n-k}$ in $\prod_{i=1}^{n} (x + a_{i})$ in LHS = sum of coefficients of $x^{n-k-1}$ in $\prod_{i=1}^{n-1} (x + a_{i})$ and $x^{n-k}$ in $a_{n}*\prod_{i=1}^{n-1} (x + a_{i})$ in RHS. Hence we get the recursion equation above.
 
   \subsection*{\huge\bfseries Divide and Conquer}
 
