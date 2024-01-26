@@ -2,7 +2,6 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
-- **Jan 19 (Friday), 23:59** - CS 208 HW1 submission
 - **Jan 31 (Wednesday)** - CS 218 quiz 1
 - **Feb 1 (Thursday), 8:30-9:30 (Class Hours)** - CS 219 quiz 1, **Syllabus:** Everything covered
 - **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
@@ -18,30 +17,25 @@ Quizzes/Deadline dates here, along with syllabus
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Tuesday
-
-- **CS 208** - Using nested boxes to prove formulae, synatactic entailment, soundness
-- **CS 218** - Merge sort like method for skyline problem, discussion of more methods
-- **CS 219** - Exit, wait, exec syscalls, as well as their code
-
-## Wednesday
-
-- **CS 217** - Regression, Error Functions, Least Square Optimization
-
-## Thursday
-
-- **CS 219** - How does the shell/terminal work, background process, pipes and signals
-- **CS 208** - Syntactic entailment vs Semantic entailment, proof that they are equivalent
-- **CS 218** - Signficant inversion, BST with count, exponentiation by repeated squaring
-- **CS 236** - Coding the shell using syscalls
-
-## Friday
-
-- **CS 217** - Linear Regression, Polynomial Fitting, Probabilistic Regression, Gradient Descent
-
 ## Monday
 
 - **CS 240** - Linear Regression by closed form and gradient descent, polynomial fitting
+
+## Tuesday
+
+- **CS 208** - Completion of syntactic = semantic equivalence, distributive and De Morgan's laws, NNF and CNF
+- **CS 218** - Fibonacci Numbers, Mutliplication Algo, Divide and Conquer in Squaring
+- **CS 219** - Trap Handling, IDT, int instruction
+
+## Wednesday
+
+- **CS 217** - Stochastic Gradient Descent, Prior and Maximum Apriori Estimate
+
+## Thursday
+
+- **CS 219** - Code of trap handling: int n, alltraps() function, timer interrupts
+- **CS 208** - Efficient method to convert to NNF, constructing equisatisfiable CNF given a DAG
+- **CS 218** - Karatsuba, Tom Cook multiplication, intro to faster methods
 
 # Timetable
 
