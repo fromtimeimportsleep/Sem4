@@ -284,5 +284,38 @@
   $O(\log n)$ time.
   So this algorithm will take $O(n \log n)$ time.
 
+  \item Think about shading the visible parts of each line. If you move from left to right, the lines will be in increasing order of slopes,
+  and form a sort of U shape. So we can start off by first sorting in increasing order of slope. If 2 lines have same slope, the one with 
+  smaller `c' is redundant. Now we're going to traverse this array one by one, and maintain a list of lines which are visible. Note that in 
+  this list, except for the first and last line, only line segments are visible. Now a crucial observation is that the next line will intersect
+  only 1 of the visible parts, as it's slope is greater than the whole thing. And which part it insersects can be found by binary search. 
+  
+  Let's check if line $l$ intersects $vis[i]$ (in the visible part of it). For this, it should intersect between the endpoints of the visible
+  part, $vis[i-1]$ and $vis[i]$'s intersection, $vis[i]$ and $vis[i+1]$'s intersection. Let's call these endpoints, $a$ and $b$, and $l$'s
+  insersection point with $vis[i]$ as $x$. If the order of points of line $vis[i]$ is $p, a, b$, then line $l$ intersects with something 
+  before $vis[i]$. If the order, is $a, b, p$, then the line insersects with something after $vis[i]$. So in this way we can binary search, 
+  by dividing our search space. Once we found out which line it intersects with, all the lines in the array after it are to be neglected, they
+  will be hidden. We don't have to spend time deleting them, just store an endpointer to $vis$ to save time. Overall the time complexity is 
+  $O(n \log n) + n \times O(\log n) = O(n \log n)$.
+
+  \item This question is very similar to the previous one, just turning it upside down. So we can do the same process, sort the lines in decreasing
+  order of slopes, and iterate through this array. However here, we also have the additional constraint that $y \geq 0$, so the starting and ending
+  lines also terminate. But stil, we follow the same process, and in the end, finding the vertices from the lines is easy. This is overall
+  $O(n \log n) + O(n) = O(n \log n)$.
+
+  \item Out of syllabus
+  
+  \item Let's divide our array into 2 subarrays, left half and the right half. Let's say we have already solved the subproblems within the 2
+  halves, now all that's left is to count number of significant inversions where $i$ is in the first half and $j$ is in the second half. In order to 
+  do this is $O(n)$ let's assume some preprocessing is already done for us, the left subarray and the right subarray are already sorted. This will
+  make our counting easier, and it's now like we are doing our counting while doing a mergesort.
+  
+  Keep pointer $p_1$ at the start of the first array, and $p_2$ at the start of the second array. We just want to find for every $i$, how many $j$
+  are there such that $A[i] > 2A[j]$. So for $p_1$ pointing to $i=0$, keep moving $p_2$ until the condition isn't satisfied. The number of $j$'s for 
+  $i=0$ are the number of times $p_2$ moved. Now increment $p_1$, and continue moving $p_2$ whenever $A[i] > 2A[j]$, for the new $i$, the total number 
+  of significant inversions is total number of times $p_2$ moved. We can keep doing this for all values, until both pointers reach the end. This takes 
+  $O(n)$ time. But our subroutine isn't done, we have to now merge these 2 subarrays to give a sorted full array, but this also takes only $O(n)$ time.
+  So we have the recursion $T(n) = 2T(n/2) + O(n)$ so $T(n) = O(n \log n)$.
+
   \end{enumerate}
 \end{document}
