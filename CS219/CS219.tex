@@ -345,15 +345,15 @@ However note that some signals like SIGKILL can't be overriden by a process's si
 \newpage
 \noindent\tbox{
     \begin{center}
-    \textbf{\Huge Lecture 6}\\
-   \textit{work in progress not yet completed}
+    \textbf{\Huge Lecture 6}
     \end{center}
 }
 
 \section{Trap handling}
 
 As we saw before the CPU can execute instructions in User mode or Kernel mode with differing level of privileges\footnote{Refer \ref{section:Isolation}}.
-The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} the OS code.
+The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} the OS code\footnote{read further to find out what a trap is}.
+The OS isn't a seperate processes it just runs in the same process which called it (by trapping the OS) just in the Kernel mode of the CPU.
 
 Note: Random doubt, How are interrupts and signals different. Interrupt is a message from a \textit{device} to the system which is handled by OS.
 Signal is a message sent from one process or another. When we give CTRL + C that is an \textit{interrupt} from the keyboard which the OS handles to create a \textit{SIGINT} signal to the running process
@@ -377,7 +377,7 @@ In a syscall some similar things are done
 But the important difference is \textit{where} the memory for the syscall() variables are allocated and what information is exposed to user.
 We can't expose the PC locations for various syscalls since they can be misused and abused by the User. It also completely takes away control from the OS and leaves the system vulnerable to attacks.
 Also the OS is \textit{paranoid} in the sense that it is designed to not trust the user. Since the User has access to the user stack the OS doesn't use that stack
-for allocating variables for its syscall(). It rather has its own secure \textbf{kernel stack} which is not accessible to the user. 
+for allocating variables for its syscall(). It rather has its own secure \textbf{kernel stack} which is not accessible to the user.
 
 \subsection{Kernel stack and IDT}
 The kernel stack is used for running all the OS code. There is a part of the PCB given to these secure OS processes which aren't accessible to the user.
@@ -386,11 +386,7 @@ The context for a process calling a syscall is pushed onto the Kernel stack and 
 
 Again how does a process know which PC to jump for a syscall(). We have the \textbf{Interrupt descriptor Table} for this purpose.
 It is a special data structure which has the mapping to the PC at which each syscall()'s code is present. This PC is indexed by n which is the 
-argument passed to the \textit{trap} instruction\footnote{read further to know what a trap is}
-
-
-
-
+argument passed to the \textit{trap} instruction. Accessing this table can only be done by privileged instructions.
 
 
 When the user wants to make a system call we can't do it with OS code directly since it involves changing permission to Kernel mode which the OS code needs anyway to run\footnote{problem of which rat will bell the cat}. We obviously can't make the user
@@ -399,11 +395,11 @@ type of trap(to indicate which syscall,interrupt,error is calling it). After thi
 
 
 The \textbf{IDT} is setup during Bootup of a system to give the PC's of syscall() depending on which task is to be done.
-This PC is used by the interrupt instruction to jump to a syscall()'s PC thus maintaining security. Thus, note that the IDT is a very important data structure and 
+This PC is used by the interrupt instruction to jump to a syscall()'s PC thus maintaining security. Thus, note that the \textbf{IDT} is a very important data structure and 
 an ability to compromise it can give access to the entire system since we can locate where all the OS's code and virtual memory is and thus gain access to the entire system 
 
 
-How does trap make the privilege to Kernel mode? What all does it do?
+How does trap make the privilege to \textit{Kernel mode}? What all does it do?
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item CPU privilege is increased
     \item CPU shifts it's stack pointer to the kernel stack
@@ -413,12 +409,57 @@ How does trap make the privilege to Kernel mode? What all does it do?
 
 
 Now we are in a position to start running the OS code. After the OS code is done handling the syscall/interrupt, it calls a return-from-trap
-instruction.
+instruction(Trapret and iret).
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item CPU privilege is decreased
     \item CPU shifts it's stack pointer to the User stack
     \item The user context for the calling process is copied to CPU
 \end{itemize}
 User is unaware that it was even suspended and continues as if nothing happened.
+
+\textbf{IDT Lookup: }The IDT is basically an array whose starting index is stored in a CPU register and the interrupt number 'n' given in INT n is the index of the PC we need.
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 7}
+    \end{center}
+}
+
+\subsection{Trap Frame in xv6 and trap handling}
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item A data structure called the Trap frame is pushed onto the kernal stack when a trap is encountered and then it is popped by return-from-trap
+    \item It contains various register values to be saved and not get lost during trap handling(pushed by OS).
+    \item The "int n" pushes a few registers(PC,SP etc.) and jumps to kernel to handle the trap and the rest of the registers are pushed by kernel code after which trap handling is done
+    \item \textbf{EIP,ESP} has values that get modified as soon as the "int" instruction is completed. So we need to save them with the int n instruction itself and cannot wait for OS code.
+    \item IDT entries for all interrupts set the EIP to point to the kernel trap handler "\texttt{Alltrap}" which is common for all traps into the OS regardless of the reason for why the trap was called
+    \item \texttt{Alltrap's} assembly code pushes remaining registers to complete trapframe on Kernel Stack
+   \\ Note: Why do we have to save registers does'nt the int instructions do it for us? The harware only saves the bare minimum and absolutely required values like \textbf{EIP,ESP}
+   It is upto the OS to save the remaining registers inorder to restore them after trap handling
+   \item Thus after \texttt{Alltrap} is executed our sturct Trap frame has all its values set appropriately
+    \item Note that after the \texttt{Alltrap} is completed the ESP points to the top of the trap frame
+    \item After this we invoke the \texttt{trap()} function in C which actually handles the specific reason the trap was called for\footnote{It knows the reason from the "n" argument in int n}
+\end{itemize}
+
+So we can see that \texttt{\texttt{Alltrap}} is written in assembly to do the bare minimum that \textbf{must} be done in assembly like pushing registers to Kernel stack. After this we go to a high level
+language like C enabling us to code the logic in the more compliacted part of actually handling the trap much easier. 
+After the trap handling is done the assembly code \texttt{trapret}'s instructions are executed. This pops the trapframe from the kernel stack(things pushed in the \texttt{Alltrap}s). It calls the \texttt{iret} instruction which is the opposite of int. It pops values which int pushed to kernel stack after which it changes privilege level back to user mode. After this the process which trapped the OS continues running. In xv6 if it was a syscall that called the trap after all the trap handling is completed the OS puts the return value for the 
+syscall in the \texttt{eax} register.
+
+
+So in conclusion the int instruction and \texttt{Alltrap}s work together to save values when a trap is performed. C code(trap handler) takes care of the actual trap. Trapret pops the register context and \texttt{iret} returns from trap and control goes back to user
+
+
+Depending on the value at n we know if the int was called for a syscall or an interrupt and can handle it appropriately. How do we know when a device interrupt occurs?
+If a particular pin connected to the device has a high value then an 
+\texttt{int n} in passed to the CPU with an appropriate "n" value and thus the CPU can handle the device interrupt
+
+
+\subsection{Timer interrupt}
+We thus understand how a trap can give control to the OS. But it maybe that intentionally or accidentaly that a program never does a trap. So the OS would never get the control
+of the CPU. What if such a process goes into an infinite loop? How will the OS stop it? Alternately if we want to do a context switch how will the OS get control? One option is to just assume the process
+is not malicious and it is smartly written to trap into the OS at regular intervals. However the better option is to interrupt every process after a particular amount of time has passes and then 
+trap into the OS to handle this interrupt and check if everything is okay or do a context switch if required. This interrupt is appropriately called an \textbf{Timer interrupt}. The Timer interrupt is a special hardware interrupt and is given to kernel periodically.
+
+
+
 \end{document}
 
