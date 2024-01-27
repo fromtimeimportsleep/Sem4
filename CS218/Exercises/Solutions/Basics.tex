@@ -295,8 +295,11 @@
   insersection point with $vis[i]$ as $x$. If the order of points of line $vis[i]$ is $p, a, b$, then line $l$ intersects with something 
   before $vis[i]$. If the order, is $a, b, p$, then the line insersects with something after $vis[i]$. So in this way we can binary search, 
   by dividing our search space. Once we found out which line it intersects with, all the lines in the array after it are to be neglected, they
-  will be hidden. We don't have to spend time deleting them, just store an endpointer to $vis$ to save time. Overall the time complexity is 
-  $O(n \log n) + n \times O(\log n) = O(n \log n)$.
+  will be hidden. We don't have to spend time deleting them, just store an endpointer to $vis$ to save time. Once we insert a new line in some 
+  location, move the endpointer to that location, and treat that as if it's the end of the array. If the next line has to be appended to the 
+  array, it will be inserted in the location just after the endpointer.
+  
+  Overall the time complexity is $O(n \log n) + n \times O(\log n) = O(n \log n)$.
 
   \item This question is very similar to the previous one, just turning it upside down. So we can do the same process, sort the lines in decreasing
   order of slopes, and iterate through this array. However here, we also have the additional constraint that $y \geq 0$, so the starting and ending
