@@ -2,8 +2,8 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
-- **Jan 31 (Wednesday)** - CS 218 quiz 1
-- **Feb 1 (Thursday), 8:30-9:30 (Class Hours)** - CS 219 quiz 1, **Syllabus:** Everything covered
+- **Jan 31 (Wednesday)** - CS 218 quiz 1, **Syllabus:** Lectures 1-7, Until Divide and Conquer
+- **Feb 1 (Thursday), 8:30-9:30 (Class Hours)** - CS 219 quiz 1, **Syllabus:** Everything covered before quiz
 - **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
 - **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1
 - **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1
