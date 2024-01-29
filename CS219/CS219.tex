@@ -157,7 +157,7 @@ from some location
         \item \textbf{Page Table}: The OS lies to the process about memory addresses(Virtual address \footnote{refer Section \ref{section:mem_alloc}}). The real address mapping to the corresponding
         virtual address is stored in the page table. The page table can be used to get the real address corresponding to each virtual address
         \item \textbf{Kernel Stack}: The context of a CPU is saved in this kernel stack when context switches occur. This stack is stored in a seperate memory and it isn't accesible by user code
-        The OS uses this stack since it doesn't trust the user stack
+        The OS uses this stack since it doesn't trust the user stack. Each process has its own kernel stack
     \end{itemize}
 
 
@@ -350,9 +350,9 @@ However note that some signals like SIGKILL can't be overriden by a process's si
 }
 
 \section{Trap handling}
-
+\label{section:trap}
 As we saw before the CPU can execute instructions in User mode or Kernel mode with differing level of privileges\footnote{Refer \ref{section:Isolation}}.
-The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} the OS code\footnote{read further to find out what a trap is}.
+The process of going to Kernel mode is called a "Trap" the CPU\textit{traps}into the OS code via the running process\footnote{read further to find out what a trap is}.
 The OS isn't a seperate processes it just runs in the same process which called it (by trapping the OS) just in the Kernel mode of the CPU.
 
 Note: Random doubt, How are interrupts and signals different. Interrupt is a message from a \textit{device} to the system which is handled by OS.
@@ -454,12 +454,83 @@ If a particular pin connected to the device has a high value then an
 
 
 \subsection{Timer interrupt}
+\label{section:Timer}
 We thus understand how a trap can give control to the OS. But it maybe that intentionally or accidentaly that a program never does a trap. So the OS would never get the control
 of the CPU. What if such a process goes into an infinite loop? How will the OS stop it? Alternately if we want to do a context switch how will the OS get control? One option is to just assume the process
 is not malicious and it is smartly written to trap into the OS at regular intervals. However the better option is to interrupt every process after a particular amount of time has passes and then 
 trap into the OS to handle this interrupt and check if everything is okay or do a context switch if required. This interrupt is appropriately called an \textbf{Timer interrupt}. The Timer interrupt is a special hardware interrupt and is given to kernel periodically.
 
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 8}
+    \end{center}
+}
+\section{OS scheduler}
+
+OS maintains a list of all active processes in a data structure. Processes are added in during \texttt{fork()} and it is removed during \texttt{wait()}.
+The \textbf{OS scheduler} is a piece of ccode that runs over this dynamically growing data structure and picks a process to run.
+Basic Job of the scheduler:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item It saves the context of the currently running process in its PCB
+    \item Loops over all the ready processes and picks a process to run(according to its policy)
+    \item Restore context of the new process from PCB and make it run
+    \item Continue as long as system is active
+\end{itemize}
+
+Why do we want to do context switch?
+Sometimes when OS is in kernel mode it can't go back to the process which it trapped into. For example, when the process has terminated or when it has made a blocking system call.
+Another reason could be that the OS may not want to return to the same process due to the necessity to give fair oppurtunity for all process to run. This is done through \textit{time sharing} for which context switching is necessary.
+
+The OS scheduler needs to decide on a policy (\textit{scheduling policy}) for selecting a process to run and needs to have a mechanism to switch to that process. The scheduler can be non pre-emptive where it switches contexts only
+ when a running process does a blocking syscall or gets terminated ie when it willingly gives up control. A pre-emptive scheduler will perform a switch even if a process is ready to run. It does this via timer interrupt\footnote{Refer \ref{section:Timer}}
 
 
-\end{document}
+
+\subsection{Mechanism of a context switch}
+ How does a context switch happen? Assume we want to switch from process A to process B. Process A is trapped into OS\footnote{Refer \ref{section:trap}}. Kernel stack has register context of user process A in the trap frame.
+ After running some kernel code assume process A can't be run anymore (Say it asked to read from disk which takes time). Now we want to switch to B. 
+
+ We now save the \textit{Kernel context} (ie) PC of OS where we stopped, kernel stack pointer, some registers etc.. . Now be careful and observe that there are \textbf{two different} contexts the \textit{user context} and the \textit{kernel context} of a process.
+ The user context is saved on the kernel stack by a trap into the OS from that process. The kernel context is saved on the kernel stack during a context switch.
+ After saving both contexts we then switch the value of the stack pointer to the kernel stack of B\footnote{The switching of this stack is the exact moment of the context switch} from the kernel stack of A\footnote{each process has its own Kernel PC}. 
+
+ What does kernel stack of B have? It trapped into OS at somepoint or was context switched out. So its kernel stack has a trap frame, kernel context etc... . We now restore the kernel context
+ of B and resumes execution in kernel mode of process B at the point(ie at the PC where context switch happened) the CPU was given up by it\footnote{This is why we store the kernel PC when we context switchd out of A}. Now user process B can run as normal after it returns out of trap.
+ Thus we have completed a context switch. 
+ 
+ 
+ An important point to note is that \textit{context swtiching }can only happen in kernel mode. So when we switch context the \texttt{EIP} is an OS code PC. When we switch into another process we switch into the OS code PC 
+ address which we were about to execute the last time a context switch happened with the process we are switching into. That is the PC of the last OS code B was executing before the last time it got switched out.\footnote{This point is quite confusing. A helpful hint is to try to visualise what happened that last time a context switch happened with B which stopped it from running}
+
+ What if B is a new process that has never been run before? Since it as never context swtiched before will it have its \textit{kernel context} saved? We can create a new process only by calling
+ \texttt{fork()} and fork doesn't create an empty kernel stack. It gives some dummy value to the stack which solves this issue. We will look at this issue in detail later
+
+ \subsection{OS scheduler in xv6}
+ In xv6 every CPU has a scheduler thread ie a special process for the scheduler code. Also note that xv6 is a pre-emptive scheduler with timer interrupts. It runs over the list of processes and then switches to one of the runnable ones. 
+
+
+ The scheduler process runs and then it context switches to another process. When the current process wants to switch to another process it swtiches to the scheduler and then to another process. 
+ Direct context switching doesn't happen. The scheduler is always a middle man.
+
+{\texttt{sched():}}  xv6 has a function \texttt{swtch()} that actually performs the context switch. The \texttt{sched()} functions makes the process context switch to the scheduler. It can't be called in user mode. It
+is a OS function to be run in kernel mode. The calling process is switched out and the scheduler context is switched in. The scheduler then finds out 
+some other process to run and then \texttt{swtch()} context switches from scheduler to that process. 
+
+When does a process call \texttt{sched()}:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Yield:} Timer interrupt occurs, process has run enough and gives up CPU
+    \item \textbf{Sleep:} Process performed blocking action like I/O from disk
+    \item \textbf{Exit:} Process called exit, sets itself as a zombie and gives up CPU
+\end{itemize}
+
+In both the scheduler,\texttt{sched()} function the function \texttt{swtch()} switches between two contexts.
+
+\textbf{Context structure:} It is the set of registered stored/restored during a context switch from one process to another. As disucssed before it is pushed into the kernel stack during a context switch.
+The pointer to this structure is stored in the \texttt{struct proc} of the xv6 system as a field called "context"(p$\rightarrow$context). This could be thought of as similar to the \textit{kernel context}.
+
+
+Note that the trap frame is a different structure which also has its own pointer in \texttt{struct proc} even though it is also stored on the kernel stack. It is saved during a trap into the OS whereas \textbf{context structure}
+is stored only during a context switch. An example is a timer interrupt, when the process traps into the OS itself the \textbf{trap frame} is saved whereas the \textbf{context structure} is only saved during a 
+context switch to a different process
+ \end{document}
 
