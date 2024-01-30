@@ -48,12 +48,11 @@ the sequence of instructions for that program starts getting executed one by one
 \subsection{Context switching}
 \label{section:context}
 How do we tell the CPU to start a process. First obviously we need to feed the address of the first instruction of the process to the \textbf{Program Counter}. We also need to set 
-the stack pointer and other registers with appropriate values. This is called \textbf{setting up the context} for a process. This job is done by the OS 
-.After the context is set the OS takes a back seat and allows the CPU to do its work
+the stack pointer and other registers with appropriate values. This is called \textbf{setting up the context} for a process. This job is done by the OS. After the context is set the OS takes a back seat and allows the CPU to do its work
 
 
 \noindent However this has a few issues. Firstly, when the process requests for data from say the hard drive there is a gap where the CPU 
-is on standby which is wasteful since other processes also require it. Secondly, we also want responsiveness from our system ie when
+is on standby which is wasteful since other processes also require it. Secondly, we also want responsiveness from our system (ie) when
 we have a process running we also may want to interact with other processes. 
 
 
@@ -162,8 +161,8 @@ from some location
 
 
     \subsection{Process Control Block}
-    All the above mentioned attributes of a process alone with more necessary information
-    is stored in a data structure called the process control block(PCB)
+    All the above mentioned attributes of a process along with more necessary information
+    is stored in a data structure called the process control block(PCB)\footnote{Stores the details about one process}
 
 
     It is called by different names in different OSes:
@@ -181,18 +180,18 @@ from some location
     world kernels it is a dynamically expanding data structure. 
 
     
-    The \textbf{OS scheduler} iterates over the ptable picks a \textit{ready} process and assigns it a processor to run it
-    .A process which needs to be put to sleep (Eg. IO from disk) will be put to sleep and another is picked from processor
+    The \textbf{OS scheduler} iterates over the ptable picks a \textit{ready} process and assigns it a processor to run it.
+    A process which needs to be put to sleep (Eg. IO from disk) will be put to sleep and another is picked from processor
  
     \section{Booting}
     We need some system to load up our OS into the CPU during start of the system.
-    The \textbf{BIOS}(Basic input output system) is present in the non-volatile memory of our system which loactes boot loader 
+    The \textbf{BIOS}(Basic input output system) is present in the non-volatile memory of our system which locates boot loader 
     in the boot disk. It is a simple program whose job is to locate and load the OS. It is present in the first sector of the boot disk
     It sets up context for the kernel and gives control to kernel
 
 
-    \textbf{BootLoader} must fit in 512 bytes of the Boot disk to be easily located which isn't sufficient to load up current complicated systems
-. So the 512 bytes(simple bootloader) load up a more complex BootLoader which loads OS onto the CPU 
+    \textbf{BootLoader} must fit in 512 bytes of the Boot disk to be easily located which isn't sufficient to load up current complicated systems.
+    So the 512 bytes(simple bootloader) load up a more complex BootLoader which loads OS onto the CPU 
 
 \noindent\tbox{
     \begin{center}
@@ -206,12 +205,12 @@ to the user constitute the \textbf{API},
 Two types of syscalls are:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item \textbf{Blocking:} Syscalls that block the process that called it\footnote{Like when you wanna read from disk which takes time} and the OS comes back to the user process after a while
-    \item \textbf{Non Blocking:} Syscalls that are called with the user instructions which acts along with user process without blocking the calling process\footnote{The process which calls the syscall}since they return immediately (eg. getpid())
+    \item \textbf{Non Blocking:} Syscalls that are called with the user instructions which acts along with user process without blocking the calling process\footnote{The process which calls the syscall} since they return immediately (eg. getpid())
 \end{itemize}
 
 
 If every OS has different syscalls \textit{portability}\footnote{ability to run same code on multiple machines} is an issue. For this purpose all the OS providers decide on an universal set of syscalls
-\footnote{The implementation of said syscall differ} to provide called the \textbf{POSIX} API. Interestingly, since the instructions for syscalls maybe different this is why we may have to recompile to run code on another OS
+\footnote{The implementation of said syscall may differ} to provide called the \textbf{POSIX} API. Interestingly, since the instructions for syscalls maybe different this is why we may have to recompile to run code on another OS
 
 Hence the hierarchy of a syscall is somewhat like:
 \begin{center}
@@ -219,11 +218,12 @@ Hence the hierarchy of a syscall is somewhat like:
 \end{center}
 
 In xv6 we are directly given syscalls in the standard library in a user friendly function call. Usually we are given syscalls at the assembly code level
-since we usually need to change the privilege of CPU\footnote{Done using INT in assembly}. Hence we need to understand that syscall is \textbf{NOT} a regular function call
+since we usually need to change the privilege of CPU\footnote{Done using INT in assembly}. Hence we need to understand that syscall is \textbf{NOT} a regular function call.\footnote{Lottt more detail on this furthers}
 
 \subsection{Fork}
 Each process is created by another process. Such a process emerging from another is called the \textit{child} of the \textit{parent} process.
-The syscall used to create such a process is called \textit{fork}. \texttt{Init} is the initial process from which all other processes are \textit{forked}
+The syscall used to create such a process is called \textit{fork}. \texttt{Init} is the initial process from which all other processes are \textit{forked}.
+
 When you call fork:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item New child process is created with new \textbf{PID}
@@ -235,11 +235,15 @@ Note that while the child may share the virtual memory with parent. It is in a d
 
 What is the point of running the same process as a child again? There is none. They aren't the same process due to one key difference.
 The \texttt{fork()} returns 0 in the child process and returns the PID of child to the parent. Hence we can make the parent and child run different code
-using the different value returned by the \texttt{fork()} function. Note that \texttt{fork()} returns -1 when forking fails. This process seems to be generating different process running some redundant code. This is not the case usually
-due to reasons we will see later. Interestingly as of yet the parent also needn't run before the child since they are independent processes
+using the different value returned by the \texttt{fork()} function. Note that \texttt{fork()} returns -1 when forking fails. This process seems to be generating different process running some redundant code.
+This is not the way to create process to perform very different functions as compared to parent.
+We will see another way to create processes for that case
+later. Interestingly as of yet the parent also needn't run before the child since they are independent processes
 
 We can also have nested forks as in multiple forks() in a program. This will make a parent and the child each of which will also call another fork and so on.
-\\\textbf{xv6 fork() code:}
+
+
+\textbf{xv6 fork() code:}
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item Allocates memory for new process and gets PID
     \item "np" a pointer to struct proc of child is created
@@ -267,7 +271,7 @@ wait() some arbitrary process out of all zombied ones processes are reaped. Note
 What if parent dies without calling wait(). Then the child continues to run as an orphan process. In this case \texttt{init.} 
 adopts the orphan process and becomes its parent and eventually reaps\footnote{calls wait() and erases the memory of the zombie} it. This is done when the parent calls exit which makes all the parent
 pointers of its children point to \texttt{init.}. Note that \texttt{init.} comes into play iff the parent dies, not when it is alive in anycase. So \texttt{init.} keeps
-checking if there is an orphan to adopt and eventually reap. If parent is alive but doesn't call wait then system memory fills with zombies\footnote{ahhhhhhh}
+checking if there is an orphan to adopt and eventually reap. If parent is alive but doesn't call wait then system memory fills with zombies\footnote{ahhhhhhh apocalypse}
 
 
 \subsection{Exec}
@@ -305,13 +309,14 @@ The basic working of the shell goes like this:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item Shell forks a child which calls exec to run commands
     \item Why doesn't the shell call exec() itself. This is since we want the shell program to keep running and not get replaced
-    \item Some commands have code written in the OS itself like \texttt{cd}, since they need to maintain the pwd*\footnote{present working dictionary} while others
+    \item Some commands have code written in the OS itself like \texttt{cd}, since they need to maintain the pwd\footnote{present working dictionary} while others
     have executables called by exec() like \texttt{ls}.
     \item User commands run in \textit{foreground} (ie) can't accept next command till previous one is done
     \item \textit{Background execution} is when we give a command followed by \& the shell runs command but doesn't wait for it to finish.
     So reaping is taken care later by the shell using a method where wait is invoked without blocking parent.
-    \item We can also run multiple commands in \textit{foreground} sequentially(one after another) or parallely using $||$ 
+    \item We can also run multiple commands in \textit{foreground} sequentially(one after another) using \&\& or parallely using $||$ 
 \end{itemize}
+
 
 Some things taken care by the shell:\\\\
 \textbf{I/O redirection:}
@@ -334,13 +339,13 @@ generate signals on its own and not from processes(eg. CTRL + C sends SIGINT).
 
 When we send a signal it is sent to all the processes in that process group. A process group is an organisation where sets of processes
 are treated as group. By default a process belongs to its parent's process group. CTRL + C sends SIGINT to all processes of the \textit{foreground} process group
-. The syscall \texttt{setpgid} can be used to change the process group of a process.
+. The syscall \texttt{setpgid()} can be used to change the process group of a process.
 
 
 Signals to a process are queued and delivered to the OS which handles them. It knows to ignore certain signals and to 
 make some processes stop for certain others. User processes can also define their own signal handlers using the signal syscalls to overwrite default behaviour.
  The process jumps to the process's signal handler and back to the process if it exists after signal is taken care of.
-However note that some signals like SIGKILL can't be overriden by a process's signal handler
+However note that some signals like SIGKILL can't be overriden by a process's signal handler since the OS needs to maintain some power over process incase they go rogue.
 \\
 \newpage
 \noindent\tbox{
@@ -352,7 +357,7 @@ However note that some signals like SIGKILL can't be overriden by a process's si
 \section{Trap handling}
 \label{section:trap}
 As we saw before the CPU can execute instructions in User mode or Kernel mode with differing level of privileges\footnote{Refer \ref{section:Isolation}}.
-The process of going to Kernel mode is called a "Trap" the CPU\textit{traps}into the OS code via the running process\footnote{read further to find out what a trap is}.
+The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} into the OS code via the running process\footnote{read further to find out what a trap is}.
 The OS isn't a seperate processes it just runs in the same process which called it (by trapping the OS) just in the Kernel mode of the CPU.
 
 Note: Random doubt, How are interrupts and signals different. Interrupt is a message from a \textit{device} to the system which is handled by OS.
@@ -427,13 +432,13 @@ User is unaware that it was even suspended and continues as if nothing happened.
 \subsection{Trap Frame in xv6 and trap handling}
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item A data structure called the Trap frame is pushed onto the kernal stack when a trap is encountered and then it is popped by return-from-trap
-    \item It contains various register values to be saved and not get lost during trap handling(pushed by OS).
-    \item The "int n" pushes a few registers(PC,SP etc.) and jumps to kernel to handle the trap and the rest of the registers are pushed by kernel code after which trap handling is done
+    \item It contains various register values to be saved and not get lost during trap handling (pushed by OS).
+    \item The "int n" pushes a few registers w(PC,SP etc.) and jumps to kernel to handle the trap and the rest of the registers are pushed by kernel code after which trap handling is done
     \item \textbf{EIP,ESP} has values that get modified as soon as the "int" instruction is completed. So we need to save them with the int n instruction itself and cannot wait for OS code.
     \item IDT entries for all interrupts set the EIP to point to the kernel trap handler "\texttt{Alltrap}" which is common for all traps into the OS regardless of the reason for why the trap was called
     \item \texttt{Alltrap's} assembly code pushes remaining registers to complete trapframe on Kernel Stack
-   \\ Note: Why do we have to save registers does'nt the int instructions do it for us? The harware only saves the bare minimum and absolutely required values like \textbf{EIP,ESP}
-   It is upto the OS to save the remaining registers inorder to restore them after trap handling
+   \\ Note: Why do we have to save registers doesn't the \texttt{int} instructions do it for us? The harware only saves the bare minimum and absolutely required values like \textbf{EIP,ESP}.
+   It is upto the OS to save the remaining registers (depending on if it needs to) inorder to restore them after trap handling
    \item Thus after \texttt{Alltrap} is executed our sturct Trap frame has all its values set appropriately
     \item Note that after the \texttt{Alltrap} is completed the ESP points to the top of the trap frame
     \item After this we invoke the \texttt{trap()} function in C which actually handles the specific reason the trap was called for\footnote{It knows the reason from the "n" argument in int n}
@@ -441,7 +446,7 @@ User is unaware that it was even suspended and continues as if nothing happened.
 
 So we can see that \texttt{\texttt{Alltrap}} is written in assembly to do the bare minimum that \textbf{must} be done in assembly like pushing registers to Kernel stack. After this we go to a high level
 language like C enabling us to code the logic in the more compliacted part of actually handling the trap much easier. 
-After the trap handling is done the assembly code \texttt{trapret}'s instructions are executed. This pops the trapframe from the kernel stack(things pushed in the \texttt{Alltrap}s). It calls the \texttt{iret} instruction which is the opposite of int. It pops values which int pushed to kernel stack after which it changes privilege level back to user mode. After this the process which trapped the OS continues running. In xv6 if it was a syscall that called the trap after all the trap handling is completed the OS puts the return value for the 
+After the trap handling is done the assembly code \texttt{trapret}'s instructions are executed. This pops the trapframe from the kernel stack (things pushed in the \texttt{Alltrap}s). It calls the \texttt{iret} instruction which is the opposite of int. It pops values which int pushed to kernel stack after which it changes privilege level back to user mode. After this the process which trapped the OS continues running. In xv6 if it was a syscall that called the trap after all the trap handling is completed the OS puts the return value for the 
 syscall in the \texttt{eax} register.
 
 
