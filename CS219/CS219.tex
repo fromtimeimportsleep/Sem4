@@ -4,7 +4,7 @@
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{tikz}
-
+\usepackage{subfig}
 \usetikzlibrary{quotes, angles, decorations.markings, intersections}
 \usetikzlibrary{calc,patterns,angles,quotes, 3d, intersections, positioning, shapes, automata, positioning}
 \newcommand{\tbox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
@@ -537,5 +537,133 @@ The pointer to this structure is stored in the \texttt{struct proc} of the xv6 s
 Note that the trap frame is a different structure which also has its own pointer in \texttt{struct proc} even though it is also stored on the kernel stack. It is saved during a trap into the OS whereas \textbf{context structure}
 is stored only during a context switch. An example is a timer interrupt, when the process traps into the OS itself the \textbf{trap frame} is saved whereas the \textbf{context structure} is only saved during a 
 context switch to a different process
- \end{document}
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 9}
+    \\\textit{could have typos, will be corrected after quiz}
+    \end{center}
+}
+\\
+\subsection*{Reference: Caller and callee saved conventions}
+\textbf{Caller and callee saved registers:} Registers can get used and the values they had before maybe lost
+when they are used to execute code from a function call. Some registers are saved on stack by caller before involving the function(caller\footnote{the code which made the function call} saved)
+and then these can be modified by the function (callee\footnote{the actual function call code}) freely without the callee have to worry about saving them.
+
+Some registers saved by callee function and restored after function ends(callee saved). Caller code
+can expect them to have same value on return and doesn't have to save them on its own. 
+
+An example is that the \textbf{return value} is put by callee in \texttt{eax} thus the previous value in it is lost. Thus the caller must be save it. The 
+work of saving registers to make sure they aren't lost in the function execution.
+These things are taken care of by the C compiler so the programmer doesn't need to take care of them. 
+
+
+There is a very specific convention on what registers are pushed and popped in which order when a function call is made.
+It is as follows:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Push the caller save registers(\texttt{eax,ecx,edx})
+    \item Push arguments in reverse order
+    \item Return address (old \texttt{EIP}) is put on stack by call instruction(callee saved)
+    \item Push old ebp on Stack
+    \item Set \texttt{ebp} to current top of stack (base of new "stack frame\footnote{the portion of the stack given for the function execution}")
+    \item Push local variables and callee save registers(\texttt{ebx,esi,edi})
+    \item Execute the function code
+    \item Pop stack frame (of the function call) and restore old ebp 
+    \item Return address popped and \texttt{eip\footnote{instruction pointer}} restored by the \texttt{ret} instruction to jump back to the caller instruction
+
+\end{itemize}
+
+Thus it is easy to see that in a way the callee saved registers are those absolutely essential for the function call to be returned properly like \texttt{ebx,esi} and the rest of the
+registers are saved according to the needs of the caller.
+\\\textbf{Stack pointers}: \texttt{ebp} stores base of stack frame and \texttt{esp}(changes with growth of stack) stores the current top. Thus we can access the full of the stack this way.
+We can also very easily access arguments since they are on the base of the stack
+
+\subsection{\texttt{swtch()} in xv6}
+It first saves the registers in the context structure onto the kernel stack of the old process.
+It now switches ESP(stack pointer) to context structure of the new process. Pops the registers from the new processes context sturcture(the moment context switch is happening).
+CPU now has the context of the new process. This entire process is coded out in assembly language since we have to push and pop
+registers from the stack which cannot be done in c.
+
+
+
+\subsubsection{Parameters of \texttt{swtch()}}
+Both the CPU thread and the \textit{struct proc} stores the pointer variable to the
+context structure. \texttt{swtch()} has two arguments(two pointers a context** and a context* pointer). It is the pointer to the old context (ie) current 
+process's context pointer(Note that this is the pointer to the context pointer) and the context pointer of the process we want to switch into. 
+
+
+We take the pointer to the context pointer(\&(p$\rightarrow$context)) of the process we are switching from and not the context itself(p$\rightarrow$context)
+for an important reason. We want to update the context to its latest status. What we mean is that when we context switch out of a process it already has the last context which
+it had when it was switched out previously. We want to update this context to the current value since when we come back to the process in the future we want to start executing it from
+this point which we are leaving it at.
+
+We however needn't modify anything about the context of the process we are switching into but rather just wants its value. Thus we just take its context* pointer as an argument
+directly.
+\subsubsection{Mechanism of \texttt{swtch()}}
+Note that only the caller saved registers and the \texttt{EIP} is present on the kernel stack when \texttt{swtch} is called. 
+So what must switch do?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Push remaining (callee save) registers on old kernel stack
+    \item Save pointer to this context in old process PCB(for which we use the first argument of context** type as explained above)
+    \item Switch ESP from old kernel stack to new kernel stack
+    \item ESP now points to saved context of new process
+    \item Pop callee-save registers from new stack(which restores some of the context)
+    \item Return from function call (pops return address, caller save registers which completes restoring the context)
+\end{itemize}
+
+\subsubsection{xv6 assembly code for \texttt{swtch()}}
+The assembly code explaination given below is redundant if you understand the high level of what is happening but helps if you are trying to understand specifics
+
+\begin{figure}[htbp]
+    \begin{minipage}[t]{0.5\textwidth}
+        \includegraphics[width=\textwidth]{context_switch.png}
+    \end{minipage}%
+    \begin{minipage}[t]{0.5\textwidth}
+        \vspace{-8cm} 
+        \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+            \item  When swtch function call is made, old kernel stack has return address (eip)
+        and arguments to swtch (address of old context pointer, new context pointer)
+        \item  Store address of old context pointer into eax
+        \item  Store value of new context pointer into edx
+        \item  Push callee save registers on kernel stack of old process
+        \item Top of stack esp now points to complete context structure of old process
+        \item  Update old context pointer (eax) to point to updated context
+        \item  Switch stacks: Copy new context pointer from edx to esp
+        \item  Pop registers from new context structure
+        \item  Return from swtch in new process
+        
+        \end{itemize}
+     
+    \end{minipage}
+    \caption{Assembly code in xv6 for \texttt{swtch()}}
+    \label{fig:parallel}
+\end{figure}
+
+\subsubsection{\texttt{swtch()} for new processes}
+Our way of working assumes the existence of a context structure of a process.
+What if the process just started and has never run before (ie) a newly forked process?
+The kernel stack of such new processes are setup\footnote{They are artificially setup with appropriate context sturcture and trap frame} in such a way that the EIP of function 
+where the process starts from is saved in the context structure to mimic that the process
+was switched out from where we want to resume in kernel mode(this location is just after the fork wherever our PC is pointing to). Apart from this the trap frame is copied
+from the parent(\texttt{eax} or return value alone is changed for the \texttt{fork()}) so it has the proper \textit{register context} to resume in user mode just after wherever \texttt{fork()} call was made. Process resumes execution in kernel mode and it returns from trap to
+user space(to the instruction right after the \texttt{fork()}).  
+
+
+\textbf{allocproc:} This is the function that creates a new \textit{struct proc} for our newly forked process. It finds
+an unused entry in the ptable and marks it as an embryo and changes it to runnable after the process completion is well "completed". It
+also allocates a \textbf{PID} for this process along with new memory (ie) a kernel stack and also a stack pointer pointing to the bottom of this stack.
+What else?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Leave space for trapframe (copied from parent)
+    \item after that pushes return address of “trapret”
+    \item Push context structure, with \texttt{eip} pointing to
+    function “forkret”. This is done since, when new process is scheduled, it begins
+    execution at forkret, then returns to trapret, then returns from trap to userspace continuing to execute instructions after fork
+    \item Thus we have hand-crafted kernel stack to make it look
+    like process had a trap and context switch basically lying to the scheduler to make it like look like any process which was context switched in the past. So the OS scheduler can schedule it as it does
+    any other process
+\end{itemize}
+
+
+\end{document}
 
