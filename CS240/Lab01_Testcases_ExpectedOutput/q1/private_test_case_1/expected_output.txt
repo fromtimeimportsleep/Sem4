@@ -1,0 +1,3 @@
+x = [2/3, 8/3]
+optimal_obj_val = 6
+pivot_list = [1, 3]

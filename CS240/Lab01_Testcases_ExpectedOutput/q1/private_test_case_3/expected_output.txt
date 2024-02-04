@@ -1,0 +1,3 @@
+x = [2, 6]
+optimal_obj_val = 34
+pivot_value = [1, 1]

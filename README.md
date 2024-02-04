@@ -2,11 +2,8 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
-- **Jan 31 (Wednesday), 8:30-9:25** - CS 218 quiz 1, **Syllabus:** Lectures 1-7, Until Divide and Conquer
-- **Feb 1 (Thursday), 8:30-9:25 (Class Hours)** - CS 219 quiz 1, **Syllabus:** Everything covered before quiz
-- **Feb 1 (Thursday), Lab Hours** - CS 236 Lab Exam 1, **Syllabus:** Process Management
-- **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1, **Syllabus:** Lectures 1-8 (Week 01-04)
-- **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1
+- **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1, **Syllabus:** Lectures 1-6 and 7 partially (upto regression; classification not there)
+- **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1, **Syllabus:** Everything including Tuesday's class
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
 - **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
@@ -19,23 +16,25 @@ Summary of what happened (topics covered) in classes this week could go here
 
 ## Monday
 
-- **CS 240** - Linear Regression by closed form and gradient descent, polynomial fitting
+- **CS 218** - Convolutions and why they are useful, representation of polynomials and comparing them
+- **CS 219** - OS scheduler, Mechanism of a context switch, context structure, big picture view
+- **CS 208** - Tseitin encoding, Horn clauses and Horn formulas, polynomial time algo for checking satisfiability
+- **CS 240** - Lambda Grid Search, Lasso Regression, Ridge Regression, Stochastic Gradient Descent
 
 ## Tuesday
 
-- **CS 208** - Completion of syntactic = semantic equivalence, distributive and De Morgan's laws, NNF and CNF
-- **CS 218** - Fibonacci Numbers, Mutliplication Algo, Divide and Conquer in Squaring
-- **CS 219** - Trap Handling, IDT, int instruction
+- **CS 208** - Alarm Problem Using Horn Clauses, intro to DPLL Algo for checking satisfiability 
+- **CS 218** - Evaluating a polynomial at d points using divide and conquer, complex roots of unity (main idea of FFT)
+- **CS 219** - swtch() function and its assembly code, xv6 code for the whole of context switching, allocproc() to create new processes using fork()
 
 ## Wednesday
 
-- **CS 217** - Stochastic Gradient Descent, Prior and Maximum Apriori Estimate
+- **CS 217** - Geometric interpretation of Lasso and Ridge Regression, sparse solution, Naive Bayes, Intro to Logistic Regression
 
 ## Thursday
 
-- **CS 219** - Code of trap handling: int n, alltraps() function, timer interrupts
-- **CS 208** - Efficient method to convert to NNF, constructing equisatisfiable CNF given a DAG
-- **CS 218** - Karatsuba, Tom Cook multiplication, intro to faster methods
+- **CS 208** - unit propagation, pure literal elimination, decision/split and backtrack steps in DPLL explained with an example
+- **CS 218** - Introduction to Greedy Algorithms and Dynamic Programming
 
 # Timetable
 
