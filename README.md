@@ -10,16 +10,16 @@ Quizzes/Deadline dates here, along with syllabus
 - **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
 - **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
 
+Midsems
+
+- **Feb 23 (Friday), 14:30-16:30** - CS 218
+- **Feb 26 (Monday), 11:30-13:30** - CS 219
+- **Feb 27 (Tuesday), 08:30-10:30** - CS 208
+- **Mar 2 (Tuesday), 11:30-13:30** - CS 217
+
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Monday
-
-- **CS 218** - Convolutions and why they are useful, representation of polynomials and comparing them
-- **CS 219** - OS scheduler, Mechanism of a context switch, context structure, big picture view
-- **CS 208** - Tseitin encoding, Horn clauses and Horn formulas, polynomial time algo for checking satisfiability
-- **CS 240** - Lambda Grid Search, Lasso Regression, Ridge Regression, Stochastic Gradient Descent
 
 ## Tuesday
 
@@ -35,6 +35,13 @@ Summary of what happened (topics covered) in classes this week could go here
 
 - **CS 208** - unit propagation, pure literal elimination, decision/split and backtrack steps in DPLL explained with an example
 - **CS 218** - Introduction to Greedy Algorithms and Dynamic Programming
+
+## Monday
+
+- **CS 218** - Interval scheduling, Proof of correctness of a greedy algorithm
+- **CS 219** - Scheduling policies, FIFO, SJF, SRTF, RR, WFQ, MLFQ
+- **CS 208** - Similarity between DPLL and Horn SAT, Resolution (proof rule for checking satisfiability)
+- **CS 240** - Logistic Regression, Softmax, Naive Bayes
 
 # Timetable
 
