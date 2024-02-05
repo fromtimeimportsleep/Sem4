@@ -5,6 +5,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{subfig}
+\usepackage{hyperref}
 \usetikzlibrary{quotes, angles, decorations.markings, intersections}
 \usetikzlibrary{calc,patterns,angles,quotes, 3d, intersections, positioning, shapes, automata, positioning}
 \newcommand{\tbox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
@@ -218,7 +219,7 @@ Hence the hierarchy of a syscall is somewhat like:
 \end{center}
 
 In xv6 we are directly given syscalls in the standard library in a user friendly function call. Usually we are given syscalls at the assembly code level
-since we usually need to change the privilege of CPU\footnote{Done using INT in assembly}. Hence we need to understand that syscall is \textbf{NOT} a regular function call.\footnote{Lottt more detail on this furthers}
+since we usually need to change the privilege of CPU\footnote{Done using INT in assembly}. Hence we need to understand that syscall is \textbf{NOT} a regular function call.\footnote{Lottt more detail on this further}
 
 \subsection{Fork}
 Each process is created by another process. Such a process emerging from another is called the \textit{child} of the \textit{parent} process.
@@ -278,7 +279,7 @@ checking if there is an orphan to adopt and eventually reap. If parent is alive 
 As we saw the fork() method seems complicated with if-else blocks for parents and children and there seems to be redundant code. We create
 child to do similar work as parents lots of times. If this is not the case (ie) parent, child are doing different things(and we don't want the parent around) we can use \texttt{exec}.
 exec() is used to get a new memory image(using that of the old process) which is used to run an executable which it takes as an argument. It is not similar to fork() since it doesn't create a new memory image
-it just replaces the parent's memory image and it copies the executable's memory image to run the executable. The page table is also updated with the new details of the process\footnote{but the PID,PPID is the same}
+it just replaces the parent's memory image and it copies the executable's memory image to run the executable. The ptable is also updated with the new details of the process\footnote{but the PID,PPID is the same}
 
 
 So whatever code is given after exec is never run by the child since it overwrites the parents memory image with the executable given as a argument. However if 
@@ -366,7 +367,7 @@ Signal is a message sent from one process or another. When we give CTRL + C that
 Why is a sycall() even different from a function call??
 To understand lets see what happens when a function call is made
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
-    \item Allocation of memory on stack for function arguments,local variables. Note that this doesn't happen during function definition.
+    \item Allocation of memory on stack for function arguments, local variables. Note that this doesn't happen during function definition.
     \item Push return address and PC jumps to function code
     \item Save register context of the calling process
     \item Execute function code and once done pop return address and pop register context
@@ -431,17 +432,17 @@ User is unaware that it was even suspended and continues as if nothing happened.
 
 \subsection{Trap Frame in xv6 and trap handling}
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
-    \item A data structure called the Trap frame is pushed onto the kernal stack when a trap is encountered and then it is popped by return-from-trap
+    \item A data structure called the Trap frame is pushed onto the kernel stack when a trap is encountered and then it is popped by return-from-trap
     \item It contains various register values to be saved and not get lost during trap handling (pushed by OS).
     \item The "int n" pushes a few registers w(PC,SP etc.) and jumps to kernel to handle the trap and the rest of the registers are pushed by kernel code after which trap handling is done
     \item \textbf{EIP,ESP} has values that get modified as soon as the "int" instruction is completed. So we need to save them with the int n instruction itself and cannot wait for OS code.
     \item IDT entries for all interrupts set the EIP to point to the kernel trap handler "\texttt{Alltrap}" which is common for all traps into the OS regardless of the reason for why the trap was called
     \item \texttt{Alltrap's} assembly code pushes remaining registers to complete trapframe on Kernel Stack
-   \\ Note: Why do we have to save registers doesn't the \texttt{int} instructions do it for us? The harware only saves the bare minimum and absolutely required values like \textbf{EIP,ESP}.
+   \\ Note: Why do we have to save registers doesn't the \texttt{int} instructions do it for us? The hardware only saves the bare minimum and absolutely required values like \textbf{EIP,ESP}.
    It is upto the OS to save the remaining registers (depending on if it needs to) inorder to restore them after trap handling
    \item Thus after \texttt{Alltrap} is executed our sturct Trap frame has all its values set appropriately
     \item Note that after the \texttt{Alltrap} is completed the ESP points to the top of the trap frame
-    \item After this we invoke the \texttt{trap()} function in C which actually handles the specific reason the trap was called for\footnote{It knows the reason from the "n" argument in int n}
+    \item After this we invoke the \texttt{trap()} function in C which actually handles the specific reason the trap was called for\footnote{It knows the reason from the value of the eax register which it passesn as an argument, int n}
 \end{itemize}
 
 So we can see that \texttt{\texttt{Alltrap}} is written in assembly to do the bare minimum that \textbf{must} be done in assembly like pushing registers to Kernel stack. After this we go to a high level
@@ -541,7 +542,6 @@ context switch to a different process
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 9}
-    \\\textit{could have typos, will be corrected after quiz}
     \end{center}
 }
 \\
@@ -663,7 +663,130 @@ What else?
     like process had a trap and context switch basically lying to the scheduler to make it like look like any process which was context switched in the past. So the OS scheduler can schedule it as it does
     any other process
 \end{itemize}
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 9}
+    \\\textit{work in progress}
+    \end{center}
+}
+
+\subsection{OS Scheduling Policy}
+Now that we have understood the mechanism of the OS scheduler let's see how the scheduler chooses which amongnst the 
+ready processes it should run. An important point to note is that only when a process is in kernel mode for a trap a context switch happens. However not on every trap does the scheduler perform a context switch
+The first classification among schedulers as we saw before are pre-emptive and non-premptive schedulers.
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Pre-emptive:} Performs \textit{involuntary} context switches using timer interrupts\footnote{Refer \ref{section:Timer}}
+    even if the process is in ready/runnable mode.
+    \item \textbf{Non-preemptive:} Performs only voluntary context switches when a process gives up the control via a trap.
+\end{itemize}
+
+What are the goals of a scheduling policy?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Maximise utilization: Efficient use of CPU hardware so that the throughput of the CPU is maximised
+    \item Minimize the time it takes for a CPU to complete a process. It is also called as turnaround or completion time
+    \item Minimize time it takes for the process to start running after it is ready to run which is called response time\footnote{Every important for processes that are highly interactive and constantly take input from users}
+    \item Fairness is to be maintained (ie) all processes get a fair share of CPU (account for priorities also)
+    \item We also want to minimize overhead. That is we don't want the scheduling itself to take too much processing power/time
+    We can't have unnecessarily large number of context switches (since it takes \~ 1 microsecond to switch) or have too much time needed to take a decision even with larger number of processes to be scheduled
+\end{itemize}
 
 
+\subsection{Different scheduling policies}
+\begin{enumerate}
+    
+
+    \item \textbf{FIFO(First in first out:)}\\
+    We put all our processes in a queue and then we run them one after another.
+    Note that FIFO is non-preemptive (ie) a processes runs to termination or till it is blocked. In case of a blocked syscall, after it is done with handling
+    a blocking syscall we add it to the end of the process as a new process with a new context. When it is added back it counts as a fresh CPU burst
+    \footnote{A CPU burst is the time for which a process runs in a continuous stretch}
+
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Process} & \textbf{CPU time needed} & \textbf{Arrives at end of} & \textbf{Execution time} \\
+        \hline
+        P1 & 5 & 0 & 1-5 \\
+        \hline
+        P2 & 3 & 1 & 6-8 \\
+        \hline
+        P3 & 2 & 3 & 9-10 \\
+        \hline
+        \end{tabular}
+        \caption{FIFO}
+        \label{tab:FIFO}
+    \end{table}
+    The disadvantages with FIFO is the convey effect (ie) processes which are shorter tend to get stuck behind much longer ones resulting in unnecessary increase in the turnaround time due to longer waiting time
+   \item \textbf{Shortest Job First(SJF):} \\Asssuming that the scheduler has the knowledge on the CPU burst of all processes(time it runs for one continuous stretch). 
+    Now we can pick the process with the shortest burst time first and run it and continue doing so. This can be done by maintaining all the processes
+    in a heap ordered by burst time needed.
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Process} & \textbf{CPU time needed} & \textbf{Arrives at end of} & \textbf{Execution time} \\
+        \hline
+        P1 & 5 & 0 & 1-5 \\
+        \hline
+        P2 & 3 & 1 & 8-10 \\
+        \hline
+        P3 & 2 & 3 & 6-7 \\
+        \hline
+        \end{tabular}
+        \caption{Shortest Job First}
+        \label{tab:SJF}
+    \end{table}
+    This can be proved to be the optimal solution when we assume all the processes arrive at the same time. However this is an unrealistic assumption.
+    Also due to its non-preemptive nature short jobs can still get stuck behind longer ones(different arrival times). 
+
+    \item \textbf{Shortest remaining time First(SRTF):} This is a preemptive version of \textbf{SJF}. A newly arrived process can preempt\footnote{terminate this process and make CPU context switch to itself} a running process, if 
+    CPU burst of new process is shorter than remaining time of the running process. This avoids the problem of shorter process getting stuck behind longer ones if they don't arrive at the same time.
+    
+    \begin{table}[h]
+        \centering
+        \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Process} & \textbf{CPU time needed} & \textbf{Arrives at end of} & \textbf{Execution time} \\
+        \hline
+        P1 & 5 & 0 & 1,\textit{preempted} then 7-10 \\
+        \hline
+        P2 & 3 & 1 & 2-4 \\
+        \hline
+        P3 & 2 & 3 & 5-6 \\
+        \hline
+        \end{tabular}
+        \caption{Shortest Remaining Time First}
+        \label{tab:SRTF}
+    \end{table}
+    However we are still assuming knowledge on the run times of processes before they arrive(unrealistic assumption).
+\item \textbf{Round Robin(RR):}\\ This is the first practical policy we are seeing. We fix a time slice (called a quantum). The quantum is a multiple of the length of the timer interrupt.
+So when the time interrupt happens the scheduler checks if the process has already run for the allocated time slice. If that is not the case control is simply handed over back to the process. If not so control is handing to another
+runnable process by context switching into it. Thus the timer interrupt is used to enforce periodic scheduling. 
+This policy is good for maintaining both response time and fairness, however it is not the most efficient for turnaround time. \texttt{xv6} uses this policy
+
+What effect does time slice's length have?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item A small time slice makes it inefficient since too many context switch happen and the time spent to context switch isn't \href{https://english.stackexchange.com/a/138566}{amortized} properly
+    \item If the time slice is too big there is no responsiveness as one process hoards the cpu for a longer time
+\end{itemize}
+
+\item \textbf{Weighted Fair Queueing(WFQ):} \\This is a modified version of Round Robin policy. We set weights to every process and give preferences according to it.
+The weight setting is done by both user and the OS itself to different extents.The time slice is for a given a process is proportional to this weight. Real life schedulers may not be able to maintian the time slice enforcement accurately. Think about cases where the time interrupt
+doesn't align with time share or a process is blocked before its slice. A practical modification to accomodate such things is to keep track of the run time of a process and switch in the process which has used the least fraction of its fair share. This compensates for deficiences/excess in the running time.
+ 
+\item 
+\textbf{CFS scheduler}:\\The Completely Fair Scheduler used in linux is a variant of WFQ. It uses red-black to keep track of who all runs and keeps track of who all have used up least amount of their fair share.
+However it is impossible to be fully fair whilst being reasonable but this policy is close to optimal fairness.
+
+
+\item \textbf{ Multi-level feedback queue(MLFQ):} \\
+This is another practical algorithm with realistic assumptions. We would prefer the property of the SJF which gives priority to smaller jobs. However we can't assume we know the running time before.
+We also want to ensure that the response time is lesser as we see in Round robin. 
+
+We have multiple queues corresponding to multiple priorities. Scheduling of processes happen first for higher priority queues and within a queue Round Robin is used for scheduling. If a process has used up more of its fair share of CPU we decay it's priority and push it down. When we 
+add a process we add it to the high priority queue. This helps us have an idea on which process is running for a longer time and which ones haven't. We run and finish up shorted processes quickly(Like I/O) even without prior knowledge of CPU bursts. Periodically reset the priority level to make sure even longer
+process gets some chance to run.
+\end{enumerate}
 \end{document}
 
