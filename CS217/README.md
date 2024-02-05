@@ -43,7 +43,17 @@
 
 16. MDP: value iteration, reinforcement learning
 
-## How to take Derivative of a Matrix (Basics) ?
+## How to take Derivative of a Matrix (Basics)?
 
-This Youtube Video will be helpful in understanding last slide of Lec 3 and entire Lec 4 :-<br/>
+This Youtube Video will help understand the last slide of Lec 3 and the entire Lec 4:-<br/>
 https://www.youtube.com/watch?v=e73033jZTCI
+
+## Simple Video on Logistic Regression
+
+This Youtube Video will give an intuitive understanding of Logistics Regression done in Lec 7:-<br/>
+https://www.youtube.com/watch?v=yIYKR4sgzI8
+
+## MAP Solution for Linear Regression
+
+The slides in the question as well as the calculations in the answer will give a nice detailed derivation of MAP for Linear Regression:-<br/>
+https://math.stackexchange.com/questions/2917109/map-solution-for-linear-regression-what-is-a-gaussian-prior
