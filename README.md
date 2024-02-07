@@ -21,12 +21,6 @@ Midsems
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Tuesday
-
-- **CS 208** - Alarm Problem Using Horn Clauses, intro to DPLL Algo for checking satisfiability 
-- **CS 218** - Evaluating a polynomial at d points using divide and conquer, complex roots of unity (main idea of FFT)
-- **CS 219** - swtch() function and its assembly code, xv6 code for the whole of context switching, allocproc() to create new processes using fork()
-
 ## Wednesday
 
 - **CS 217** - Geometric interpretation of Lasso and Ridge Regression, sparse solution, Naive Bayes, Intro to Logistic Regression
@@ -42,6 +36,12 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 219** - Scheduling policies, FIFO, SJF, SRTF, RR, WFQ, MLFQ
 - **CS 208** - Similarity between DPLL and Horn SAT, Resolution (proof rule for checking satisfiability)
 - **CS 240** - Logistic Regression, Softmax, Naive Bayes
+
+## Tuesday
+
+- **CS 208** - Countably infinite strings, example of a Finite Automaton, definition of DFA
+- **CS 218** - Longest duration interval scheduling via dynamic programming, proof of optimality
+- **CS 219** - Multi-core scheduling, Interprocess Communication (IPC), socket communication in unix domain
 
 # Timetable
 
