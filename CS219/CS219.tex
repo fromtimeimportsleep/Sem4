@@ -1,11 +1,22 @@
 \documentclass[12pt]{article}
 \usepackage[margin=3cm]{geometry}
+\usepackage{blindtext}
+\usepackage{chngcntr}
+\counterwithin*{section}{part}
 \usepackage{enumitem}
 \usepackage{listings}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{subfig}
 \usepackage{hyperref}
+\usepackage{xcolor}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=green,
+    urlcolor=red
+}
 \usetikzlibrary{quotes, angles, decorations.markings, intersections}
 \usetikzlibrary{calc,patterns,angles,quotes, 3d, intersections, positioning, shapes, automata, positioning}
 \newcommand{\tbox}[1]{\noindent\fbox{\parbox{\textwidth}{#1}}}
@@ -22,6 +33,7 @@
     \textbf{\Huge Lecture 1}
     \end{center}
 }
+\part{Introduction to Operating Systems}
 \section{Introduction}
 \noindent An \textbf{OS}(operating system) alias \textbf{Master Control Program} alias \textbf{System software} is software than enables the user to access the hardware resources of a computer 
 in a controlled manner. It acts as a layer of abstraction allowing the user to not worry
@@ -193,12 +205,14 @@ from some location
 
     \textbf{BootLoader} must fit in 512 bytes of the Boot disk to be easily located which isn't sufficient to load up current complicated systems.
     So the 512 bytes(simple bootloader) load up a more complex BootLoader which loads OS onto the CPU 
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 3}
     \end{center}
 }
+
+\part{Process Management}
 \section{API:Application Programming Interface}
 \textit{System calls} provide an interface to the OS called the Application Programming Interface (ie) the set of syscalls given
 to the user constitute the \textbf{API},
@@ -550,7 +564,7 @@ context switch to a different process
 when they are used to execute code from a function call. Some registers are saved on stack by caller before involving the function(caller\footnote{the code which made the function call} saved)
 and then these can be modified by the function (callee\footnote{the actual function call code}) freely without the callee have to worry about saving them.
 
-Some registers saved by callee function and restored after function ends(callee saved). Caller code
+Some registers saved by callee function and restored after function ends (callee saved). Caller code
 can expect them to have same value on return and doesn't have to save them on its own. 
 
 An example is that the \textbf{return value} is put by callee in \texttt{eax} thus the previous value in it is lost. Thus the caller must be save it. The 
@@ -589,7 +603,7 @@ registers from the stack which cannot be done in c.
 \subsubsection{Parameters of \texttt{swtch()}}
 Both the CPU thread and the \textit{struct proc} stores the pointer variable to the
 context structure. \texttt{swtch()} has two arguments(two pointers a context** and a context* pointer). It is the pointer to the old context (ie) current 
-process's context pointer(Note that this is the pointer to the context pointer) and the context pointer of the process we want to switch into. 
+process's context pointer (Note that this is the pointer to the context pointer) and the context pointer of the process we want to switch into. 
 
 
 We take the pointer to the context pointer(\&(p$\rightarrow$context)) of the process we are switching from and not the context itself(p$\rightarrow$context)
@@ -666,7 +680,6 @@ What else?
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 9}
-    \\\textit{work in progress}
     \end{center}
 }
 
@@ -684,10 +697,10 @@ What are the goals of a scheduling policy?
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item Maximise utilization: Efficient use of CPU hardware so that the throughput of the CPU is maximised
     \item Minimize the time it takes for a CPU to complete a process. It is also called as turnaround or completion time
-    \item Minimize time it takes for the process to start running after it is ready to run which is called response time\footnote{Every important for processes that are highly interactive and constantly take input from users}
+    \item Minimize time it takes for the process to start running after it is ready to run which is called response time\footnote{Very important for processes that are highly interactive and constantly take input from users}
     \item Fairness is to be maintained (ie) all processes get a fair share of CPU (account for priorities also)
-    \item We also want to minimize overhead. That is we don't want the scheduling itself to take too much processing power/time
-    We can't have unnecessarily large number of context switches (since it takes \~ 1 microsecond to switch) or have too much time needed to take a decision even with larger number of processes to be scheduled
+    \item We also want to minimize overhead. That is we don't want the scheduling itself to take too much processing power/time.
+    We can't have unnecessarily large number of context switches (since it takes \(\sim \)1 microsecond to switch) or have too much time needed to take a decision even with larger number of processes to be scheduled
 \end{itemize}
 
 
@@ -695,7 +708,7 @@ What are the goals of a scheduling policy?
 \begin{enumerate}
     
 
-    \item \textbf{FIFO(First in first out:)}\\
+    \item \textbf{FIFO(First in first out):}\\
     We put all our processes in a queue and then we run them one after another.
     Note that FIFO is non-preemptive (ie) a processes runs to termination or till it is blocked. In case of a blocked syscall, after it is done with handling
     a blocking syscall we add it to the end of the process as a new process with a new context. When it is added back it counts as a fresh CPU burst
@@ -718,7 +731,7 @@ What are the goals of a scheduling policy?
         \label{tab:FIFO}
     \end{table}
     The disadvantages with FIFO is the convey effect (ie) processes which are shorter tend to get stuck behind much longer ones resulting in unnecessary increase in the turnaround time due to longer waiting time
-   \item \textbf{Shortest Job First(SJF):} \\Asssuming that the scheduler has the knowledge on the CPU burst of all processes(time it runs for one continuous stretch). 
+   \item \textbf{Shortest Job First(SJF):} \\Asssuming that the scheduler has the knowledge on the CPU burst of all processes (time it runs for one continuous stretch). 
     Now we can pick the process with the shortest burst time first and run it and continue doing so. This can be done by maintaining all the processes
     in a heap ordered by burst time needed.
     \begin{table}[h]
@@ -738,7 +751,7 @@ What are the goals of a scheduling policy?
         \label{tab:SJF}
     \end{table}
     This can be proved to be the optimal solution when we assume all the processes arrive at the same time. However this is an unrealistic assumption.
-    Also due to its non-preemptive nature short jobs can still get stuck behind longer ones(different arrival times). 
+    Also due to its non-preemptive nature short jobs can still get stuck behind longer ones (different arrival times). 
 
     \item \textbf{Shortest remaining time First(SRTF):} This is a preemptive version of \textbf{SJF}. A newly arrived process can preempt\footnote{terminate this process and make CPU context switch to itself} a running process, if 
     CPU burst of new process is shorter than remaining time of the running process. This avoids the problem of shorter process getting stuck behind longer ones if they don't arrive at the same time.
@@ -759,9 +772,9 @@ What are the goals of a scheduling policy?
         \caption{Shortest Remaining Time First}
         \label{tab:SRTF}
     \end{table}
-    However we are still assuming knowledge on the run times of processes before they arrive(unrealistic assumption).
+    However we are still assuming knowledge on the run times of processes before they arrive (unrealistic assumption).
 \item \textbf{Round Robin(RR):}\\ This is the first practical policy we are seeing. We fix a time slice (called a quantum). The quantum is a multiple of the length of the timer interrupt.
-So when the time interrupt happens the scheduler checks if the process has already run for the allocated time slice. If that is not the case control is simply handed over back to the process. If not so control is handing to another
+So when the time interrupt happens the scheduler checks if the process has already run for the allocated time slice. If that is not the case, control is simply handed over back to the process. If not so, control is handed to another
 runnable process by context switching into it. Thus the timer interrupt is used to enforce periodic scheduling. 
 This policy is good for maintaining both response time and fairness, however it is not the most efficient for turnaround time. \texttt{xv6} uses this policy
 
@@ -772,7 +785,7 @@ What effect does time slice's length have?
 \end{itemize}
 
 \item \textbf{Weighted Fair Queueing(WFQ):} \\This is a modified version of Round Robin policy. We set weights to every process and give preferences according to it.
-The weight setting is done by both user and the OS itself to different extents.The time slice is for a given a process is proportional to this weight. Real life schedulers may not be able to maintian the time slice enforcement accurately. Think about cases where the time interrupt
+The weight setting is done by both user and the OS itself to different extents. The time slice is for a given a process is proportional to this weight. Real life schedulers may not be able to maintian the time slice enforcement accurately. Think about cases where the time interrupt
 doesn't align with time share or a process is blocked before its slice. A practical modification to accomodate such things is to keep track of the run time of a process and switch in the process which has used the least fraction of its fair share. This compensates for deficiences/excess in the running time.
  
 \item 
@@ -780,13 +793,143 @@ doesn't align with time share or a process is blocked before its slice. A practi
 However it is impossible to be fully fair whilst being reasonable but this policy is close to optimal fairness.
 
 
-\item \textbf{ Multi-level feedback queue(MLFQ):} \\
+\item \textbf{Multi-level feedback queue (MLFQ):} \\
 This is another practical algorithm with realistic assumptions. We would prefer the property of the SJF which gives priority to smaller jobs. However we can't assume we know the running time before.
 We also want to ensure that the response time is lesser as we see in Round robin. 
 
 We have multiple queues corresponding to multiple priorities. Scheduling of processes happen first for higher priority queues and within a queue Round Robin is used for scheduling. If a process has used up more of its fair share of CPU we decay it's priority and push it down. When we 
-add a process we add it to the high priority queue. This helps us have an idea on which process is running for a longer time and which ones haven't. We run and finish up shorted processes quickly(Like I/O) even without prior knowledge of CPU bursts. Periodically reset the priority level to make sure even longer
+add a process we add it to the high priority queue. This helps us have an idea on which process is running for a longer time and which ones haven't. We run and finish up shorted processes quickly (Like I/O) even without prior knowledge of CPU bursts. Periodically reset the priority level to make sure even longer
 process gets some chance to run.
 \end{enumerate}
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 10}
+    \end{center}
+}
+
+\subsection{Multicore Scheduling}
+Scheduling decision is supposed to be made seperately for each core. Do we bind a process to a particular CPU core always or do we let a process,
+run on any CPU core that is free? Making sure that the process runs on the same core as much as possible is better due to improved CPU cache performance.
+However balancing is important, if the core is highly overloaded then we ensure a process runs on a different free core to not waste time. 
+
+Overall however having
+a single queue which assigns the ready process to the first free CPU out of all of the multiple CPU's present is more efficient than having
+multiple queues for each CPU and choosing to put a process in one of these queues. This is due to the high cost and thus inability to switch queues once a process
+is assigned a queue in the multiqueue case.
+
+
+\section{Inter Process Communication}
+Why do we need IPC\footnote{Interprocess Communication}? In real life systems it is not ideal or feasible to maintain all of the functionality in just a single
+process. Rather we 
+modularise code (which can be in different languages, frameworks and written by different teams of people) and need some method for them to work along with each other.
+
+Processes in a system needn't share memory with each other by default. However they still need the ability to communicate. This is done via
+IPC mechanisms, which are available via the OS whcih provides several syscalls enabling the exchange of information between processes. The communication can also
+be done by two processes agreeing to share a particular portion of the memory image to enable communication. Communication can also be done by having a particular
+memory area (buffer) specifically meant for communication. It is important to note that it is an extremely dumb idea to just let two processes have access to the entire 
+memory images of each other since this destroys the ability to maintain isolation of processes.   
+
+
+\subsection{Sockets:}
+Sockets are an abstraction to enable communication between processes. Each process opens its own socket and two sockets of two processes can be connected.
+The process to open the socket first is the \textit{server} and the process which connects its socket to the server is the \textit{client}. A socket is a way of 
+bidirectional communication, thus a process can write into its socket which can be read by other processes and vice versa. Processes communicating using socktes can be 
+in the same machine or on different machines. While communicating on the same machine the buffer\footnote{intermediate storage which stores message to be sent} is present in OS memory. For communicating across machines messages are sent on the network.
+\textit{Unix Domain sockets} are used to communicate between processes on the same machine. \textit{Internet sockets} are used to communicate between
+processes on different machines. 
+
+
+The client needs some information about the process whose socket it wants to connect to (server). Thus every socket needs a unique number
+to identify itself. This \texttt{ID} for a Internet socket is the IP address and port number. Local sockets are identified a unique \textit{pathname} identifying it in the local machine. Note that the local
+socket isn't exactly a file but it has a pathname that only serves the purpose of identying it uniquely.
+The server needs to publicise its identifier (IP or pathname) for the client process to know where to connect to.
+
+
+\textit{Connection-based sockets} are those when a client and server are explicitly connected to each other. After this connection they can only talk to each other. So there is no need to explicitly mention which socket we want to communicate to.
+\textit{Connection-less sockets} are those who can communicate with multiple processes at the same time. Thus we need to mention the address of the socket we want to communicate with. 
+
+
+\subsubsection{\texttt{socket()} syscall}
+The \texttt{socket()} syscall is used to create a socket. It takes the type of socket as an argument and returns the file descriptor of the socket to the process. This file descriptor 
+is used for all operations on the socket by this process. A socket can optionally bind to the address (pathname or IP address/port number) using \texttt{bind()} system call. 
+Server socket binding means that the socket is given a global address which can be used by other processes to communicate to this socket. Note that binding is compulsory for server sockets who need to 
+publicise this binding address to enable clients to talk to them. The \texttt{close()} system call closes a socket.
+
+
+How do processes use \textbf{sockets} to communicate?
+\begin{itemize}
+    \item \textbf{sendto():} is used to send a message from one socket to another connection-less socket. It takes its own socket's file descriptor, the message to be sent, the other socket's address as arguments
+    \item \textbf{recvfrom():} is used to recieve a message from a socket. It takes the its socket's file descriptor, a message buffer to copy the message into and a sockets address structure into which the recieving socket's
+    global address is filled. Now this process can use the address it just obtained to communicate back to the process which sent it a message. 
+\end{itemize}
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 11}
+    \end{center}
+}
+\subsubsection*{Connecting sockets}
+Connection-oriented sockets need to be explicitly connected for transfer of messages.
+After a server binds to a well-known address\footnote{gets assigned a proper global address}, it uses the \texttt{listen()} syscall to listen
+for "requests to connect" from clients who want to connect to server. Clients use the \texttt{connect()} to send a request to connect to the server. The server
+uses \texttt{accept()} syscall to accept a request from the client to establish a connection. Once an \texttt{accept()} syscall is sucessfull then a connection
+is established between the client and server. 
+
+
+The \texttt{accept()} syscall takes the file descriptor of a socket as an argument. This socket's address is what clients use to send a "request to connect".
+Once the \texttt{accept()} syscall is succesful it returns a \textbf{new file descriptor} to a socket which is connected to the client. 
+
+Hence it is important to note that there is a \textit{listening socket} corresponding to whose address requests are send to connect and there are (possibly multiple)
+\textit{connected sockets} explicitly connected to a client socket to enable communication between two unique processes. 
+The \texttt{accept()} syscall will block the server till is recieves a request to connect from a client. Similarly, the \texttt{connect()} syscall blocks the client till the server accepts the requests.
+
+After a client connects to a server, the \textit{pair of sockets} are used to exchange data. Again let's reassert that the \textit{connected socket} is the one which is used to transfer messages not the \textit{listen socket}.
+Syscall \texttt{send/write} to send a message which only goes to the connected socket.
+Similarly syscall \texttt{recv()/read()} is used to recieve a message on connected socket. 
+The arguments given to send/recv are the socket fd, message buffer, buffer length and (optional) flags.
+The return value is number of bytes read/written or error number.
+We need not specify socket address on every message, as they connected already and only communicate with each other using that particular socket.
+
+In any kind of real system multiple connected and connection-less sockets connect multiple processes in several ways forming a complex network of processes all working with one another to achieve some task. 
+
+\subsection{Message queues}
+Message queues are another method used for exchanging messages between processes. We open a connection to a message queue identified by a "key", and get a file descriptor to it. The sender can open a connection to
+the message queue and send a message. The reciever opens a connection to the message queue and recieves the message later on. The message queue acts as a buffer till the message is retrieved by a reciever.
+
+
+There are three main syscalls associated with a message queue:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \texttt{msgget()}: syscall to get the id of a message queue. The parameters it takes are the key of the message queue . It returns the msg\_queue identifier on success and -1 on failure.
+    \item \texttt{msgsnd()}: The parameters it takes are the msg\_queue identifier and the message to be sent and its size. It returns 0 on success and -1 on failure. 
+    \item \texttt{msgrcv()}: The parameters it takes are the msg\_queue identifier, size of the message and the buffer to write the message into. It returns the number of bytes recieved on success and -1 on failure.
+\end{itemize}
+There can be several different message queues all with their own unique "keys". Also note that multiple processes can use the same message queue if they all have access to its key. Thus we need to be careful about which process's message is being recieved when \texttt{msgrcv()} is used.
+
+\subsection{Pipes}
+A pipe is a unidirectional FIFO channel into which writing is done on one end and reading from another end. The syscall \texttt{pipe()} is used to create a unidirectional pipe. It returns two file descriptors for 
+the end points (one for write, other for read). A pointer to a \texttt{struct} of a pair of numbers are passed as a parameters of the pipe. Once a pipe is succesful this \texttt{struct} has both file descriptors. Why do we have access to both descriptors? This is because Pipes
+are frequently used for communication between a parent and a child. The data written into a pipe is stored in the buffer of the pipe channel until they are read. Obviously, bi-directional communication between two processes needs two pipes. 
+
+
+\textbf{Anonymous pipes} are only available to communicate between process and its children. The pipe file descriptor is available to both the parent and the child.
+
+\textbf{Named pipes} are used by two unrelated processes to talk to each other. The pipe is opened with a pathname which is accessible across processes. One of the processes
+has access to the read end of a pipe, while the other other process opens the write end. 
+
+
+\textbf{Buffer Mechanism:}  
+When we want to send a message the general mechanism stays the same across all these sycalls. We write the message into a temporary space called the buffer. This buffer is usually some memory location
+inside OS not directly accessible by the user.
+In all of these system calls the buffer maintains the messages in a FIFO order. When the buffer is read the message which was in it and was read is cleared. Sender 
+usually can't be blocked by \texttt{send()} syscall unless the temporary buffer is full. Similarly reciever can be blocked if temporary buffer is empty. We can also customize the sycalls to not block the process
+but return some error code for us to handle to error manually.
+
+\subsection{Shared memory}
+Processes in a system do not share any memory unless mentioned otherwise. Child process \textit{copies} the memory of the parent but doesn't share the memory image.
+Shared memory means that the same memory image appears in multiple processes. Each memory \textit{segment} shared is identified by a unique key. A process can request to map/attach this shared 
+memory segment into its own memory image using this identifier key. 
+
+Sharing of memory is a risky and volatile task. The processes thus need extra mechanisms to know for example, if the memory has been modified. This enables them to coordinate with one another
 \end{document}
 
