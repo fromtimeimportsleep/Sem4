@@ -1,0 +1,4 @@
+Weather Dataset:
+Query 1:- [['Rainy' 'Mild' 'Normal' 't']] ---> ['no']
+Query 2:- [['Overcast' 'Cool' 'Normal' 't']] ---> ['yes']
+Query 3:- [['Sunny' 'Hot' 'High' 't']] ---> ['no']

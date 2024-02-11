@@ -2,9 +2,8 @@
 
 Quizzes/Deadline dates here, along with syllabus
 
-- **Feb 7 (Wednesday), Class Hours** - CS 217 quiz 1, **Syllabus:** Lectures 1-6 and 7 partially (upto regression; classification not there)
-- **Feb 7 (Wednesday), 21:00-23:30** - CS 208 quiz 1, **Syllabus:** Everything including Tuesday's class
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
+- **Mar 5 (Monday), 11:59 PM** - CS 218 Programming Assignment
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
 - **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
 - **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
@@ -21,15 +20,6 @@ Midsems
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Wednesday
-
-- **CS 217** - Geometric interpretation of Lasso and Ridge Regression, sparse solution, Naive Bayes, Intro to Logistic Regression
-
-## Thursday
-
-- **CS 208** - unit propagation, pure literal elimination, decision/split and backtrack steps in DPLL explained with an example
-- **CS 218** - Introduction to Greedy Algorithms and Dynamic Programming
-
 ## Monday
 
 - **CS 218** - Interval scheduling, Proof of correctness of a greedy algorithm
@@ -42,6 +32,16 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208** - Countably infinite strings, example of a Finite Automaton, definition of DFA
 - **CS 218** - Longest duration interval scheduling via dynamic programming, proof of optimality
 - **CS 219** - Multi-core scheduling, Interprocess Communication (IPC), socket communication in unix domain
+
+## Thursday
+
+- **CS 219** - IPC: Sockets, Message queues and Pipes
+- **CS 218** - Tasks and Deadlines, Dynamic Programming and Greedy approaches
+- **CS 236** - Process Management in xv6
+
+## Friday
+
+- **CS 217** - Perceptron Algorithm and Geometric Interpretation, Introduction to Decision Trees
 
 # Timetable
 
