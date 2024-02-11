@@ -3,7 +3,7 @@
 Quizzes/Deadline dates here, along with syllabus
 
 - **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
-- **Mar 5 (Monday), 11:59 PM** - CS 218 Programming Assignment
+- **Mar 5 (Tuesday), 11:59 PM** - CS 218 Programming Assignment
 - **Mar 27 (Wednesday)** - CS 218 quiz 2
 - **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
 - **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
