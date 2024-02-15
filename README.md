@@ -9,6 +9,12 @@ Quizzes/Deadline dates here, along with syllabus
 - **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
 - **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
 
+Compensation classes
+
+- **Feb 17 (Saturday)** - Monday timetable untill 2 pm
+- **Mar 4 (Monday), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
+- **Mar 9, Mar 30 (Saturday), 11-12:30 PM** - CS 217 lectures
+
 Midsems
 
 - **Feb 23 (Friday), 14:30-16:30** - CS 218
@@ -20,19 +26,6 @@ Midsems
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Monday
-
-- **CS 218** - Interval scheduling, Proof of correctness of a greedy algorithm
-- **CS 219** - Scheduling policies, FIFO, SJF, SRTF, RR, WFQ, MLFQ
-- **CS 208** - Similarity between DPLL and Horn SAT, Resolution (proof rule for checking satisfiability)
-- **CS 240** - Logistic Regression, Softmax, Naive Bayes
-
-## Tuesday
-
-- **CS 208** - Countably infinite strings, example of a Finite Automaton, definition of DFA
-- **CS 218** - Longest duration interval scheduling via dynamic programming, proof of optimality
-- **CS 219** - Multi-core scheduling, Interprocess Communication (IPC), socket communication in unix domain
-
 ## Thursday
 
 - **CS 219** - IPC: Sockets, Message queues and Pipes
@@ -42,6 +35,23 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Friday
 
 - **CS 217** - Perceptron Algorithm and Geometric Interpretation, Introduction to Decision Trees
+
+## Monday
+
+- **CS 218** - Matrix Chain Multiplication using DP
+- **CS 219** - Different Virtual address translation methods, Base and bound, Segmentation, Page, Frame, Page table
+- **CS 208** - Similarity between DPLL and Horn SAT, Resolution (proof rule for checking satisfiability)
+- **CS 240** - Logistic Regression, Softmax, Naive Bayes
+
+## Tuesday
+
+- **CS 208** - Countably infinite strings, example of a Finite Automaton, definition of DFA
+- **CS 218** - Subset sum problem using DP, Knapsack and fractional knapsack, intro to Balanced Margin problem
+- **CS 219** - External and internal fragmentation, VPN, FPN, Translation Lookaside Buffer (TLB), Disadvantage of continous single page table
+
+## Wednesday
+
+- **CS 217** - Decision Trees, Examples, Entropy and conditional entropy, creation rules using mutual information, stopping criteria, overfitting
 
 # Timetable
 
