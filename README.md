@@ -11,7 +11,7 @@ Quizzes/Deadline dates here, along with syllabus
 
 Compensation classes
 
-- **Feb 17 (Saturday)** - Monday timetable untill 2 pm
+- **Feb 17 (Saturday), 10:30-12:30 PM** - CS 219, CS 208 Lecture
 - **Mar 4 (Monday), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
 - **Mar 9, Mar 30 (Saturday), 11-12:30 PM** - CS 217 lectures
 
