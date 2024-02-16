@@ -18,6 +18,7 @@ Compensation classes
 Midsems
 
 - **Feb 23 (Friday), 14:30-16:30** - CS 218
+- **Feb 25 (Sunday), 14:00-17:00** - CS 240
 - **Feb 26 (Monday), 11:30-13:30** - CS 219
 - **Feb 27 (Tuesday), 08:30-10:30** - CS 208
 - **Mar 2 (Tuesday), 11:30-13:30** - CS 217
