@@ -9,7 +9,15 @@
 \usepackage{tikz}
 \usepackage{subfig}
 \usepackage{hyperref}
+\usepackage{tcolorbox}
 \usepackage{xcolor}
+\lstset{language=C++,
+    basicstyle=\ttfamily,
+    keywordstyle=\color{blue},
+    stringstyle=\color{red},
+    commentstyle=\color{green},
+    morecomment=[l][\color{magenta}]{\#}
+}
 
 \hypersetup{
     colorlinks=true,
@@ -931,5 +939,133 @@ Shared memory means that the same memory image appears in multiple processes. Ea
 memory segment into its own memory image using this identifier key. 
 
 Sharing of memory is a risky and volatile task. The processes thus need extra mechanisms to know for example, if the memory has been modified. This enables them to coordinate with one another
-\end{document}
 
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 12}
+    \end{center}
+}
+\section{Memory Management}
+\subsection*{Abstraction of Address space}
+Every process assumes it has access to a large space of memory from address 0 to a max value. The maximum value depends on the available number of bits for the memory space.
+The virtual address sapce contains all the code/data that a process can access. Addresses in CPU registers point to these virtual addresses.
+
+
+
+
+However this is not how memory is actually stored. The OS maintains this illusion of virtualized address spaces by having a map from every virtual address to a physical address. When the CPU accesses memory 
+using an address (virtual address) the Memory Management Unit (MMU) converts it to a real address and gives back the data at the physical memory corresponding to the virtual address. OS allocates physical memory to a process, it has the translation information
+provides it to MMU.
+
+Why do we need the MMU? Why not the OS? This is primarily since we don't want to trap into the kernel for every memory access. The OS does the background work
+of allocating memory for processes and maintaing the virtual address $\rightarrow$ physical address mapping and simply passes on the information to the MMU.
+The MMU deals with translation of virtual memory to real memory. During Bootup the OS starts on the MMU and starts giving it translation information.
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width = 6cm]{memory_allocation.png}
+        \label{figure:memory_alloc}
+        \caption{Memory allocation for three processes}
+    \end{center}
+\end{figure}
+
+
+\subsubsection*{Why virtual address?}
+The real view of memory is messy and it is not easy to manage manually. In earlier systems there was only one process and its own code. Nowadays we have multiple
+parallely running processes which all do time\-sharing on the same CPU. Memory is also allocated in a non-contiguos manner, but we still want to maintain the illusion of memory being continuosly allocated. 
+Thus virtualization has become a neccesity in modern systems. The CPU \textbf{only} uses the virtual addresses to perform any action.\footnote{For example addresses of a pointer obtained from \texttt{malloc()} is the virtual address}
+
+\subsection{Base and bound}
+This is the simplest form of memory management. It is not used in modern systems but we will understand it to get some insights. The memory image
+from [0,N] is placed at memory address base B. That is every virtual address X is stored at physical address B + X. There is also a bound associated with this base which tells us 
+the maximal address for the memory allocated in this memory image.
+
+
+
+Simple example: Let's take a small porgram as given hello
+
+\begin{lstlisting}
+    void func(){
+        int x = 300;
+        x = x + 3;
+    }
+\end{lstlisting}
+This code compiles to give instructions. 
+
+Suppose the OS places the entire memory image in one chunk starting at physical address 32kb, then the OS indicates base and bound to MMU. 
+MMU performs this translation from Virtual adress to physical address. But what if some garbage address/ out of bound address is given? Then the
+MMU raises a trap to call the OS to handle this situation. This is another type of hardware level trap (program fault). In this case int n is inserted into the 
+stream of instructions run by the CPU. 
+
+\subsection{OS vs MMU}
+The OS is the one who allocates the memory and builds the translation information of a process. However the MMU
+is the one who translates virtual address to a physical address. Note that once the user starts running the OS is out of the picture unless there is a trap.
+
+When a context switch happens the OS changes the translation information in the MMU to enable it to perform translating addresses corresponding to this new process \footnote{same virtual address means different physical address in different processes}. 
+As told before when the CPU has an instruction which wants to access memory the MMU translates it to a physical address which can be used to access the data.
+
+\subsection{Segmenation}
+It is an upgradation of base and bound. The program is split into several segments (Code, data, stack) and each of them is placed at a different memory location (base).
+Each of these bases also have a bound associated with them. When the address exceeds the bound of a segment we obtain a \textit{segmenation fault}\footnote{\href{https://www.youtube.com/watch?v=NAEppFUWLfc}{\textit{sigh}}}
+. Thus when we context switch into a process the OS updates the MMU with all the necessary bases and bounds.
+Each virtual address is hence a segment identifier bit sequence concatenated with an offset for that particular byte.
+
+But this is still inefficient due to the variable sizes of these segments. This also results in \textit{fragmentation} where there is some unusable space between two segments. 
+
+\subsection{Paging}
+Paging is the mostly widely used system of memory Management today. We divide our virtual address space into fixed size pages. Each one of these pages is assigned a free \textbf{physical frame}\footnote{Just the physical memory associated with a single page}.
+The memory allocation for each page is done at a fixed size (eg. 4kb). Since the pages are tightly packed we have no wasteage of size between pages (ie) no \textit{external fragmentation}. However inside the pages we could have some wasteage of space (ie) \textit{internal fragmentation}.
+
+What is the optimal page size? Why 4kb?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textit{Large page size} \(\rightarrow\) larger amount of wastage inside individual pages.
+    \item \textit{Small page size} \(\rightarrow\) OS has to keep track of huge number of pages which creates a large overhead.\footnote{Large processing power is needed to maintain page table}
+\end{itemize}
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 13}
+    \end{center}
+}
+\subsection{Page table}
+\subsubsection*{What is a page table?}
+The page table is a per process structure (ie) each process has its own page table. This table helps to translate
+virtual addresses to real ones. It stores frame numbers for all the pages used by the process in an array format. 
+Table[i] gives the physical frame number of the ith virtual page of the process. Thus the ith entry of the page table corresponds to the physical address of the starting byte of the ith page. The page table is stored in a part of a OS memory (stored in PCB). The MMU has 
+access to the page tables of current processes and it uses it for translation. 
+
+
+Given page table of a process, how is physical address obtained from virtual address?
+
+When you have the virtual address you can find which page your data is in. This can be done by (Virtual Address / Page size) and the offset is (Virtual Address \% Page size).
+That is the most significant digits give the page number and the least significant ones give the offset. 
+
+\begin{figure}
+    \begin{center}
+        \includegraphics[width = 6cm]{address_translation.png}
+        \label{figure:address_translation}
+        \caption{Visual representation of address translation}
+    \end{center}
+\end{figure}
+
+
+Hence the most significant digits give the Virtual Page Number (VPN) and least significant bytes give the offset. The VPN and the page
+table can be used to get the Physical Frame Number. Note that Page\_Table\_array[VPN] = PFN\footnote{Physical Frame Number}. Obviously the offset to get the byte
+we want is same in both the Physical frame and the virtual page.
+
+\subsubsection*{Translation Lookaside Buffer(TLB)}
+An important point to note with paging is that one memory access has become two accesses now. One access to the page table and the one to the actual byte we want. This results in a significant
+slow down since memory accesses are very slow. This is the overhead associated with paging
+
+To reduce this overhead the MMU caches the most recent translations in translation lookaside buffer(TLB)\footnote{It is a fully associated cache}.
+TLB caches only the \textbf{page table entries} \footnote{the physical data in 32/64 bit addresses are cached by the actual cpu cache}. If we have
+a hit, we fetch the memory contents of the given address in one access since we already have the page table entry in the cache. If there is a miss we get the memory from RAM and place it in TLB for future accesses after 
+which we use the translated address and then again use this page table entry to translate the virtual address and get the memory we wanted.
+
+Interestingly, during a context switch the TLB is flushed. This is due to the fact that the MMU needs to translate the Page table for every processes in a different
+way (different page table entries).
+
+
+Thus the TLB is very important and \textit{needs} to have a high hit rate. It works parallely with the CPU cache to further optimize memory accesses.  
+
+\end{document}
