@@ -1,0 +1,15 @@
+Outlook	Temp	Humidity	Windy	Play
+Rainy	Mild	Normal	t	yes
+Overcast	Cool	Normal	t	yes
+Sunny	Hot	High	f	yes
+Overcast	Mild	High	t	yes
+Sunny	High	Normal	f	yes
+Sunny	Hot	Normal	t	no
+Overcast	Cool	High	t	yes
+Overcast	Mild	Normal	f	yes
+Rainy	High	Normal	f	yes
+Overcast	Mild	Normal	t	no
+Rainy	Mild	High	t	yes
+Overcast	Mild	High	t	yes
+Rainy	Hot	High	f	no
+Overcast	Hot	High	f	yes
