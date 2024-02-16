@@ -1066,6 +1066,82 @@ Interestingly, during a context switch the TLB is flushed. This is due to the fa
 way (different page table entries).
 
 
-Thus the TLB is very important and \textit{needs} to have a high hit rate. It works parallely with the CPU cache to further optimize memory accesses.  
+Thus the TLB is very important and \textit{needs} to have a high hit rate. It works 
+parallely with the CPU cache to further optimize memory accesses.  
+\\
 
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 14}\\
+    \textit{work in progress}
+    \end{center}
+}
+
+\subsection*{Page table entries}
+As we saw before the page table is an array of page table entries. 
+There are a large number of virutal pages available but each process only uses a few. Thus to indicate that
+a virtual page is not used each page table entry of a page table has a \texttt{valid} bit. If this bit is 0 that entry is invalid and if it is 1 then it is used. 
+The invalid page table entries in a process can be used by some other process at the same time. So not being able to access these entries is extremely important for isolation purposes.
+
+We also have other similar \textbf{permission bits} which we will look at later.
+
+The number of bits in the virtual address corresponding to the offset of a particular page is dependent on the size of the page. 
+If the size of the page is say x bytes then the number of bits required for offset is \(\log_{2} x\)\footnote{12 bits in 4kb case}. The remaining bits of the address are used to indicate the 
+Virtual Page Number. If the Virtual Page number does not correspond to a valid entry of the page table then the MMU raises a trap (it is an out of bounds access). Thus the most significant bits are used as an index to get the Physical frame address from the 
+page table and the remaining bits are the offset to get the actual memory byte we want to access. 
+
+In a 32 bit (4GB) system usually, a page is 4kb large. There are (1024 * 1024 pages (ie) around a million pages) in a page table.
+\subsection*{Inner and outer page table}
+The page table is of size 1MB (All 32-bit addresses are stored). But we know that the size of the physical frame which is the size of an available contiguos memory chunk is 4kb. 
+So how is the page table stored?. Interestingly the page table is divided into 1024 inner page tables which have their start addresses in another "outer" page table corresponding to each inner page table. To reiterate, each of those 1024 byte sized chunks of the page table is an inner page table.
+This outer page table has a size of 1kb (Since each page table entry covers 1024 bytes corresponding to one inner page table). 
+This solves our limitation in the size of our physical frame. The outer page table is as powerful as the normal page table which comes into use.
+
+
+\begin{figure}[h]
+    \begin{center}
+        \hspace{2cm}
+        \includegraphics[width = 12cm]{inner_page_table.png}
+        \label{figure:inner_page_table}
+        \caption{Mapping from outer page table to inner page table }
+    \end{center}
+\end{figure}
+
+Say we have a process which has 2k pages needed for code and data and after that it has 6k unallocated pages and then 1k unallocated pages (for the stack) followed by the stack itself\footnote{Note that }.
+Here if we had entries for all pages in their corresponding inner page table with valid/invalid bits it is easy to see that it is a lot of work since we need to bother about 1024 * 1024 entries. A smart solution is, rather
+than worrying about the inner pages tables at all just set an entry of the outer page table to be invalid iff all the entries in the inner page table corresponding to it are not used. Thus instead of setting 1024 entries of the inner page 
+table to invalid we directly make the outer page table entry corresponding to all of them invalid. Hence we need not even bother creating/maintaing inner page tables with no valid entries.
+
+
+
+As a conclusion, in our paging system there are 4GB bytes which are split into 1M pages of size 4kb each. There are 1M entries in the page table corresponding to each virtual page. The 1M entires of the page table are divided into 1024 inner page tables.
+The inner page table has the physical frame address corresponding to a virtual page. Each of these inner page tables is mapped to an entry in the outer page table thus the outer page table has 1024 entries.
+
+
+
+\subsubsection{Multi-level Page Tables}
+How are addresses translated in a two level Page table? As we saw before the most significant bits denote the page number. Now we can even split these most
+significant bits into two parts where the more significant bits represent the index of the outer page table whereas the one less significant represent the offset within the inner page table to get the appropriate page table entry. Thus to get the actual 
+physical address the MMU walks along the page table arrays. This why the MMU accessing the page table is called walking the table. 
+
+
+MMU stores starting, physical address\footnote{Since we need the actual access to the page table} of the page table in a single level page table or specifically the outer page table incase of multi-level paging. 
+This is stored in the page table base register of the MMU.
+
+What if splitting into two levels isn't enough? This process of making page tables for page tables can be continued up until the final/outermost page table can fit within a single page. 
+However this comes with the obvious overhead of making each page table walk longer and thus more time consuming. 
+
+
+\begin{figure}[h]
+    \begin{center}
+        \includegraphics[width = 12cm]{mulit_level_page.png}
+        \label{figure:multi_level_page_table}
+        \caption{Translation from multi level page table to physical address }
+    \end{center}
+\end{figure}
+
+\subsection*{Virtual Addresses}
+It is important to note that every element of memory needed by a process has a virtual address associated with it. 
 \end{document}
+
