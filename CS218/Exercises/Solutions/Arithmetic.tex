@@ -218,6 +218,45 @@
     we can just swap $a_i$ and $a_j$ directly. So we just iterate through all elements and do the swap (to make sure something isn't swapped twice, we can make sure
     we only swap with something after it).
 
+    \item $e_i = P(\omega^i) = a_0 + a_1 \omega^i + a_2 \omega^{2i} + \dots + a_{d-1} \omega^{(d-i)i} = \sum_{j=0}^{d-1} a_j \omega^{ij}$. We can just expand each 
+    coefficients in the polynomial $Q(y)$ and evaluate using this.
+    \begin{align*}
+        Q(\omega^{-i}) &= e_0 \omega^{-i} + e_1 \omega^{-2i} + \dots + e_{d-1} \omega^{-(d-1)i} \\
+        &= \sum_{k=0}^{d-1} e_k \omega^{-ik} \\
+        &= \sum_{k=0}^{d-1} \left(\sum_{j=0}^{d-1} a_j \omega^{kj}\right) \omega^{-ik} \\
+        &= \sum_{k=0}^{d-1} \sum_{j=0}^{d-1} a_j \omega^{(j-i)k} \\
+    \end{align*}
+    Let's now reorder the summation a bit, and group terms according to $j$.
+    \begin{align*}
+        Q(\omega^{-i}) &= \sum_{j=0}^{d-1} \sum_{k=0}^{d-1} a_j \omega^{(j-i)k} \\
+        &= \sum_{j=0}^{d-1} \left(\sum_{k=0}^{d-1} \omega^{(j-i)k}\right) a_j
+    \end{align*}
+    Now we just have some weighted sum of $a_j$'s, all we have to do is calculate their weights. Firstly let's try to to find the weight of $a_i$.
+    This weight is going to be $\sum_{k=0}^{d-1} \omega^{(i-i)k} = \sum_{k=0}^{d-1} 1 = d$, so 1 term is just $d a_i$. Now take the case where
+    $j \neq i$. The weight is now $\sum_{k=0}^{d-1} \omega^{(j-i)k} = \sum_{k=0}^{d-1} u^k$, where $u = \omega^{j-i}$. But we also know that $u$ is
+    a complex root of unity, so $1 + u + u^2 + \dots + u^{d-1} = 0$, so the summation which is the weight, is basically 0. So the final answer we get
+    is 
+    \[ Q(\omega^{-i}) = \sum_{j=0}^{d-1} \left(\sum_{k=0}^{d-1} \omega^{(j-i)k}\right) a_j = d a_i \]
+
+    \item Note that this circuit is just a diagramatic way of doing in-place FFT. The operations done in this circuit are exactly the same as the ones 
+    we have done in Q11. So in fact, we fill the circles in the first column in the same order as the `reordering' we did in Q11. So for the first circuit,
+    the order is $a_0, a_2, a_1, a_3$ and for the second circuit, the order is $a_0, a_4, a_2, a_6, a_1, a_5, a_3, a_7$.
+
+    \item Firstly, to find the force on $q_i$, we can just find the strength of the field, and multiply by $C q_i$ at the end. Also for the field at $q_i$, 
+    it's equal to some linear combination of $q_j$'s (where the coefficient is $\frac{1}{(j-i)^2}$), so maybe we can find some pattern in the 
+    Let's just take an example and see if there's some pattern, assume there's only $q_0, q_1, q_2, q_3$.
+    \begin{align*}
+        E(q_0) &= (0) q_0 + \left(-\frac{1}{1^2}\right) q_1 + \left(-\frac{1}{2^2}\right) q_2 + \left(-\frac{1}{3^2}\right) q_3 \\
+        E(q_1) &= \left(\frac{1}{1^2}\right) q_0 + (0) q_1 + \left(-\frac{1}{1^2}\right) q_2 + \left(-\frac{1}{2^2}\right) q_3 \\
+        E(q_2) &= \left(\frac{1}{2^2}\right) q_0 + \left(\frac{1}{1^2}\right) q_1 + (0) q_2 + \left(-\frac{1}{1^2}\right) q_3 \\
+        E(q_3) &= \left(\frac{1}{3^2}\right) q_0 + \left(\frac{1}{2^2}\right) q_1 + \left(\frac{1}{1^2}\right) q_2 + (0) q_3 \\
+    \end{align*}
+
+    The coefficients look like they are going in a sliding window, and whenever you see this, think of convolutions. Observe the convolution
+    of the arrays: $[q_0, q_1, q_2, q_3]$ and $[-1/3^2, -1/2^2, -1/1^2, 0, 1/1^2, 1/2^2, 1/3^2]$. In general if the first row has $n$ charges,
+    the second array has $2n-1$ terms. The convolution will have $n + (2n-1) - 1 = 3n - 2$ terms. If you just ignore the first and last $n-1$ 
+    terms, the middle of the convolution array is going to be your answer. And since both arrays are $O(n)$, convolution will take $O(n \log n)$
+    time.
     
 \end{enumerate}
 \end{document}
