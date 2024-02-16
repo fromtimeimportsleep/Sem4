@@ -21,21 +21,12 @@ Midsems
 - **Feb 25 (Sunday), 14:00-17:00** - CS 240
 - **Feb 26 (Monday), 11:30-13:30** - CS 219
 - **Feb 27 (Tuesday), 08:30-10:30** - CS 208
+- **Feb 29 (Thursday), 14:00-17:00** - CS 236
 - **Mar 2 (Tuesday), 11:30-13:30** - CS 217
 
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Thursday
-
-- **CS 219** - IPC: Sockets, Message queues and Pipes
-- **CS 218** - Tasks and Deadlines, Dynamic Programming and Greedy approaches
-- **CS 236** - Process Management in xv6
-
-## Friday
-
-- **CS 217** - Perceptron Algorithm and Geometric Interpretation, Introduction to Decision Trees
 
 ## Monday
 
@@ -53,6 +44,16 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Wednesday
 
 - **CS 217** - Decision Trees, Examples, Entropy and conditional entropy, creation rules using mutual information, stopping criteria, overfitting
+
+## Thursday
+
+- **CS 219** - Two-level page table, Address translation, Inner page table on demand and its worst case, Multi-level page tables
+- **CS 218** - Objective for Balanced Margin problem in latex, Solving using DP and its running time complexity
+- **CS 236** - Inter Process Communication(IPC) using Shared Memory, Unix Domain sockets, Pipes
+
+## Friday
+
+- **CS 217** - Introduction to Neural Networks, extending LR, activation function, loss function, efficiently calculating gradient using chain rule
 
 # Timetable
 
