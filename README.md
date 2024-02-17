@@ -2,12 +2,12 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Feb 25 (Sunday), 2-5 PM** - CS 240 Midsem Lab Exam
-- **Mar 5 (Tuesday), 11:59 PM** - CS 218 Programming Assignment
-- **Mar 27 (Wednesday)** - CS 218 quiz 2
-- **Apr 3 (Wednesday), Class Hours** - CS 217 quiz 2
-- **Apr 3 (Wednesday), 21:00-23:30** - CS 208 quiz 2
-- **Apr 21 (Sunday), 2-5 PM** - CS 240 Endsem Lab Exam
+- **Feb 25 (SUN), 2-5 PM** - CS 240 Midsem Lab Exam
+- **Mar 05 (TUE), 11:59 PM** - CS 218 Programming Assignment
+- **Mar 27 (WED)** - CS 218 quiz 2
+- **Apr 03 (WED), Class Hours** - CS 217 quiz 2
+- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
+- **Apr 21 (SUN), 2-5 PM** - CS 240 Endsem Lab Exam
 
 ### Compensation classes
 
@@ -17,12 +17,12 @@
 
 ### Midsems
 
-- **Feb 23 (Friday),   14:30-16:30** - CS 218, Design and Analysis of Algorithms
-- **Feb 25 (Sunday),   14:00-17:00** - CS 240, AI-ML Lab
-- **Feb 26 (Monday),   11:30-13:30** - CS 219, Operating Systems
-- **Feb 27 (Tuesday),  08:30-10:30** - CS 208, Logic and Automata Theory
-- **Feb 29 (Thursday), 14:00-17:00** - CS 236, OS Lab
-- **Mar 02 (Tuesday),  11:30-13:30** - CS 217, AI-ML Theory
+- **Feb 23 (FRI),   14:30-16:30** - CS 218, Design and Analysis of Algorithms
+- **Feb 25 (SUN),   14:00-17:00** - CS 240, AI-ML Lab
+- **Feb 26 (MON),   11:30-13:30** - CS 219, Operating Systems
+- **Feb 27 (TUE),  08:30-10:30** - CS 208, Logic and Automata Theory
+- **Feb 29 (THU), 14:00-17:00** - CS 236, OS Lab
+- **Mar 02 (SAT),  11:30-13:30** - CS 217, AI-ML Theory
 
 # Weekly Recap
 
