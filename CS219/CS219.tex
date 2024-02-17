@@ -9,6 +9,7 @@
 \usepackage{tikz}
 \usepackage{subfig}
 \usepackage{hyperref}
+\usepackage{amsmath}
 \usepackage{tcolorbox}
 \usepackage{xcolor}
 \lstset{language=C++,
@@ -1074,7 +1075,6 @@ parallely with the CPU cache to further optimize memory accesses.
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 14}\\
-    \textit{work in progress}
     \end{center}
 }
 
@@ -1123,7 +1123,7 @@ The inner page table has the physical frame address corresponding to a virtual p
 \subsubsection{Multi-level Page Tables}
 How are addresses translated in a two level Page table? As we saw before the most significant bits denote the page number. Now we can even split these most
 significant bits into two parts where the more significant bits represent the index of the outer page table whereas the one less significant represent the offset within the inner page table to get the appropriate page table entry. Thus to get the actual 
-physical address the MMU walks along the page table arrays. This why the MMU accessing the page table is called walking the table. 
+physical address the MMU walks along the page table arrays. This is why the MMU accessing the page table is called walking the table. 
 
 
 MMU stores starting, physical address\footnote{Since we need the actual access to the page table} of the page table in a single level page table or specifically the outer page table incase of multi-level paging. 
@@ -1133,6 +1133,22 @@ What if splitting into two levels isn't enough? This process of making page tabl
 However this comes with the obvious overhead of making each page table walk longer and thus more time consuming. 
 
 
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 15}\\
+    \end{center}
+}
+
+
+As an example consider a 48-bit cpu architecture with pages of 4KB size. Thus the number of pages will be \(\frac{\text{Total number of bits}}{\text{Size of a page in bits}}\) (ie) \(\frac{2^{48}}{2^{12}}\) so \(2^{36}\) pages. So we need an array to store the corresponding 
+physical frame address for each virtual page that is \(2^{36}\) entries. Now obviously this innermost page table isn't less than the size of one page which is \(2^{12}\). Hence it can't be stored continuosly in a single page and we need to find futher divide the table into page table sized chunks and map each of them to a physical frame address.
+So lets do make a page table for the inner most page table. From similar caluculations the size of this new table will be \(\frac{2^{36}}{2^{12}}\) which is \(2^{24}\). This again isn't small enough to fit in one page. Let's divide again. Now we have \(\frac{2^{24}}{2^{12}}\) which is \(2^{12}\). Finally this is exactly one page long.
+Thus we stop.
+
+We ended up having 4 levels of page tables here. The size of the innermost page table entry is \(2^{36}\), so 4-byte (32 bit) addresses are not enough to identify each entry uniquely thus we have 8-byte addresss.  The most significant 36 bits help us get the physical frame address of each page and the remaining 9 bits give the offset.
+Now among these 36 bits the first 24 tell us the physical frame address of the beginning of a chunk into which the inner most page table is divided and the 9 bits give us the offset among one such chunk. Reiterating that the innermost page table is divided into \(2^{24}\) chunks and each of this is mapped to a page. We can continue in this way to 
+index each element of the tables at every level when given a 48-bit address.
+ 
 \begin{figure}[h]
     \begin{center}
         \includegraphics[width = 12cm]{mulit_level_page.png}
@@ -1141,7 +1157,35 @@ However this comes with the obvious overhead of making each page table walk long
     \end{center}
 \end{figure}
 
-\subsection*{Virtual Addresses}
-It is important to note that every element of memory needed by a process has a virtual address associated with it. 
+\subsection{Virtual Addresses}
+It is important to note that every element of memory needed by a process has a virtual address associated with it. This is due to the fact that MMU can access elements only via
+virtual addresses. So every element like the code, data has a virtual page and a mapping to its physical address. Even libraries that we import or the OS is mapped to a virtual
+page by \textbf{each} process.
+
+What virtual addresses are given to the OS,libraries which are not technically part of the code? We give such elements \textit{high virtual address}. This is done to prevent accidental
+collisons in the virtual addresses assigned to these elements and other things like stack, code, data. Note that this does not mean each process has a copy of the OS, libraries. Rather each process
+has an entry in its page table and thus allocates virtual pages to these elements, however the physical addresses these virtual pages point to \textit{remain the same.}
+
+Also thinking the other way around anything inaccessible by a process is not part of the virtual address space. 
+
+\subsection{OS is not a process}
+From the discussion above one important point to notice is that the OS isn't a seperate process with its own address space. The OS is mapped for each process to be a part of its virtual memory.
+This denotes a very important point established in the beginning of the course. \textbf{Each process thinks it owns the system.} Each process thinks it is the only one existing and that
+it has a monopoly over the system and that the OS code is a part of it.
+
+When the Bootloader runs, it places the OS memory in the very beginning addreses of the ram. Thus the OS has high virtual address and low physical addresses.'
+
+\subsubsection*{Permission bits}
+How is illegal OS access prevented? As we saw before we have permission \texttt{bits} which can make a page table entry invalid, make a page read( or write ) only, make it accessible only during user mode etc. 
+Thus the OS page table mappings have permission bits to allow access only in kernel mode. Similarly our code's pages are assigned read only privileges since we do not have to change instructions after compilation. 
+
+\subsection{Memory management in xv6}
+xv6 has a two level page table system. It has 1024 inner page tables with 1024 entries corresponding to each of them in the 
+outer page table. The physical address of the base of the outer page table is put in the CPU's cr3 register, which is used by the MMU
+during address translation.
+
+The size of the virtual address space in xv6 is 4GB. The physical address space ranges from [0,PHYSTOP]. \texttt{PHYSTOP} is a macro to denote
+the maximum size of the usable physical address in xv6.
+
 \end{document}
 
