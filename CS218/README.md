@@ -7,10 +7,15 @@
 
 **Algorithms**: Basic principles like induction/recursion. Basic paradigms like Divide and Conquer, Dynamic Programming, Greedy Algorithms. Beyond the basics: Network Flow and its applications. Reductions.
 
-**Complexity**: Polynomial time and the Complexity classes NP, co-NP. NP-hardness and NP-completeness.
+**Complexity**: Polynomial-time and the Complexity classes NP, co-NP. NP-hardness and NP-completeness.
 
 **Advanced topics**: Randomized algorithms, Approximation algorithms. E.g., approximate max-cut, load balancing, min-cut.
 
 ### Video on Fast-Fourier Transform (FFT)
 
 Apart from the Veritasium Youtube video shared by Prof., here is a video that very nicely explains the actual algorithm and thinking behind FFT:-<br>https://www.youtube.com/watch?v=h7apO7q16V0
+
+### Small Reference for Minimum Max Lateness problem
+
+These slides will help prove the correctness of the Greedy approach (of earlier deadline first) in this problem:-<br/>
+https://personal.utdallas.edu/~sxb027100/cs6363/dead.pdf
