@@ -108,7 +108,7 @@ Here again however the OS plays tricks on the processes. Since it is impractical
 allocate memory for the process continguosly it allocates them in chunks but returns a \textbf{virtual address} (Recall Virtualization) to the program. This "virtual address" is the
 address returned when the user requests the OS for an address of the data stored. Here again the OS lies to the process creating the illusion that it has access to continguos memory starting
 from some location
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 2}
@@ -488,7 +488,7 @@ We thus understand how a trap can give control to the OS. But it maybe that inte
 of the CPU. What if such a process goes into an infinite loop? How will the OS stop it? Alternately if we want to do a context switch how will the OS get control? One option is to just assume the process
 is not malicious and it is smartly written to trap into the OS at regular intervals. However the better option is to interrupt every process after a particular amount of time has passes and then 
 trap into the OS to handle this interrupt and check if everything is okay or do a context switch if required. This interrupt is appropriately called an \textbf{Timer interrupt}. The Timer interrupt is a special hardware interrupt and is given to kernel periodically.
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 8}
@@ -562,6 +562,7 @@ Note that the trap frame is a different structure which also has its own pointer
 is stored only during a context switch. An example is a timer interrupt, when the process traps into the OS itself the \textbf{trap frame} is saved whereas the \textbf{context structure} is only saved during a 
 context switch to a different process
 
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 9}
@@ -811,6 +812,7 @@ add a process we add it to the high priority queue. This helps us have an idea o
 process gets some chance to run.
 \end{enumerate}
 
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 10}
@@ -941,7 +943,7 @@ memory segment into its own memory image using this identifier key.
 
 Sharing of memory is a risky and volatile task. The processes thus need extra mechanisms to know for example, if the memory has been modified. This enables them to coordinate with one another
 
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 12}
@@ -1023,6 +1025,8 @@ What is the optimal page size? Why 4kb?
     \item \textit{Large page size} \(\rightarrow\) larger amount of wastage inside individual pages.
     \item \textit{Small page size} \(\rightarrow\) OS has to keep track of huge number of pages which creates a large overhead.\footnote{Large processing power is needed to maintain page table}
 \end{itemize}
+\newpage
+
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 13}
@@ -1071,7 +1075,7 @@ Thus the TLB is very important and \textit{needs} to have a high hit rate. It wo
 parallely with the CPU cache to further optimize memory accesses.  
 \\
 
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 14}\\
@@ -1132,7 +1136,7 @@ This is stored in the page table base register of the MMU.
 What if splitting into two levels isn't enough? This process of making page tables for page tables can be continued up until the final/outermost page table can fit within a single page. 
 However this comes with the obvious overhead of making each page table walk longer and thus more time consuming. 
 
-
+\newpage
 \noindent\tbox{
     \begin{center}
     \textbf{\Huge Lecture 15}\\
