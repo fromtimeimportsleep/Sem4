@@ -11,7 +11,6 @@
 
 ### Compensation classes
 
-- **Feb 17 (Saturday), 10:30-12:30 PM** - CS 219, CS 208 Lecture
 - **Mar 4 (Monday), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
 - **Mar 9, Mar 30 (Saturday), 11-12:30 PM** - CS 217 lectures
 
@@ -27,13 +26,6 @@
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Monday
-
-- **CS 218** - Matrix Chain Multiplication using DP
-- **CS 219** - Different Virtual address translation methods, Base and bound, Segmentation, Page, Frame, Page table
-- **CS 208** - Similarity between DPLL and Horn SAT, Resolution (proof rule for checking satisfiability)
-- **CS 240** - Logistic Regression, Softmax, Naive Bayes
 
 ## Tuesday
 
@@ -54,6 +46,13 @@ Summary of what happened (topics covered) in classes this week could go here
 ## Friday
 
 - **CS 217** - Introduction to Neural Networks, extending LR, activation function, loss function, efficiently calculating gradient using chain rule
+
+## Monday
+
+- **CS 218** - Examples of Edit distances such as Hamming distance and Levenshtein distance, Sequence alignment problem using DP
+- **CS 219** - Demand Paging, Swap space, Page faults
+- **CS 208** - Kleene's theorem, Equivalence between Regular expressions and NFA without epsilon, Using DFA's to show equivalence between two regular expressions
+- **CS 240** - Decision trees with and without using sklearn
 
 # Timetable
 
