@@ -113,7 +113,7 @@
     \end{align*}
     Since in all the subdivisions $a > b$, we can assume the second term is just $O(a^k)$, so overall $T(b^k) = O(a^k)$. Substituting
     $k = \log_b n$, $T(n) = a^{\log_b n} = n^{\log_b a}$. To compare the complexities, we just need to compare log values, and it's easy
-    to check that $\log_4 7 < \log_5 3 < \log_4 8 < \log_6 3$.
+    to check that $\log_4 7 < \log_6 3 < \log_4 8 < \log_5 3$.
 
     \item We can do something similar to Q2. We'll have to square $n/k$ bit integers $2k-1$ times, so this takes $(2k - 1)T(n/k)$ time. But the 
     the other step we have to do is now solve $2k-1$ linear equations in $2k-1$ variables. If we do the normal row operations, i.e Gaussian
@@ -121,7 +121,7 @@
     during elimination, and every row subtraction involves $2k-1$ individual subtractions. 
     The $n/k$ factor comes because the addition/subtraction is happening with $n/k$ bit integers.
     So our recursion is 
-    $T(n) = (2k-1)T(n/k) + O(k^2)$. Now we can do something similar to the previous question, and keep using the recursion. Assume $n = k^c$.
+    $T(n) = (2k-1)T(n/k) + O(k^2 n)$. Now we can do something similar to the previous question, and keep using the recursion. Assume $n = k^c$.
 
     \begin{align*}
         T(k^c) &= (2k-1)T(k^{c-1}) + O(k^2 (k^c)) \\
@@ -188,7 +188,7 @@
 
     First we have to combine the paired terms (the adjacent terms of the array). Since 2 coefficients just form a linear polynomial we evaluate it at 1, 
     -1. So our transformed array is 
-    \[ [a_0 + a_4, a_0 - a_4, a_2 + a_6, a_2 - a_6, a_1 + a_5, a_1 - a_5, a_2 + a_6, a_2 - a_6] \]
+    \[ [a_0 + a_4, a_0 - a_4, a_2 + a_6, a_2 - a_6, a_1 + a_5, a_1 - a_5, a_3 + a_7, a_3 - a_7] \]
     Our next step is going to be to separately combine terms in the left half, and in the right half. Let's just look at the left half first. The 0th and 
     2nd index can be combined, $(a_0 + a_4) + 1(a_2 + a_6)$, $(a_0 + a_4) - 1(a_2 + a_6)$. We now replace the values at these 2 indices with the combined
     values. Similarly the terms and the first and third index can be combined. Call the terms $t_1$ and $t_3$. $t_1 + i*t_3$ and $t_1 - i*t_3$ give 
@@ -243,7 +243,7 @@
     the order is $a_0, a_2, a_1, a_3$ and for the second circuit, the order is $a_0, a_4, a_2, a_6, a_1, a_5, a_3, a_7$.
 
     \item Firstly, to find the force on $q_i$, we can just find the strength of the field, and multiply by $C q_i$ at the end. Also for the field at $q_i$, 
-    it's equal to some linear combination of $q_j$'s (where the coefficient is $\frac{1}{(j-i)^2}$), so maybe we can find some pattern in the 
+    it's equal to some linear combination of $q_j$'s (where the coefficient is $\frac{1}{(j-i)^2}$), so maybe we can find some pattern in the coefficients.
     Let's just take an example and see if there's some pattern, assume there's only $q_0, q_1, q_2, q_3$.
     \begin{align*}
         E(q_0) &= (0) q_0 + \left(-\frac{1}{1^2}\right) q_1 + \left(-\frac{1}{2^2}\right) q_2 + \left(-\frac{1}{3^2}\right) q_3 \\

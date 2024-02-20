@@ -1,0 +1,228 @@
+\documentclass[12pt]{report}
+\usepackage[a4paper, left=1in, right=1in, top=1in, bottom=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{algpseudocode}
+\usepackage{mathtools}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{framed}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows, positioning}
+
+\lstset{basicstyle=\ttfamily,
+  commentstyle=\color{red},
+  keywordstyle=\color{blue},
+  %basicstyle=\footnotesize,
+  frame=lines,
+  numbers=left,
+  stepnumber=1,
+  showstringspaces=false,
+  tabsize=1,
+  breaklines=true,
+  breakatwhitespace=false,
+}
+\usepackage{hyperref}
+\hypersetup
+{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+    pdftitle={\Huge \textbf{CS218 Solutions GreedyDP}},
+    pdfpagemode=FullScreen,
+}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\subsection*{\Large\bfseries Greedy Algorithms}
+\begin{enumerate}[label=\textbf{\arabic*.}]
+
+  \item Assuming there's a minimum weight spanning tree. It must have at least 1 edge in $C$, as the vertices in $V_1$ and $V_2$ have to be connected.
+  If the edge $e^*$ is already in the spanning tree, we're done, so assume it's not there. Now add $e^*$, since we have too many edges, we'll have a cycle.
+  We can also say that the cycle contains $e^*$, as that's the edge which when added, created a cycle. There must be some other edge in $C$ which is part of 
+  the cycle. This is because is we walk through the cycle, we traverse $e^*$, moving from $V_1$ to $V_2$, so we must come back from $V_2$ to $V_1$, and that
+  requires another edge in the cut. So now we can delete this other edge in the cut, and we get a spanning tree again, and this tree will have weight $\leq$
+  the old tree, as $e^*$ was the minimum weight edge in the cut.
+
+  \item Again, let's assume that we have a minimum spanning tree without $e^*$, and now add $e^*$. There will now be a cycle, and this cycle will contain 
+  $e^*$. There must be another edge of this cycle containing $v_1$, as every vertex in a cycle must have 2 edges in the cycle. Now if we delete this other 
+  edge, we will have a spanning tree, and this spanning tree will be minimum.
+
+  \item Strategy 1 fails in cases where you actually have less time for larger assignments. Take an example there $l_1, l_2 = 1, 2$ and $d_1, d_2 = 3, 2$. If 
+  you do 1 before 2, you finish 2 late, but if you do 1 after 2, you finish both on time.
+
+  Strategy 3 seems logical. The reason we are using $d_i - l_i$ as a factor, is because that's the time remaining after we finish the assignment. So it's an 
+  increasing order of how much extra time we will have for an assignment if we start now. But it can prioritize very long assignments over short ones which 
+  need to be finished early. Take $l_1, l_2 = 1, 3$ and $d_1, d_2 = 3, 4$. Our greedy approach will make us do assignment 2 first, which makes us finish
+  assignment 1 late. But if we did assignment 1 first, we would have enough time for assignment 2 after it.
+
+  Now to prove the claim in strategy 2.
+  Let's say $A_j$ is immediately done before $A_i$, but $A_j$ has a closer deadline compared to $A_i$. What happens if we swap $A_i$ and $A_j$? Firstly, it's
+  clear that the lateness of any assignment other than $A_i$ and $A_j$ don't change. Now let's just look at $A_i$ and $A_j$. We can take cases, but I'll provide
+  some sort of general reasoning as to why the swap won't decrease the max lateness.
+
+  Before the swap, $A_j$ was finished later, but had an earlier deadline. So no matter what, the lateness will be more than or equal to $A_i$. So after swapping, 
+  we just have to make sure the lateness of both $A_i, A_j$ are less than the lateness of $A_j$ before swapping. Firstly after swapping the lateness of $A_j$
+  obviously decreases, it's done earlier. But the lateness of $A_i$ has increased. But think about it like this, $A_i$'s finishing time after swapping is same 
+  as $A_j$'s finishing time before swapping. And also, $A_i$'s deadline is further away than $A_j$'s deadline. So since the finishing times are equal and we have 
+  more time in 1 case, $A_i$'s lateness after swapping is $\leq$ $A_j$'s lateness before swapping.
+
+  Now we can use this swapping trick to do the whole question. Assume there's an optimal solution which isn't increasing order of deadlines. We can just do an
+  insertion sort like algorithm. And keep doing swaps to bring the array to increasing order of deadlines. We have also shown that in each swap, the max lateness
+  isn't increasing, and it can't really decrease as we started with an optimal solution. So at the end of our insertion sort, the max lateness is same as that of
+  the optimal solution, so increasing order of deadlines is always optimal.
+  
+  \item Since each assignment takes unit time, there's a simple way to check if an assignments is done on time. If you do the assignments in order, the $k^{th}$
+  assignment is done on time if and only if its deadline is greater than or equal to $k$. We just now have to order the $n$ assignments, maximizing the total 
+  reward.
+
+  Here's how our greedy algorithm is going to work. We first sort the assignments in decreasing order of rewards. After that, assume the assignments are $A_1, 
+  \dots, A_n$. Now we iterate through this array. We check if $A_i$ can be completed in time i.e. there's some empty spot from 1 to deadline of $A_i$. If there 
+  is, we place in the last spot that we could, such that $A_i$ is completed in time. If not, we just place $A_i$ at the end of the array, or as far as possible 
+  to the end.
+
+  The algorithm is simple enough, but why does this work? We'll prove by induction that there is an optimal solution where $A_1, \dots, A_k$ are placed at the 
+  same place as our algorithm. Let's explain how the induction works. Assume there's a solution where $A_1, \dots, A_{k-1}$ have been placed how they have in our 
+  algorithm, now think about $A_k$.
+
+  \begin{itemize}
+    \item Case 1: There's a spot for $A_k$ such that it can be completed on time. Can we show that it's also completed on time in the optimal solution? If 
+    not, in the optimal solution, there's some $A_l$ in the spot where $l > k$. But then just swap $A_l$ and $A_k$, now we get an extra reward due to $A_k$,
+    we might lose the reward $A_l$. But our net gain is positive as reward of $A_k$ is more than reward of $A_l$. Now we have to show there's a solution 
+    where it's placed as late as possible, but this is intuitive right. If it's placed eariler, just swap it with $A_l$ (whatever's in the latest spot), 
+    $A_k$ is still completed, you still get its reward, and $A_l$ is completed even earlier, so it won't lose its reward either.
+
+    \item Case 2: There's no spot for $A_k$ such that it can be completed on time. This would mean even in our optimal solution, $A_k$ isn't completed as there
+    is literally no place for it to go. There is obviously some optimal solution where it's placed as late as possible, right. If it's placed earlier than that,
+    just move it later, anyway it wasn't going to be completed on time, and you are moving some other assignment earlier, which definitely won't hurt.
+  \end{itemize}
+
+  \item This is actually a hard problem :/
+  
+  It's not really mentioned whether we can split up the time when we do a particular assignment, or that we have to do it in 1 whole stretch. But we can 
+  see that it doesn't matter, actually splitting up assignments doesn't really help us. Let's say we are finishing some set of assignments $A_1$ to $A_n$, by 
+  splitting them up. WLOG let's also assume the final finishing times of $A_1$ to $A_n$ are in ascending order. We claim that if we just did $A_1$ fully, then 
+  $A_2$ fully, $\dots$, then $A_n$ fully, we would have accomplished the same thing. We can prove this by induction. We know $A_n$ is finished at the end, so
+  it is finally finished at time $l(A_1) + l(A_2) + \dots + l(A_n)$ (where $l(A_i)$ is total length/time taken for assignment $A_i$). But why not rearrange the 
+  time intervals, and do $A_n$ at the end? To be clear, we are picking out times whenever $A_n$ is done, and placing them at the end. The final time $A_n$ is 
+  finishing at is still the same. And time intervals of the other assignments are moved earlier anyway, by this swapping. Now just do this for $A_{n-1}, A{n-2}$,
+  so on until all of them are just done at a stretch.
+
+  Now that we've proved this, let's just assume we can split up assignments. Now our greedy algorithm is going to work like this: first sort in increasing order of 
+  assignment lengths. Now we iterate over the array, and check if the assignment $A_i$ can be completed in time i.e. there is at least $l(A_i)$ space before the 
+  deadline of $A_i$. If so, we do $A_i$ as late as possible, and split it up to achieve this, if required. If it's not possible to do it on time, we just skip it.
+
+  We now prove by induction: there exists an optimal solution where $A_1, \dots, A_k$ are finally finished at the same time as whenever our algo decides when they 
+  should finish.
+
+  Our inductive assumption: assume there's an optimal solution where $A_1, \dots, A_{k-1}$ are placed where they are. Now if there's enough empty space before deadline
+  of $A_k$, we claim that there's an optimal solution where $A_k$ is done before the deadline. As most greedy questions, we assume there's an optimal solution without 
+  $A_k$, and try to modify it such that $A_k$ is done too. Ok, our optimal solution doesn't actually do $A_k$ but it most likely does something else in the time when 
+  it could have done $A_k$. Maybe it spent 1 unit of time on many assignments, maybe it did half of $A_{k+1}$, maybe it did nothing, we don't really know. But our idea 
+  is to replace something with $A_k$ right, but we can't really do this if only partial assignments are done. If somehow a full assignment $A_l$ was done, we could have 
+  replaced it with $A_k$, as $A_k$ takes lesser time than $A_l$ for all $l > k$. So what do we do? The insight now is to reorder intervals such that assignments are done 
+  one by one, but we reorder only $A_{k+1}$, $A_{k+2}$, all the way to $A_n$.
+
+  Let me explain what this reordering is exactly. Say $A_i$ was done in $[0,1]$, nothing was done in $[1,2]$, $A_j$ was done in $[2,3]$ and $A_i$ was done in $[3,4]$.
+  We reorder such that no assignment is done between the starting and completion of another assignment, but importantly, we keep empty intervals empty. So if we want 
+  to reorder in the example given, we do $A_j$ from $[0,1]$, nothing from $[1,2]$, $A_i$ from $[2,3]$ and $A_i$ from $[3,4]$.
+
+  Ok, now after this reordering, now what do we see done before $A_k$'s deadline (other than $A_1$ to $A_{k-1}$). If suppose one of the assignments from $A_{k+1}$ to 
+  $A_n$ was finished completely before $A_k$'s deadline, great. We just delete it and insert $A_k$. Now if none of these assignments were finished before $A_k$'s deadline,
+  we can say only at most one of them was started before $A_k$'s deadline. Because, if one of them was started, it has to be completed before the next one is started, and
+  none of them finish before $A_k$'s deadline. So what we can do is just delete this assignment. We'll now have enough empty intervals before the deadline of $A_k$
+  to fit the length of $A_k$, move them to the end, and fit $A_k$.
+
+  Now that we've proven there is an optimal solution with $A_k$, we have to show that $A_k$ is done as late as possible (just like how it's done in our algo). 
+  But this is easy right, if not, we can swap such that it is done as late as possible, and move everything else earlier. Clearly this doesn't make any assignment completed
+  late, so we're done.
+
+  \item We have to first sort all the intervals in a meaningful order. Let's say they are just sorted according to starting time (breaking ties arbitrarily). Our 
+  greedy approaches will be as follows: when we get a new interval, use a new station only if we really have to. And if some old stations can be used, use a random
+  one of them. We just have to prove that this algorithm is optimal.
+
+  Suppose at a point in our algorithm we have used stations $1$ to $k-1$ at least once, and then for the next interval $[s_i, e_i]$ we use station $k$. This means 
+  that none of stations $1$ to $k-1$ have trains that have departed. So at time $t = s_i$, there are $k-1$ different intervals that contain it, these correspond
+  to the trains in each station. Then there's also $[s_i, e_i]$ which contains $s_i$, so there are at least $k$ trains which need a station at this common time.
+  This would mean the optimal (minimum) number of stations is at least $k$. So at every point in our algo, when we require an extra station, we really do need that 
+  many stations in any optimal solution, which means we can't do better than our algorithm.
+
+  \item The algorithm is actually simple enough to describe, like most of Greedy. Sort the vertices in decreasing order of degrees. Now we just connect the vertex
+  with the largest degree to the next few vertices, until it's degree is satisfied. That is, if $v_1$ has degree $d$, we connect it to $v_2, v_3, \dots, v_{d+1}$.
+  We have to now decrease the degree of these vertices, and discard $v_1$, and continue the algo for the rest of the vertices (we also have to remove vertices which
+  become degree 0). Our algo gives up whenever the largest degree is greater than or equal to number of vertices left.
+
+  It's easy to see that whenever our algo terminates without giving up, there's a solution. But we have to prove that our algo will always give a solution whenever
+  a graph is possible. So our claim is basically this: if there's a graph with degree sequence $\{d_1, d_2, \dots, d_n\}$ (where degrees are in descending order), 
+  there's also a graph with degree sequence $\{d_2 - 1, d_3 - 1, \dots, d_{d_1+1} - 1, d_{d_1+2}, \dots, d_n\}$. But how do we even go about proving this? The idea like
+  most greedy algos is assume a solution where this isn't true, and do some modifications to our graph to convert it to what our greedy algo produces.
+
+  What's an operation that changes our graph, but doesn't really modify our degree sequence? Think of 4 vertices $v, w, x, y$. There's an edge between $v, w$ and one 
+  between $x, y$, but no edge between $v, x$ and $w, y$. Our operation is to basically delete the 2 edges that are there, and add the 2 edges that aren't there.
+  This actually preserves the degrees of all 4 vertices involved.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Edgeswap.png}  
+  \end{figure}
+
+  Now, to prove our claim. Say the vertices in decreasing order of degree are $v_1, \dots, v_n$ and $v_1$ has a degree $d$. We need to prove that there's a graph with 
+  the given degree sequence, where $v_1$ is connected to every vertex in the set $S = \{v_2, v_3, \dots, v_{d+1}\}$. So let's assume this isn't the case $v_1$ isn't connected
+  to $v_i \in S$. Since $v_1$ needs to satisfy its degree requirements, it has to be connected with at least 1 vertex outside $S$, let's say it's connected to $x \notin S$.
+  If you think about our goal operation, we already have $3$ vertices ready, $v_1, v_i, x$. We just need a fourth vertex, that $v_i$ is connected to and $x$ isn't connected to.
+  But why will some vertex exist? Ok, assume the contrary, there's no such vertex. Every vertex that $v_i$ is connected to, $x$ is also connected to. This would mean that the 
+  degree of $x$ is at least as much as the degree of $v_i$. But $x$ is also connected to $v_1$, that $v_i$ isn't connected to, so its degree is strictly more than $v_i$.
+  But that's a contradiction, if degree of $x$ is more than $v_i$, it must be in the set $S$ right, as $S$ has all the highest degree vertices. So we can conclude there is 
+  some vertex $y$ such that $v_i$ is connected to $y$, but $x$ isn't. And then we can perform our operation, to keep the degree sequence as same, and get a solution where $v_1$ 
+  is connected to $v_i$. This operation can be done as many times as we want, to make $v_1$ connected to every vertex of $S$. So we're done.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{DegSeqProof.png}  
+  \end{figure}
+    
+  \item Our idea is to sort intervals based on increasing order of end time. The intuition behind this is that, there will be very few people who can show the first person the ad,
+  after this sorting, and it is easier to think of some greedy approach. While checking who all arrive before the first person leaves, isn't it best to select the one who leaves
+  the latest? This seems intuitive right, as we want most number of people to see the ad.
+
+  Let's prove this claim. Suppose there's some optimal solution where among the people who overlap with the first person, the one with the latest leaving time (call this person $L$)
+  isn't selected. So some other person who overlaps with the first guy is selected $K$. Can we always swap this person with the person we claim? One thing to observe is that, $L$ 
+  is going to overlap with everyone before $L$ in our array. This is because $L$ arrives before anyone leaves, and leaves only after every single person before $L$ leaves. So everyone
+  will see $L$ before leaving. Now for the elements after $L$, is there any person there who $K$ sees but $L$ doesn't see? That's not possible. If they are after $L$ in the array
+  they leave way after $K$, so in order for $K$ to see them, they have to arrive before $K$ leaves, but this would mean they also arrive before $L$ leaves, so basically they see $L$ too.
+  
+  So what have we proven? Anyone $K$ sees, $L$ is going to see, so we might as well pay $L$ instead of $K$. And if we pay $L$, we know for sure we aren't going to pay anyone before $L$
+  (same proof as the claim) if we're being optimal. So we continue the same algorithm for the array, starting from after $L$. Note that some intervals after $L$ might have already seen 
+  the ad, but that doesn't mean we shouldn't pay them in the optimal solution. Our new first person is going to be the first person who $L$ doesn't see. But the one we select is going to 
+  be the one who overlaps with the first person and leaves the latest, this could potentially be someone before the first person, we have to start checking from after $L$ itself.
+
+  If we just apply our claim inductively, we'll be able to prove that our greedy strategy works.
+
+  \item We have $\binom{n}{2}$ pairwise distances. We want to make sure that as many of the small distances as possible aren't from one set to the other, so we try the following greedy 
+  approach. First we sort all the pairwise distances in ascending order, and since we don't know which numbers in the same set, assume they are all in different singleton sets for now.
+  Now we iterate through the pairwise distances. If suppose the 2 elements are in different sets, we merge them to 1 cluster. We stop our algorithm whenever we have done so much merging that 
+  we have only $k$ sets, and we can't do any more merging. Note that there'll be exactly $n-k$ merges.
+
+  We have to prove by induction that every merge we do is valid. But how to phrase this a bit better? At any point in our algorithm, when we detect that $i$ and $j$ are in different clusters, 
+  there exists an optimal solution where they are in the same cluster.
+
+  So how do we do this induction? So we assume all the previous merges we have done so far are valid i.e. there exists an optimal solution where elements are in the same cluster, whenever our 
+  they are in the same set in our algo. Now we detect 2 new elements which we want to merge. What if there's an optimal solution without these 2 elements in the same set? The spacing of this 
+  clustering is at least as big as the distance between these 2 elements, as they are in different sets in the optimal solution. And for the clustering produced by our greedy algo, the spacing
+  is at most the distance between these 2 elements, as all the pairwise distances including this distance, and the ones greater than it, don't appear in the spacing term of the greedy algo. Which 
+  proves that the greedy algo also outputs some optimal clustering.
+
+\end{enumerate}
+\end{document}
