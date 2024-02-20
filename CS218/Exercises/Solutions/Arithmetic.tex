@@ -162,7 +162,7 @@
         different terms to compute. But in order to compute these terms, we can compute the terms $p_1$ to $p_7$ but substituting submatrices instead
         of numbers. Note that each $p_i$ will take exactly 1 matrix multiplication of size $n/2 \times n/2$. Now that the $p_i$'s are calculated, we
         can do few additions and subtraction as we did in the first part to get the 4 terms that we need, they are the same as the terms that we need
-        in the second part. So this is how we get $C$. The recursion for this is that $T(n) = 7T(n/8) + O(n^2)$ ($O(n^2)$ for additions and subtractions).
+        in the second part. So this is how we get $C$. The recursion for this is that $T(n) = 7T(n/2) + O(n^2)$ ($O(n^2)$ for additions and subtractions).
         Solving this recursion gives $T(n) = O(n^{\log_2 7}) = O(n^{2.81})$.
     \end{enumerate}
 

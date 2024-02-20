@@ -14,7 +14,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 \usepackage{tikz}
-\usetikzlibrary{arrows, positioning}
+\usepackage{emoji}
 
 \lstset{basicstyle=\ttfamily,
   commentstyle=\color{red},
@@ -224,5 +224,84 @@
   is at most the distance between these 2 elements, as all the pairwise distances including this distance, and the ones greater than it, don't appear in the spacing term of the greedy algo. Which 
   proves that the greedy algo also outputs some optimal clustering.
 
-\end{enumerate}
+  \subsection*{\Large\bfseries Dynamic Programming}
+
+  \subsubsection*{Flavour 1: where the subproblems are on suﬃxes/preﬁxes of the input.}
+
+  \item We first sort based on starting time. Now we divide by cases on whether we select the first interval or don't. If we don't, our answer is just going to be the answer for the subarray from
+  2 to $n$. If we select the first interval, we have to reject all the intervals which start before the first interval ends. But note that after rejecting everything, we are still going to be left 
+  with a contiguous subarray, from some $k$ to $n$, only because the array is sorted by starting time. To find this $k$, we have to just binary search actually. The query is the first interval's 
+  end time, and whatever index you get from the binary search, that will decide from which point you have to solve the subproblem. In the end our reucrsion is going to be like
+  $f(1, n) = \max(f(2,n), l(I_1)+f(k,n))$. Since by applying this recursion the subarray always ends in $n$, and starting index gets smaller, there are at most $n$ distinct recursive calls. To code this 
+  up, we can iterate backwards and find $f(i, n)$ for $i$ from $n$ to 1. Each $f(i, n)$ takes $O(\log n)$ time due to the binary search, so overall the time complexity is still $O(n \log n)$.
+
+  \item I don't know which question they are referring to where we found optimal cost \emoji{grinning-face-with-sweat}
+  
+  \item Again, split based on whether we select the first interval or don't. If you take the first interval, the best you can do is $w_1 + f(k,n)$, where $k$ is the first interval which starts after
+  the first interval ends. And if you don't select the first interval, the answer is just $f(2,n)$. So our recursion changes like: $f(1,n) = \max(f(2, n), w_1 + f(k,n))$. We can iterate backwards 
+  to calculate $f(i,n)$ for all $i$, in $O(n \log n)$ time.
+
+  \item It's the same case split again. If we don't select the first interval, the answer is just $f(2,n)$. If we select the first interval, the number of subsets is $f(k,n)$. So the recursion is
+  $f(1,n) = f(2,n) + f(k,n)$, where $k$ is the first interval which starts after the first interval ends. 
+
+  \item A natural first idea would be to case split based on which hotel we are staying in for the first night. Let $dp[i]$ be the minimum cost to travel, starting from city $i$. We basically need
+  $dp[0]$, treating $A$ as the $0^{th}$ city, and our base case is $dp[n+1] = 0$, treating $B$ as the $(n+1)^{th}$ city. Our recursion is something like this:
+  \[ dp[i] = \min_{j \in S_i} (dp[j] + c_j) \text{, $S_i$ is the set of cities which can be reached from city $i$ } \]
+  We need some efficient way to calculate $S_i$ for all $i$, while iterating in our algorithm. It's enough to see which is the last city, and its distance which can be reached from every $i$.
+  
+  We can solve this itself using subproblems. Let's say for city $i$, we have already calculated $j$, the furthest city we can reach, and its distance which is $d_{i+1} + d_{i+2} + \dots + d_j$.
+  Now we want to find the furthest city to reach from city $i-1$, so what we do is just add $d_i$ to our distance, assuming we can still reach $j$. If our distance is still not greater than $d$, 
+  great, $j$ is still the furthest city. But if it exceeds $i$, keep decrementing $j$, and subtracting $d_j$ from our distance, until the distance doesn't exceed $d$. This is basically a 2 pointer
+  method, so it completes in $O(n)$ time overall, for every $i$.
+
+  Now back to our original question. It will be useful if we could just store all the $dp[j] + c[j]$'s in a multiset right, so that we can just find the minimum in $O(\log n)$ time. The idea is 
+  to find $dp[i]$ iterating backwards from $n$ to $1$. We concurrently do our subproblem, whenever we decrement $i$, we add $dp[i] + c[i]$ to our multiset. Whenever we decrement $j$, we delete 
+  $dp[j] + c[j]$ from our multiset. After doing all the decrementing to $j$ for the particular $i$, we find the minimum of the multiset, and assign that as $dp[i]$. The time complexity of this 
+  algorithm overall is $O(n \log n)$ as we have $n$ additions and deletions to our multiset, and well as $n$ minimum queries.
+  
+  \item For each vertex $i$ from $n$ to $1$, we find the longest path to vertex $n$. Base case is $dp[n] = 0$. Now to get $dp[i]$, we just do $1 + $ the maximum length from every vertex it connects 
+  to. This is $O(E)$, where $E$ is the number of edges.
+
+  \item The normal dynamic programming idea is like this: for each element $i$, find the longest increasing subsequence in the array ending at $i$. Suppose this is done for $i$, and we want to 
+  do it for $i+1$. We check $arr[i+1]$, and see which all array elements before it that are smaller than it, because we can append $arr[i]$ to any increasing subsequence ending at those. Our recursion
+  is going to be $dp[i] = 1 + \max(\{dp[j] \ | \ j \in S_i\})$, where $S_i$ is the set of all $j$ such that $j < i$ and $arr[j] < arr[i]$. The problem with this approach is that $dp[i]$ takes $O(n)$
+  time, so this becomes $O(n^2)$.
+
+  We flip the question a bit. For each length $l$, we store the smallest number a subsequence of length $l$ can end in. If in the first $i$ elements there's a subsequence of length 3 ending with 5, 
+  there's no point of keeping track of a subsequence of length 3 ending with 10. Further, our array is going to be in increasing order. This is intuitive right, if you have a sequence of length 5
+  ending with 10, subsequence with length 4 is going to have a smaller ending number. The fact that the array is sorted could help us do something like binary search.
+
+  Let's say you are in the middle of your iteration, and what you have stored so far is $[2, 3, 5, 9, 10, 12]$ i.e. the smallest ending for a subsequence of length 1 is 2, smallest ending for a subsequence
+  of length 2 is 3, and so on. Now let's say the next element of the array you process is 7, how will you update what you are storing? Firstly, 7 can only be appended to sequences of length 1,2,3. There's no
+  way we could append to a sequence of length 4,5, or 6, as the smallest ending of a subsequence that long, is already larger than 7. Is there any point appending 7 to a sequence of length 1,2? That creates
+  sequence of length 2,3 that end in 7, but we have sequences of that length ending in smaller numbers, so this is useless. So let's append it to a sequence of length 3, this gives a sequence of length 4 ending 
+  in 7. This is finally something useful, we have to update the 9 to a 7. From this example, it's clear that only one number has to be updated. For each entry in the input array, find between which 2 numbers
+  in our dp array that it lies in, and update the larger number to the input array element. Two edge cases are there though, When our input array element is smaller than our whole dp array, just update the 
+  first element. If it's greater than our whole dp array, append the array element to our dp array, as we have a new length of increasing subsequence we can achieve. This algorithm is $O(n \log n)$, as for 
+  each element of our input array we take $O(\log n)$ time in binary search.
+
+  \item Let $dp[i]$ represent the solution in the subarray from $i$ to $n$. We iterate backwards, and let's say $dp[i+1]$ to $dp[n]$ are calculated. Now for $dp[i]$, either we select $arr[i]$ or not. If we
+  don't select $arr[i]$, the optimal sum is just $dp[i+1]$. If we select $arr[i]$ then we can't select $arr[i+1]$, so we just have to select elements from index $i+2$ to $n$ such that none of them are 
+  consecutive. This is just $dp[i+2]$. Finally our recursion is $dp[i] = \max(dp[i+1], arr[i] + dp[i+2])$. This takes $O(n)$ time overall. As we have $n$ $O(1)$ calculations.
+
+  \subsubsection*{Flavour 2: where the subproblem is on a substring of the input.}
+
+  \item We case split based on what't the last multiplication we should do. If we multiply $A_1 A_2 \dots A_i$ with $A_{i+1}$ $A_{i+2} \dots A_n$ last, what's our cost? The first term has dimension $p_1 
+  \times p_{i+1}$ and the second term has dimensions $p_{i+1} \times p_{n+1}$ so the cost is $p_1 p_{i+1} p_{n+1}$. We take cases for all $i$, and also, we have the subproblems to solve, how get the 2
+  terms most efficiently. Overall our recursion is like this:
+  \[dp[1 .. n] = \min_i (dp[1 .. i] + p_1 p_{i+1} p_{n+1} + dp[i+1 .. n]), i \in \{1, 2, \dots, n-1\} \]
+  In the recursion, we are always having some contiguous subarray, so there are at most $O(n^2)$ recursive calls. Our base case is that $dp[i .. i] = 0$. Also one more thing in the recursion is that, the 
+  size of the subarray we call recursively is strictly decreasing. So to do this algo iteratively, we first store all the solutions for subarray of length 1, length 2, and so on, so that we can directly 
+  access solutions of smaller subarrays whenever using the recursive function. Also, each recursive call takes $O(n)$ time, as we have to find the minimum of $O(n)$ number of terms.
+  So overall this algo takes $O(n^3)$ time.
+
+  \item We partition cases based on which element is the root of the tree. If $a_k$ is the root, $a_1$ to $a_{k-1}$ have to be in the left subtree, and $a_{k+1}$ to $a_n$ have to be in the right subtree.
+  The left and right subtree have to separately be constructed optimally inorder for them for the total tree to be optimal. If the optimal sum for the left subtree alone is $dp[1..k] = \sum f_i d_i$, the 
+  contributing factor in the final tree will be $\sum f_i (d_i + 1)$ as each node has extra depth by 1. This simplifies to $\sum f_i d_i + \sum f_i$. A similar story holds for the right subtree. So the
+  final recursion is:
+  \[dp[1 .. n] = \min_k \left((dp[1 .. k-1]) + \sum_{i=1}^{k-1} f_i + (dp[k+1 .. n]) + \sum_{k+1}^{n} f_i \right), k \in \{1, 2, \dots, n\} \] 
+  it might look like the $\sum f_i$ term will make the time compexity extremely bad, but this is just a sum of frequencies of some contiguous subarray. If we just do a precomputation of prefix sums, it
+  becomes very easy to get these values ($O(1)$ time in fact). Again, our recursion only calls contiguous subarrays, so there are $O(n^2)$ recursive calls. For each recursive call, we have to find the maximum
+  among $O(n)$ values, which takes $O(n)$ time. So overall, just like the previous question, the time complexity is $O(n^3)$.
+  \end{enumerate}
 \end{document}
