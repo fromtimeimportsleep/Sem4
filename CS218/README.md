@@ -19,3 +19,8 @@ Apart from the Veritasium Youtube video shared by Prof., here is a video that ve
 
 These slides will help prove the correctness of the Greedy approach (of earlier deadline first) in this problem:-<br/>
 https://personal.utdallas.edu/~sxb027100/cs6363/dead.pdf
+
+### Small Reference for Sequence Alignment in Linear Space
+
+These slides will help understand the O(N+M) space complexity algorithm for Sequence Alignment:-<br/>
+https://web.stanford.edu/class/cs262/notes/lecture3.pdf
