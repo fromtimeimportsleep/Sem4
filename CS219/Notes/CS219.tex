@@ -949,8 +949,8 @@ Sharing of memory is a risky and volatile task. The processes thus need extra me
     \textbf{\Huge Lecture 12}
     \end{center}
 }
-\section{Memory Management}
-\subsection*{Abstraction of Address space}
+\part{Memory Management}
+\section*{Abstraction of Address space}
 Every process assumes it has access to a large space of memory from address 0 to a max value. The maximum value depends on the available number of bits for the memory space.
 The virtual address sapce contains all the code/data that a process can access. Addresses in CPU registers point to these virtual addresses.
 
@@ -974,12 +974,12 @@ The MMU deals with translation of virtual memory to real memory. During Bootup t
 \end{figure}
 
 
-\subsubsection*{Why virtual address?}
+\subsection*{Why virtual address?}
 The real view of memory is messy and it is not easy to manage manually. In earlier systems there was only one process and its own code. Nowadays we have multiple
 parallely running processes which all do time\-sharing on the same CPU. Memory is also allocated in a non-contiguos manner, but we still want to maintain the illusion of memory being continuosly allocated. 
 Thus virtualization has become a neccesity in modern systems. The CPU \textbf{only} uses the virtual addresses to perform any action.\footnote{For example addresses of a pointer obtained from \texttt{malloc()} is the virtual address}
 
-\subsection{Base and bound}
+\section{Base and bound}
 This is the simplest form of memory management. It is not used in modern systems but we will understand it to get some insights. The memory image
 from [0,N] is placed at memory address base B. That is every virtual address X is stored at physical address B + X. There is also a bound associated with this base which tells us 
 the maximal address for the memory allocated in this memory image.
@@ -1001,14 +1001,14 @@ MMU performs this translation from Virtual adress to physical address. But what 
 MMU raises a trap to call the OS to handle this situation. This is another type of hardware level trap (program fault). In this case int n is inserted into the 
 stream of instructions run by the CPU. 
 
-\subsection{OS vs MMU}
+\section{OS vs MMU}
 The OS is the one who allocates the memory and builds the translation information of a process. However the MMU
 is the one who translates virtual address to a physical address. Note that once the user starts running the OS is out of the picture unless there is a trap.
 
 When a context switch happens the OS changes the translation information in the MMU to enable it to perform translating addresses corresponding to this new process \footnote{same virtual address means different physical address in different processes}. 
 As told before when the CPU has an instruction which wants to access memory the MMU translates it to a physical address which can be used to access the data.
 
-\subsection{Segmenation}
+\section{Segmenation}
 It is an upgradation of base and bound. The program is split into several segments (Code, data, stack) and each of them is placed at a different memory location (base).
 Each of these bases also have a bound associated with them. When the address exceeds the bound of a segment we obtain a \textit{segmenation fault}\footnote{\href{https://www.youtube.com/watch?v=NAEppFUWLfc}{\textit{sigh}}}
 . Thus when we context switch into a process the OS updates the MMU with all the necessary bases and bounds.
@@ -1016,7 +1016,7 @@ Each virtual address is hence a segment identifier bit sequence concatenated wit
 
 But this is still inefficient due to the variable sizes of these segments. This also results in \textit{fragmentation} where there is some unusable space between two segments. 
 
-\subsection{Paging}
+\section{Paging}
 Paging is the mostly widely used system of memory Management today. We divide our virtual address space into fixed size pages. Each one of these pages is assigned a free \textbf{physical frame}\footnote{Just the physical memory associated with a single page}.
 The memory allocation for each page is done at a fixed size (eg. 4kb). Since the pages are tightly packed we have no wasteage of size between pages (ie) no \textit{external fragmentation}. However inside the pages we could have some wasteage of space (ie) \textit{internal fragmentation}.
 
@@ -1032,8 +1032,8 @@ What is the optimal page size? Why 4kb?
     \textbf{\Huge Lecture 13}
     \end{center}
 }
-\subsection{Page table}
-\subsubsection*{What is a page table?}
+\section{Page table}
+\subsection*{What is a page table?}
 The page table is a per process structure (ie) each process has its own page table. This table helps to translate
 virtual addresses to real ones. It stores frame numbers for all the pages used by the process in an array format. 
 Table[i] gives the physical frame number of the ith virtual page of the process. Thus the ith entry of the page table corresponds to the physical address of the starting byte of the ith page. The page table is stored in a part of a OS memory (stored in PCB). The MMU has 
@@ -1058,7 +1058,7 @@ Hence the most significant digits give the Virtual Page Number (VPN) and least s
 table can be used to get the Physical Frame Number. Note that Page\_Table\_array[VPN] = PFN\footnote{Physical Frame Number}. Obviously the offset to get the byte
 we want is same in both the Physical frame and the virtual page.
 
-\subsubsection*{Translation Lookaside Buffer(TLB)}
+\subsection*{Translation Lookaside Buffer(TLB)}
 An important point to note with paging is that one memory access has become two accesses now. One access to the page table and the one to the actual byte we want. This results in a significant
 slow down since memory accesses are very slow. This is the overhead associated with paging
 
@@ -1082,7 +1082,7 @@ parallely with the CPU cache to further optimize memory accesses.
     \end{center}
 }
 
-\subsection*{Page table entries}
+\section*{Page table entries}
 As we saw before the page table is an array of page table entries. 
 There are a large number of virutal pages available but each process only uses a few. Thus to indicate that
 a virtual page is not used each page table entry of a page table has a \texttt{valid} bit. If this bit is 0 that entry is invalid and if it is 1 then it is used. 
@@ -1096,7 +1096,7 @@ Virtual Page Number. If the Virtual Page number does not correspond to a valid e
 page table and the remaining bits are the offset to get the actual memory byte we want to access. 
 
 In a 32 bit (4GB) system usually, a page is 4kb large. There are (1024 * 1024 pages (ie) around a million pages) in a page table.
-\subsection*{Inner and outer page table}
+\section*{Inner and outer page table}
 The page table is of size 1MB (All 32-bit addresses are stored). But we know that the size of the physical frame which is the size of an available contiguos memory chunk is 4kb. 
 So how is the page table stored?. Interestingly the page table is divided into 1024 inner page tables which have their start addresses in another "outer" page table corresponding to each inner page table. To reiterate, each of those 1024 byte sized chunks of the page table is an inner page table.
 This outer page table has a size of 1kb (Since each page table entry covers 1024 bytes corresponding to one inner page table). 
@@ -1124,7 +1124,7 @@ The inner page table has the physical frame address corresponding to a virtual p
 
 
 
-\subsubsection{Multi-level Page Tables}
+\subsection{Multi-level Page Tables}
 How are addresses translated in a two level Page table? As we saw before the most significant bits denote the page number. Now we can even split these most
 significant bits into two parts where the more significant bits represent the index of the outer page table whereas the one less significant represent the offset within the inner page table to get the appropriate page table entry. Thus to get the actual 
 physical address the MMU walks along the page table arrays. This is why the MMU accessing the page table is called walking the table. 
@@ -1162,7 +1162,7 @@ index each element of the tables at every level when given a 48-bit address.
     \end{center}
 \end{figure}
 
-\subsection{Virtual Addresses}
+\section{Virtual Addresses}
 It is important to note that every element of memory needed by a process has a virtual address associated with it. This is due to the fact that MMU can access elements only via
 virtual addresses. So every element like the code, data has a virtual page and a mapping to its physical address. Even libraries that we import or the OS is mapped to a virtual
 page by \textbf{each} process.
@@ -1173,14 +1173,15 @@ has an entry in its page table and thus allocates virtual pages to these element
 
 Also thinking the other way around anything inaccessible by a process is not part of the virtual address space. 
 
-\subsection{OS is not a process}
+\section{OS is not a process}
 From the discussion above one important point to notice is that the OS isn't a seperate process with its own address space. The OS is mapped for each process to be a part of its virtual memory.
 This denotes a very important point established in the beginning of the course. \textbf{Each process thinks it owns the system.} Each process thinks it is the only one existing and that
 it has a monopoly over the system and that the OS code is a part of it.
 
 When the Bootloader runs, it places the OS memory in the very beginning addreses of the ram. Thus the OS has high virtual address and low physical addresses.'
 
-\subsubsection*{Permission bits}
+\subsection{Permission bits}
+\label{section:Permission bits}
 How is illegal OS access prevented? As we saw before we have permission \texttt{bits} which can make a page table entry invalid, make a page read( or write ) only, make it accessible only during user mode etc. 
 Thus the OS page table mappings have permission bits to allow access only in kernel mode. Similarly our code's pages are assigned read only privileges since we do not have to change instructions after compilation. 
 
@@ -1192,5 +1193,173 @@ during address translation.
 The size of the virtual address space in xv6 is 4GB. The physical address space ranges from [0,PHYSTOP]. \texttt{PHYSTOP} is a macro to denote
 the maximum size of the usable physical address in xv6.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 16}\\
+    \end{center}
+}
+\section{Demand Paging}
+Now, think about if it is necessary to have all the pages in the main memory? This is not necessary as a process can't use them at once. This is
+also not possible with larger address spaces. Modern operating systems provide only virtual memory. That is not all logical pages are assigned physical frames.
+Even those that are, are not permanently kept in main memory. Some pages are stored in disk and brought to main memory \textit{on demand}. This is called 
+\textbf{Demand paging}
+
+\subsection*{Swap space}
+This is the special area in the disk to hold pages that do not fit in DRAM. Pages are pushed
+to the swap space when the main memory (DRAM) is full. This is brought into memory when a page is accessed.
+
+Recall valid bits. If a page is invalid we don't store any frame number for them. However for valid pages we either store the physical frame number or 
+a disk address space. Now we also need to denote if an entry contains a disk addreses or a physical frame address. For this purpose we have a permission\footnote{Refer \ref{section:Permission bits}} bit called
+the present bit. If the present bit is 1 then the memory is in DRAM else it is in disk space.  
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Valid & Present & What it represents\\
+        \hline
+        1 & 1 & The page is valid and in DRAM\\
+        \hline
+        1 & 0 & The page is valid and is in disk\\
+        \hline
+        0 & 1 & Stupid, doesn't happen\\
+        \hline
+        0 & 0 & Invalid page\\
+        \hline
+    \end{tabular}
+    \caption{Table to show valid, present bit configurations}
+    \label{tab:present_valid}
+\end{table}
+
+Note that in mulitlevel paging we can still have some of the pages in DRAM and some of them in disk.
+From the above discussion we can see that the OS \textit{overcommits} pages (ie) tells the process it has access 
+to a lot more pages than it actually does and it takes care of giving these pages by getting them from disk \textbf{on demand}
+
+
+
+\subsection{Page faults}
+When the MMU walks the page table to translate an address to a physical address, the various permission bits of the page table are also examined. 
+If the MMU notices some unexpected behaviour it raises a trap and gives control to the OS.
+
+Possible errors raised by MMU:
+\begin{enumerate}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Segmenation fault:} Trying to dereference some address of an unallocated virtual address. That is accessing memory which doesn't belong to the program. The OS kills the process in this case.
+    \item \textbf{Illegal action:} The code performs some illegal action like attempt to access a page table that is not valid, or an attempt to modify a read-only page which obviously terminates the process.
+    \item \textbf{Page allocation in DRAM:} When a valid bit is set but present bit is not set (page in disk), then OS allocates a page in the DRAM, updates the page table and then gives control back to the process.
+    The process won't terminate in this case since the error was on the OS's side. Rather after handling the allocation process continues to run.
+\end{enumerate}
+
+\subsection{Reclaiming Pages}
+The OS keeps track of all the free pages that are not being used so that they can be used during a page fault \footnote{The third type of fault}. If there is no free page available for the OS,
+then it evicts a \texttt{vicitm page} and then pushes it from memory to the swap space (page table is updated). After this the page just freed up in the DRAM is allocated
+for the page which raised the fault. 
+
+We need to have a policy to determine how to choose a victim page. Note that the victim page can be in the same process or a different process.  
+
+\subsection*{File backed, anonymous, dirty pages}
+Pages in the memory image of a process are of two types.
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]        
+    \item \textbf{File-backed pages:} This contains data that comes from a file on the disk. (e.g Page with the executable code). So even if the memory in the DRAM is lost we have the file saved in the disk
+    \item \textbf{Anonymous Pages:} These are pages containing data which are not stored anywhere. Some examples are the stack, heap. So if these are removed from DRAM they are gone forever.
+\end{itemize}
+
+File backed pages are further classified as:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Dirty Pages:} These are file backed pages whose contents is different from their copy on the disk.
+    \item \textbf{Non-Dirty Page:} Pages which are identical to their copy on the disk.
+\end{itemize}
+
+This classification is kept track by the page table, again using permission bits \footnote{eg. the dirty bit}.
+Why do we need this classification? We need to deal with page faults differently depending on which type of page it is.
+When we reclaim memory from a victim page, we need to copy its content since it has changed compared to the file from which it came iff it is a dirty page. Else we can simply delete the page.
+
+When we allocate memory during a page fault, the free memory frame must be intitialized with the content from the disk for 
+a file backed and non-empty anonymous pages. For empty anonymous pages we just give an empty page for it. 
+
+Note that a process maybe blocked quite a few times for disk I/O during a page fault. The average memory access time shoots up greatly if we have too many page faults. 
+
+\subsection*{TLB and address translation}
+Just a recap of how addresses are dealt with. The CPU only had virtual addresses which it deals with. The processor
+requests the corresponding physical address from the MMU which looks in the TLB for an entry. If we have a hit/match for that address, the 
+physical address is directly returned. Else the page table is walked and the entry corresponding to this Virtual address. This entry is used to get the 
+address from memory. This address is also populated into the TLB for future use.     
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 17}
+    \end{center}
+}
+
+\section{Thrashing}
+We have several causes for an application to slow down but a page fault is an important reason for a massive decrease in efficiency. 
+So it is essential that we have a large enough working memory to avoid page faults. 
+
+Every process has a working set which is the number of frequently used pages in the memory image. The actual set of pages can change from time to time
+depending on what process is running. This is usually smaller than the total virtual memory of the process. If we allocate memory lesser than the
+size of the working set, we have frequent page faults.
+
+Thrashing is this scenario where the system spends too much time servicing page faults and swapping back and forth from disk, and too little time doing
+application based work. A fun example to think of to understand this is to assume that you want to study but you keep switching subjects every minute. Most of your time
+goes off in taking and putting back books. 
+
+The way to deal with Thrashing is to create efficient processes that don't use that many pages at the same time and also for the OS to terminate some processes.
+
+
+
+
+\section{Page replacement policies}
+We need to decide which page is our victim page we want to replace when the DRAM is full. Hence we need a replacement
+poilicy
+
+Some of them are
+\begin{itemize}[topsep=0pt]        
+    \item \textbf{Optimal policy:} We have 4 pages which the process needs but the process has space only for 3 pages in the DRAM. We assume that we can "look" into the future 
+    and then evict the page which is not needed for the longest amount of time in the future. This ensures minimal number of misses. Obviously it is not implementable since we are not oracles
+    who can look into the future.
+    \item \textbf{FIFO:} We evict the page which was first put in the DRAM (ie) first page which was put in chronologically and then we evict that page. Bad idea since pages first put in are generally reused often
+    
+    \textbf{NOTE:} Beleady's anomalies are very weird examples of some policies doing worse on some inputs when they have more resources.
+    
+    \item \textbf{LRU:} The page which was accessed the farthest time in the past is evicted. That is if a page was accessed recently it is kept
+    .The logic behind the policy is intuitive since a page accessed recently is much more likely to be accessed again.
+
+    LRU \textit{seems} to be very easy to implement. Diving into the details makes the problems a lot more apprarent. Something as simple as maintaining a time stamp is difficult since 
+    time is not something that is consitently maintained in the system. Also the question of where you will store this information also comes up. The best part is OS doesn't even know
+    which pages were translated/accessed since it's last trap so this information cannot be updated by it. 
+
+    Thus implementing a \textbf{perfect LRU} is almost impossible. Rather we maintain a very crude version of LRU.
+
+    The way LRU is actually implemented is by maintaining an access bit which is set to 1 when MMU is accessing it. When a trap to the OS
+    occurs for a page replacement, the OS just picks a page which has a 0 value at the access bit meaning it was not accessed recently and replaces it.
+
+    The OS also periodically wipes the access bits to 0 periodically. The OS also avoids choosing dirty pages as victim pages since we need more resources to write 
+    into disk for them. 
+\end{itemize}
 \end{document}
 

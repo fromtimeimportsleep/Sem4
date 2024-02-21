@@ -1,4 +1,0 @@
-    void func(){
-        int x = 300;
-        x = x + 3;
-    }
