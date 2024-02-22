@@ -218,7 +218,7 @@
   We have to prove by induction that every merge we do is valid. But how to phrase this a bit better? At any point in our algorithm, when we detect that $i$ and $j$ are in different clusters, 
   there exists an optimal solution where they are in the same cluster.
 
-  So how do we do this induction? So we assume all the previous merges we have done so far are valid i.e. there exists an optimal solution where elements are in the same cluster, whenever our 
+  So how do we do this induction? So we assume all the previous merges we have done so far are valid i.e. there exists an optimal solution where elements are in the same cluster, whenever
   they are in the same set in our algo. Now we detect 2 new elements which we want to merge. What if there's an optimal solution without these 2 elements in the same set? The spacing of this 
   clustering is at least as big as the distance between these 2 elements, as they are in different sets in the optimal solution. And for the clustering produced by our greedy algo, the spacing
   is at most the distance between these 2 elements, as all the pairwise distances including this distance, and the ones greater than it, don't appear in the spacing term of the greedy algo. Which 
@@ -353,9 +353,58 @@
   $i$ belongs to some set where pairing with the first element is possible, and $i > 5$. Since each recursive call is on a subarray, there are $O(n^2)$ recursive calls, and each recursive call takes $O(n)$ time to compute.
   So this algo is $O(n^3)$, and our base cases for the recursion are when the subarray length is $\leq$ 5, the number of pairings is 0.
 
-  \item
+  \item \textbf{Question 10} is very similar to Q23 of exercises. Instead of incurring a cost when you are moving from machine $A$ to machine $B$, you get $0$ steps done, that's the only difference. So the recursion is 
+  $dp_A(i) = \max(dp_A(i+1) + a_i, dp_B(i+1))$, and $dp_B(i) = \max(dp_B(i+1) + b_i, dp_A(i+1))$
+
+  \textbf{Question 16}. The root of the tree must first decide in which order it should give the information to its subordinates. Once the root gives it to one of its children, we can just treat the child as the root of another subtree,
+  and it is the child's responsibility to inform it to its whole subtree. So this is just a subproblem. Assume that the subproblem has been solved for all children of the root. And the number of rounds required is $r_1, \dots, 
+  r_n$. Now if the root decides to inform them in the same order, the final time for each subtree to get informed is $1 + r_1, 2 + r_2, \dots, n + r_n$, and the final number of rounds is the max of all these values. If we 
+  want to order $r_1$ to $r_n$ to minimize the max of all these values, it's intuitive that we need to order $r_1$ to $r_n$ in descending order. But how do we prove this? Suppose you have $i + r_i$ and $j + r_j$, where $i < j$
+  and $r_i < r_j$. If we do a swap, and see $i + r_j$, and $j + r_i$, both are smaller than $j + r_j$. So the maximum of them decreases.
+
+  If we want to do this iteratively, we calculate the optimal solution for each of the leaves (which is 0) and go bottom up. For each vertex, we order the solutions for their children in descending order, and compute $\max(i + r_i)$
+  after sorting. Outputting the sequence of people informed is also not too difficult after finding the answer for each node, we just need to store the time each person is informed. The root will have the time as 0. For each child
+  of the root, they will have times $1, 2, \dots, n$. And then we can continue finding the times for the next level, by adding the time of the previous level with the index of the child, when written in decreasing order. Once we have the
+  times that each node is informed (say the time is $i$), add the node to the $i^{th}$ set.
+
+  \textbf{Question 28}. This is basically the hard problem, check Q5.
  
-  \item
+  \item Sequence alignment can be converted to a shortest path problem in a graph. Suppose you want to align $x_1 x_2 \dots$ and $y_1 y_2 \dots$. Let's say you have already aligned $x_1 \dots x_i$ and $y_1 \dots y_j$. You could
+  now incur a gap penalty and now align something extra: $x_1 \dots x_{i+1}$ and $y_1 \dots y_j$, or maybe you add another gap in the second string to align $x_1 \dots x_i$ and $y_1 \dots y_{j+1}$. There's a third case, and you match
+  $x_{i+1}$ and $y_{j+1}$ (with its cost) to align the first $i+1$ and $j+1$ characters. These 3 possibilities can be edges of a graph, with weights as their penalties.
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{SeqAlignGraph.png}  
+  \end{figure}
+
+  The question is basically to get the shortest path from the lower left corner to the upper right corner. Once we have this graph, there are 2 ways to do dp, one forwards, and one backwards. The forward way is the get the shortest path
+  to every node from the bottom corner, base case being the bottom left corner have path length 0. The other way of doing dp is like this, find the shortest path with destination as the top right corner, for every node, base case being that
+  the path length from the top right node is 0. Both these dp formulations will come in handy. Let $f(i,j)$ be the shortest path found from $(0,0)$ to $(i,j)$ and $g(i,j)$ be the shortest path from $(i,j)$ to $(m,n)$. Both of these $dp$'s will
+  have simple enough recursions, which we have seen before. Our crucial observation is the following, fix $i$ and vary $j$. We claim that the shortest path that we require is going to be some $f(i,j) + g(i,j)$ for some $j$, whenever $i$ is
+  fixed. This is intuitive right, as at some point you have to reach row $i$ when moving from $(0,0)$ to $(m,n)$, and let's say you reach it at column $j$. The optimal solution is just going to be the shortest path to $(i,j)$ from $(0,0)$,
+  and then shortest path to $(m,n)$ from $(i,j)$. This is $\min_j (f(i,j) + g(i,j))$. The same thing can be done by fixing $j$ and varying $i$.
+
+  Now we have a divide and conquer algo. Find $i$ which minimizes $f(i,n/2)$ and $g(i,n/2)$. Let's say the paths for both of these are stores on some global list. Just iterate over all $i$, find which of them minimizes this sum and store the 
+  sequence of nodes we traverse to get these. To get the list of nodes from the list given by $f(i,n/2)$ and $g(i,n/2)$, we just concatenate the lists. At any point, our only we use are these global lists, which store only $O(m+n)$ nodes.
+  The main point is that we work only on one recursive call i.e. one value of $i$ at a time, and reuse our memory for different values of $i$. If we ensure this for all recursive calls, only then is the space complexity $O(m+n)$. Interestingly
+  at every point in our recursion, our list will store some path from $(0,0)$ to $(m,n)$, holding $O(m+n)$ edges. We can also have another global list to store the best path we have so far.
+
+  Why is this approach $O(mn)$ in time? It looks like some complicated divide and conquer right. We can actually prove this by induction that $T(m,n) \leq cmn$ for some fixed (but large as we want) $c$. The base cases will be $m = 2$ and $n = 2$ 
+  which aren't too hard to get a $c$ for. Now for $T(m,n)$ we have to take a minimum of $m$ terms, for all of which we have to calculate $f(i, n/2)$ and $g(i, n/2)$. Calculating this for a fixed $i$ will take time in the worst case as
+  $c \times (i \times n/2 + (m-i) \times n/2)$. This doesn't really look good right, the time complexity is going above $O(mn)$. Is there a way to do this without iterating over all $i$ like this?
+
+  There's actually another way to do our normal dp idea, using $O(m)$ space. Since in our dp our first row only depends on the array entries of the previous row, it's enough to store just the latest 2 rows. This acutally solves our whole question
+  in $O(mn)$ time and $O(m)$ space but the problem is that we can't backtrack and find the path itself, as we are deleting the old rows. But this can help in actually finding the $i$ which minimizes $f(i,n/2)$ and $g(i,n/2)$. We can do our $O(m)$
+  space efficient dp to get $f(i,n/2)$ for all $i$, this is just the last row. We can also do backward space efficient dp to get $g(i,n/2)$ for all $i$. With the values of these 2 arrays, we can directly find the best $i$ from both of these arrays.
+  So we don't have to call our divide and conquer algo for all $i$, just for the best one. 
+
+  Let the best $i$ be $q$. Our time complexity is $T(m,n) = c \times m(n/2) + c \times m(n/2) + T(q,n/2) + T(m-q,n/2)$. The first 2 terms are the time complexity of doing the space efficient dp which is $O(mn)$ itself. Now from here we can prove that 
+  $T(m,n)$ is $O(mn)$, using induction. Assume $T(m,n) \leq kmn$ for some $k$, for all $m,n$ smaller than some values. From the recursion we get 
+  $T(m,n) = cmn + T(q,n/2) + T(m-q,n/2) \leq cmn + kq(n/2) + k(m-q)(n/2) = (c + k/2)mn \leq kmn$ (the last part holds as long as we choose some large $k$, $k \geq 2c$). So we're done.
+
+  To summarise the algo goes like this. First compute the best $i$ to get to using memory efficient $dp$'s. Now we know one node to get to which is $(q,n/2)$ now call this function recursively to find out how to get to $(q,n/2)$ from $(0,0)$ and
+  also how to get to $(m,n)$ from $(q,n/2)$. We basically find the middle of our path, and construct subpaths using divide and conquer.
   
   \item For each node, we are maintaining what is the shortest path length to the destination. You just also need to maintain which node to go next, at each node. Whenever you compute minimum among which nodes to go next,
   just store the node which gives you minimum. After the whole algo, we can just move along this path to get the optimal path.
