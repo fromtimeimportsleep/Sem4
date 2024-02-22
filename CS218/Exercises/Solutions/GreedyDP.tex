@@ -299,9 +299,74 @@
   The left and right subtree have to separately be constructed optimally inorder for them for the total tree to be optimal. If the optimal sum for the left subtree alone is $dp[1..k] = \sum f_i d_i$, the 
   contributing factor in the final tree will be $\sum f_i (d_i + 1)$ as each node has extra depth by 1. This simplifies to $\sum f_i d_i + \sum f_i$. A similar story holds for the right subtree. So the
   final recursion is:
-  \[dp[1 .. n] = \min_k \left((dp[1 .. k-1]) + \sum_{i=1}^{k-1} f_i + (dp[k+1 .. n]) + \sum_{k+1}^{n} f_i \right), k \in \{1, 2, \dots, n\} \] 
+  \[dp[1 .. n] = \min_k \left((dp[1 .. (k-1)]) + \sum_{i=1}^{k-1} f_i + f_k + (dp[(k+1) .. n]) + \sum_{k+1}^{n} f_i \right) \] 
+  Actually all the summations of $f_i$ can be grouped together, to just summation of all $f_i$'s. So the summation of $f_i$'s are independent of $k$, we can take this term outside.
+  \[dp[1 .. n] = \left(\sum_{i=1}^n f_i \right) + \min_k [dp[1 .. (k-1)] + dp[(k+1) .. n]], k \in \{1, 2, \dots, n\} \] 
   it might look like the $\sum f_i$ term will make the time compexity extremely bad, but this is just a sum of frequencies of some contiguous subarray. If we just do a precomputation of prefix sums, it
   becomes very easy to get these values ($O(1)$ time in fact). Again, our recursion only calls contiguous subarrays, so there are $O(n^2)$ recursive calls. For each recursive call, we have to find the maximum
   among $O(n)$ values, which takes $O(n)$ time. So overall, just like the previous question, the time complexity is $O(n^3)$.
+
+  \item Take cases based on which is the first line segment. If the first line segment is from point 1 to point $i$, we just find the best fit line from point 1 to point $i$, add $C$ as we are doing a partition, 
+  and then find the optimal solution from point $i$ to point $n$. One edge case is that we don't do any partition i.e. $i = n$ itself, but this is easy to take care of. Our recursion will go like this:
+  \[dp[1 .. n] = min (min_i (best\_fit[1 .. i] + C + dp[(i+1) .. n]), best\_fit[1 .. n]) \]
+  We are always calling dp from some index to $n$, so there are $O(n)$ recursive calls. For each recursive call, we have to find minimum among some $O(n)$ terms, so overall it looks like this will be $O(n^2)$.
+  But there's an issue, the $best\_fit$ terms have to be calculated before hand for each contiguous subarray, so $O(n^2)$ calculations to be done. Each calculation has a closed form solution, which takes $O(n)$
+  time to calculate. So overall, the precomputation is $O(n^3)$, so the time complexity is $O(n^3)$.
+
+  \subsubsection*{Flavour 3: where the subproblem has two diﬀerent parameters.}
+
+  \item We take cases based on if the first letter of $A$ matches with the first letter of $B$. First of all, if their first letters are different, there's no choice to be made. Ignore the first letter of $B$ and
+  solve the same question. Suppose $A$, $B$ have the first same letters, there's a choice to be made. Again we could decide not to match, and ignore the first letter of $B$. But we could also choose to match, in 
+  which case we incur a cost of $p_1$, and then optimally solve the question for $A$ without its first letter, $B$ without its first letter. If we just keep applying this, we can see that there are only $O(mn)$ 
+  recursive calls. Each call is trying to solve matching of $A[i .. m], B[j .. n]$. What are our base cases? If the substring of $A$ has zero length, the answer is $0$. If the substring of $A$ has non zero length
+  and the substring of $B$ has zero length, we are stuck, we can't do any matching. So it's like the answer is infinite. Anywhere else, the recursion works. Let $dp(A[i], B[j])$ be the optimal cost of matching 
+  $A[i..m], B[j..n]$.
+  \begin{align*}
+    dp(A[i], B[j]) &= dp(A[i .. m], B[j+1]) \text{ if } A[i] \neq B[j] \text{, else} \\
+    dp(A[i], B[j]) &= \min(dp(A[i], B[j+1]), dp(A[i+1], B[j+1]) + p_j)
+  \end{align*}
+  
+
+  \item Let $dp(i, w)$ be the maximum value you can get from the first $i$ elements when the total weight is bounded by $w$. Our base cases are $dp(i, 0) = 0$, $dp(0, w) = 0$. Now it's a simple case split based
+  on if we choose the $i^{th}$ element or not. If in the optimal answer we don't choose it, the answer is just $dp(i-1, n)$. If we do choose it, we now get a value of $v_i$, but rest of the weights can't sum more
+  than $w - w_i$. So $dp(i,w) = \max(dp(i-1,w), v_i + dp(i-1, w - w_i))$.
+
+  Now we need some other way of doing the question. Instead of getting the maximum value for particular weights, just get the minimum weight for some particular values. Let $dp(i, v)$ be the minimum weight to get a
+  total value of $v$, using the first $i$ elements. The maximum value you can get is just $\sum v_i$, so we have $\sum v_i \times n$ possible recursive calls. Now again take cases based on if you choose the $i^{th}$ 
+  element or not. If you don't choose it, your answer is just $dp(i-1, v)$. If you choose it, your answer is $w_i + dp(i-1, v - v_i)$. Our base cases are $dp(i,0) = 0$, as we need 0 weight to get a value of $0$. What
+  about $dp(0,v)$, when $v \neq 0$. This is not even possible to achieve, so shouldn't be a case and since we are taking minimum, we can just initialize this to $\infty$. After all these $dp$ values are calculated,
+  we should find the maximum $v$ such that $dp(n,v) \leq W$.
+
+  \subsubsection*{Flavour 4: where subproblems are parameterized by a preﬁx and something more}
+
+  \item Let $dp_A(i)$ and $dp_B(i)$ be the maximum earning you can get from the beginning of day $i$, starting at city $A$, $B$ respectively. Our base cases are $dp_A(n) = a_n$, and $dp_B(n) = b_n$. To find $dp_A(i)$,
+  there are 2 choices. Either you stay in city A, and get the earning $a_i$, and from then onwards it is $dp_A(i+1)$. Or you decide to pack up and leave, you don't get any earnings on day $i$, incur a cost of $c$, and
+  from then onwards it is $dp_B(i+1)$. So the recursion is $dp_A(i) = \max(dp_A(i+1) + a_i, dp_B(i+1) - c)$. Similarly, $dp_B(i) = \max(dp_B(i+1) + b_i, dp_A(i+1) - c)$. So we iterate backwards and calculate $dp_A(i),
+  dp_B(i)$ for all $i$. Our final answer is just $\max(dp_A(1), dp_B(1))$.
+
+  \item Done in Q20
+  
+  \item We take cases on which index $b_1$ is paired with. Firstly, it can't be paired with $b_2$ to $b_5$ based on the constraint. Check which of $b_6$ to $b_n$ it can be paired with. If it is paired with some $b_i$, the 
+  sequence is split into 2 parts: $b_2$ to $b_{i-1}$, and $b_{i+1}$ to $b_n$. None of the letters can be paired from one of these sequences to the other, because of the non-crossing condition. So all we have to do is solve
+  the problem recursively for each of these subarrays. Another corner case is when $b_1$ is paired with nothing, in which case our answer is the subproblem solved from $b_2$ to $b_n$. Our recursion is like this:
+  \[dp[1 .. n] = \max(1 + \max_i (dp[2 .. (i-1)] + dp[(i+1) .. n]), dp[2 .. n]) \]
+  $i$ belongs to some set where pairing with the first element is possible, and $i > 5$. Since each recursive call is on a subarray, there are $O(n^2)$ recursive calls, and each recursive call takes $O(n)$ time to compute.
+  So this algo is $O(n^3)$, and our base cases for the recursion are when the subarray length is $\leq$ 5, the number of pairings is 0.
+
+  \item
+ 
+  \item
+  
+  \item For each node, we are maintaining what is the shortest path length to the destination. You just also need to maintain which node to go next, at each node. Whenever you compute minimum among which nodes to go next,
+  just store the node which gives you minimum. After the whole algo, we can just move along this path to get the optimal path.
+
+  \item Bellman Ford will just give you the optimal path of length at most $n-1$, this won't be the optimum path if there are negative weight cycles. The idea to detect negative cycles is like the following. Add a sink
+  vertex i.e. add a new vertex such that every vertex has a directed edge of weight 0 to it. If there's any negative cycle, there's also a path going through this cycle and ends up at the sink, since you can go from any node to the sink.
+  For any node in this cycle, the minimum weight path to the sink is $-\infty$, as you can just pump this cycle as many times as you want. Using this as motivation, our idea is like this: check if $opt(n,v) = opt(n-1,v)$
+  for all nodes $v$ (where $opt(n,v)$ is the minimum weight path of length atmost $n$ from $v$ to the sink). If the graph has no negative weight cycles, obviously $opt(n,v) = opt(n-1,v)$ as paths of length greater than $n-1$
+  will have cycles, and won't be optimal. The converse is also true, assume $opt(n,v) = opt(n-1,v)$ for all nodes $v$. This means that the optimal solution at each node doesn't change. Then if we do one more iteration of Bellman Ford,
+  $opt(n+2, v) = opt(n+1, v)$ for all $v$. We have basically reached a stable point in our algorithm. But this can never happen for a graph with negative weight cycles, as for some vertex, $opt(n,v)$ should blow up (or down) to 
+  $-\infty$ as we said before. So a quick way if-and-only-if way to check if there are negative weight cycles, is to see if $\forall v \ opt(n,v) = opt(n-1,v)$.
+
   \end{enumerate}
 \end{document}
