@@ -323,7 +323,7 @@
   $A[i..m], B[j..n]$.
   \begin{align*}
     dp(A[i], B[j]) &= dp(A[i+1], B[j]) \text{ if } A[i] \neq B[j] \text{, else} \\
-    dp(A[i], B[j]) &= \min(dp(A[i+1], B[j]), dp(A[i+1], B[j+1]) + p_j)
+    dp(A[i], B[j]) &= \min(dp(A[i+1], B[j]), dp(A[i+1], B[j+1]) + p_i)
   \end{align*}
   
 
