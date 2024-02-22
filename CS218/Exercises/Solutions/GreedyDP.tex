@@ -235,7 +235,11 @@
   $f(1, n) = \max(f(2,n), l(I_1)+f(k,n))$. Since by applying this recursion the subarray always ends in $n$, and starting index gets smaller, there are at most $n$ distinct recursive calls. To code this 
   up, we can iterate backwards and find $f(i, n)$ for $i$ from $n$ to 1. Each $f(i, n)$ takes $O(\log n)$ time due to the binary search, so overall the time complexity is still $O(n \log n)$.
 
-  \item I don't know which question they are referring to where we found optimal cost \emoji{grinning-face-with-sweat}
+  \item I am assuming it is the previous question they are referring to where we need to find optimal set of intervals \emoji{grinning-face-with-sweat}. Whenever taking maximum of 2 things in the 
+  previous question, let us also remember which one was bigger i.e. whether $f(2,n)$ was bigger or $l(I_1) + f(k,n)$ was bigger. Depending on which was bigger, we can store a boolean value to tell if 
+  the interval was selected or not. We can also store $k$ for each interval, the first index where the interval starts after the current interval ends. Now with these 2 things stored, we can get back 
+  the optimal set of intervals in $O(1)$ time. Check the bool value for $I_1$. If it's false, go to $I_2$ and continue the same process. If it's true, we add $I_1$ to our set, and go to $I_k$ (we have
+  stored the $k$ value for $I_1$) and then continue the same process. We keep doing this until we reach the end of our interval array.
   
   \item Again, split based on whether we select the first interval or don't. If you take the first interval, the best you can do is $w_1 + f(k,n)$, where $k$ is the first interval which starts after
   the first interval ends. And if you don't select the first interval, the answer is just $f(2,n)$. So our recursion changes like: $f(1,n) = \max(f(2, n), w_1 + f(k,n))$. We can iterate backwards 
@@ -244,14 +248,17 @@
   \item It's the same case split again. If we don't select the first interval, the answer is just $f(2,n)$. If we select the first interval, the number of subsets is $f(k,n)$. So the recursion is
   $f(1,n) = f(2,n) + f(k,n)$, where $k$ is the first interval which starts after the first interval ends. 
 
-  \item A natural first idea would be to case split based on which hotel we are staying in for the first night. Let $dp[i]$ be the minimum cost to travel, starting from city $i$. We basically need
+  \item Suppose they have given distance of every city from $A$ itself. For our algorithm, it's more useful if we have distances between consecutive cities. So what we can do is replace $d_1, d_2, 
+  d_3, \dots$, with $d_1, d_2 - d_1, d_3 - d_2, \dots$. This just takes $O(n)$ time. From now onwards assume that $d_i$ is distance between consecutive cities.
+  
+  A natural first idea would be to case split based on which hotel we are staying in for the first night. Let $dp[i]$ be the minimum cost to travel, starting from city $i$. We basically need
   $dp[0]$, treating $A$ as the $0^{th}$ city, and our base case is $dp[n+1] = 0$, treating $B$ as the $(n+1)^{th}$ city. Our recursion is something like this:
   \[ dp[i] = \min_{j \in S_i} (dp[j] + c_j) \text{, $S_i$ is the set of cities which can be reached from city $i$ } \]
   We need some efficient way to calculate $S_i$ for all $i$, while iterating in our algorithm. It's enough to see which is the last city, and its distance which can be reached from every $i$.
   
   We can solve this itself using subproblems. Let's say for city $i$, we have already calculated $j$, the furthest city we can reach, and its distance which is $d_{i+1} + d_{i+2} + \dots + d_j$.
   Now we want to find the furthest city to reach from city $i-1$, so what we do is just add $d_i$ to our distance, assuming we can still reach $j$. If our distance is still not greater than $d$, 
-  great, $j$ is still the furthest city. But if it exceeds $i$, keep decrementing $j$, and subtracting $d_j$ from our distance, until the distance doesn't exceed $d$. This is basically a 2 pointer
+  great, $j$ is still the furthest city. But if it exceeds $d$, keep decrementing $j$, and subtracting $d_j$ from our distance, until the distance doesn't exceed $d$. This is basically a 2 pointer
   method, so it completes in $O(n)$ time overall, for every $i$.
 
   Now back to our original question. It will be useful if we could just store all the $dp[j] + c[j]$'s in a multiset right, so that we can just find the minimum in $O(\log n)$ time. The idea is 
