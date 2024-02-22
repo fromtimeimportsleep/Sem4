@@ -7,3 +7,7 @@
 ## Shell Lab Solutions
 
 <https://github.com/CS236-2023-2-LabSolutions/Lab-2-Solutions-Shell>
+
+## Process Management Lab Solutions
+
+<https://github.com/CS236-2023-2-LabSolutions/Process-management-in-xv6>
