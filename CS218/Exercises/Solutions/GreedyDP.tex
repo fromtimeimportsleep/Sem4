@@ -315,15 +315,15 @@
 
   \subsubsection*{Flavour 3: where the subproblem has two diﬀerent parameters.}
 
-  \item We take cases based on if the first letter of $A$ matches with the first letter of $B$. First of all, if their first letters are different, there's no choice to be made. Ignore the first letter of $B$ and
-  solve the same question. Suppose $A$, $B$ have the first same letters, there's a choice to be made. Again we could decide not to match, and ignore the first letter of $B$. But we could also choose to match, in 
+  \item We take cases based on if the first letter of $A$ matches with the first letter of $B$. First of all, if their first letters are different, there's no choice to be made. Ignore the first letter of $A$ and
+  solve the same question. Suppose $A$, $B$ have the first same letters, there's a choice to be made. Again we could decide not to match, and ignore the first letter of $A$. But we could also choose to match, in 
   which case we incur a cost of $p_1$, and then optimally solve the question for $A$ without its first letter, $B$ without its first letter. If we just keep applying this, we can see that there are only $O(mn)$ 
-  recursive calls. Each call is trying to solve matching of $A[i .. m], B[j .. n]$. What are our base cases? If the substring of $A$ has zero length, the answer is $0$. If the substring of $A$ has non zero length
-  and the substring of $B$ has zero length, we are stuck, we can't do any matching. So it's like the answer is infinite. Anywhere else, the recursion works. Let $dp(A[i], B[j])$ be the optimal cost of matching 
+  recursive calls. Each call is trying to solve matching of $A[i .. m], B[j .. n]$. What are our base cases? If the substring of $B$ has zero length, the answer is $0$. If the substring of $B$ has non zero length
+  and the substring of $A$ has zero length, we are stuck, we can't do any matching. So it's like the answer is infinite. Anywhere else, the recursion works. Let $dp(A[i], B[j])$ be the optimal cost of matching 
   $A[i..m], B[j..n]$.
   \begin{align*}
-    dp(A[i], B[j]) &= dp(A[i .. m], B[j+1]) \text{ if } A[i] \neq B[j] \text{, else} \\
-    dp(A[i], B[j]) &= \min(dp(A[i], B[j+1]), dp(A[i+1], B[j+1]) + p_j)
+    dp(A[i], B[j]) &= dp(A[i+1], B[j]) \text{ if } A[i] \neq B[j] \text{, else} \\
+    dp(A[i], B[j]) &= \min(dp(A[i+1], B[j]), dp(A[i+1], B[j+1]) + p_j)
   \end{align*}
   
 
