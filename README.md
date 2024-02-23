@@ -27,16 +27,6 @@
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Tuesday
-
-- **CS 208** - Countably infinite strings, example of a Finite Automaton, definition of DFA
-- **CS 218** - Subset sum problem using DP, Knapsack and fractional knapsack, intro to Balanced Margin problem
-- **CS 219** - External and internal fragmentation, VPN, FPN, Translation Lookaside Buffer (TLB), Disadvantage of continous single page table
-
-## Wednesday
-
-- **CS 217** - Decision Trees, Examples, Entropy and conditional entropy, creation rules using mutual information, stopping criteria, overfitting
-
 ## Thursday
 
 - **CS 219** - Two-level page table, Address translation, Inner page table on demand and its worst case, Multi-level page tables
@@ -53,6 +43,16 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 219** - Demand Paging, Swap space, Page faults
 - **CS 208** - Kleene's theorem, Equivalence between Regular expressions and NFA without epsilon, Using DFA's to show equivalence between two regular expressions
 - **CS 240** - Decision trees with and without using sklearn
+
+## Tuesday
+
+- **CS 208** - Product construction for Automata with given DFA or NFA, Closure property of RL, Substitution Languages and their automata
+- **CS 218** - Example where we use negative edge Graphs, Bellman Ford algorithm, Space efficent variant
+- **CS 219** - VA and PA caches, Thrashing, Page replacement policies, FIFO, LRU, complexity in implementation
+
+## Wednesday
+
+- **CS 217** - Backpropagation, forward pass and backward pass, Regularizations such as early stopping, dropout
 
 # Timetable
 
