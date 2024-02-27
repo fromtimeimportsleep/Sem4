@@ -11,3 +11,7 @@
 ## Process Management Lab Solutions
 
 <https://github.com/CS236-2023-2-LabSolutions/Process-management-in-xv6>
+
+## Inter Process Communication
+
+<https://github.com/CS236-2023-2-LabSolutions/inter-process-comms>

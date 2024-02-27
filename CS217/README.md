@@ -57,3 +57,11 @@ https://www.youtube.com/watch?v=yIYKR4sgzI8
 
 The slides in the question as well as the calculations in the answer will give a nice detailed derivation of MAP for Linear Regression:-<br/>
 https://math.stackexchange.com/questions/2917109/map-solution-for-linear-regression-what-is-a-gaussian-prior
+
+## References by instructor for Back Propagation
+
+<https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/>
+
+<https://www.youtube.com/watch?v=6SW1oUztmzg>
+
+<https://www.cse.iitb.ac.in/~swaprava/courses/cs217/references/kamper_backprop17.pdf>
