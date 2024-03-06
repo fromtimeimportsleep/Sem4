@@ -2,8 +2,7 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Feb 25 (SUN), 2-5 PM** - CS 240 Midsem Lab Exam
-- **Mar 05 (TUE), 11:59 PM** - CS 218 Programming Assignment
+- **Mar 10 (SUN), 11:59 PM** - CS 218 Programming Assignment
 - **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), Class Hours** - CS 217 quiz 2
 - **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
@@ -11,17 +10,9 @@
 
 ### Compensation classes
 
-- **Mar 4 (Monday), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
-- **Mar 9, Mar 30 (Saturday), 11-12:30 PM** - CS 217 lectures
-
-### Midsems
-
-- **Feb 23 (FRI),   14:30-16:30** - CS 218, Design and Analysis of Algorithms
-- **Feb 25 (SUN),   14:00-17:00** - CS 240, AI-ML Lab
-- **Feb 26 (MON),   11:30-13:30** - CS 219, Operating Systems
-- **Feb 27 (TUE),  08:30-10:30** - CS 208, Logic and Automata Theory
-- **Feb 29 (THU), 14:00-17:00** - CS 236, OS Lab
-- **Mar 02 (SAT),  11:30-13:30** - CS 217, AI-ML Theory
+- **Mar 4 (MON), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
+- **Mar 25 (SUN), 2-5 PM** - CS 240 Lab (Remote submissions allowed)
+- **Mar 9, Mar 30 (SAT), 11-12:30 PM** - CS 217 lectures
 
 # Weekly Recap
 
@@ -39,20 +30,20 @@ Summary of what happened (topics covered) in classes this week could go here
 
 ## Monday
 
-- **CS 218** - Examples of Edit distances such as Hamming distance and Levenshtein distance, Sequence alignment problem using DP
-- **CS 219** - Demand Paging, Swap space, Page faults
-- **CS 208** - Kleene's theorem, Equivalence between Regular expressions and NFA without epsilon, Using DFA's to show equivalence between two regular expressions
-- **CS 240** - Decision trees with and without using sklearn
+- **CS 218 Lec 1** - Bipartite matching, Last Problem of midsem, Network flow, Maximum flow problem, Defining Constraints and Objective
+- **CS 219** - User point of view of Memory allocation, Variable sized allocation, brk and mmap, malloc library function, heap management
+- **CS 218 Lec 2** - (s,t) cut, Capacity constraint, Residual capacity graph, pushback edges, Algorithm for Max flow problem
+- **CS 240** - Neural Networks from scratch using numpy
 
 ## Tuesday
 
-- **CS 208** - Product construction for Automata with given DFA or NFA, Closure property of RL, Substitution Languages and their automata
-- **CS 218** - Example where we use negative edge Graphs, Bellman Ford algorithm, Space efficent variant
-- **CS 219** - VA and PA caches, Thrashing, Page replacement policies, FIFO, LRU, complexity in implementation
+- **CS 218 Lec 1** - Defining Residual graph, Proving termination and Correctness of Algorithm, Time complexity, Defining Strongly polynomial time
+- **CS 218 Lec 2** - No of iterations based on s,t path selection, Applications, Bipartite macthing, Taxi scheduling
+- **CS 219** - Fragmentation, Managing heap by free list, Splitting and Coalescing, Complexity in real life systems, Buddy allocation
 
 ## Wednesday
 
-- **CS 217** - Backpropagation, forward pass and backward pass, Regularizations such as early stopping, dropout
+- **CS 217** - Recurrent Neural Network, NLP example, different structures as one-many, many-many etc, Training NN, Backward Propagation, disadvantages
 
 # Timetable
 
