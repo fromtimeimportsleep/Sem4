@@ -18,13 +18,17 @@
 
 Summary of what happened (topics covered) in classes this week could go here
 
+## Wednesday
+
+- **CS 217** - Recurrent Neural Network, NLP example, different structures as one-many, many-many etc, Training NN, Backward Propagation, disadvantages
+
 ## Thursday
 
 - **CS 219** - Two-level page table, Address translation, Inner page table on demand and its worst case, Multi-level page tables
 - **CS 218** - Objective for Balanced Margin problem in latex, Solving using DP and its running time complexity
 - **CS 236** - Inter Process Communication(IPC) using Shared Memory, Unix Domain sockets, Pipes
 
-## Friday
+## Saturday
 
 - **CS 217** - Introduction to Neural Networks, extending LR, activation function, loss function, efficiently calculating gradient using chain rule
 
@@ -40,10 +44,6 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 218 Lec 1** - Defining Residual graph, Proving termination and Correctness of Algorithm, Time complexity, Defining Strongly polynomial time
 - **CS 218 Lec 2** - No of iterations based on s,t path selection, Applications, Bipartite macthing, Taxi scheduling
 - **CS 219** - Fragmentation, Managing heap by free list, Splitting and Coalescing, Complexity in real life systems, Buddy allocation
-
-## Wednesday
-
-- **CS 217** - Recurrent Neural Network, NLP example, different structures as one-many, many-many etc, Training NN, Backward Propagation, disadvantages
 
 # Timetable
 
