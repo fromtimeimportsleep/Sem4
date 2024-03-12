@@ -808,8 +808,12 @@ This is another practical algorithm with realistic assumptions. We would prefer 
 We also want to ensure that the response time is lesser as we see in Round robin. 
 
 We have multiple queues corresponding to multiple priorities. Scheduling of processes happen first for higher priority queues and within a queue Round Robin is used for scheduling. If a process has used up more of its fair share of CPU we decay it's priority and push it down. When we 
-add a process we add it to the high priority queue. This helps us have an idea on which process is running for a longer time and which ones haven't. We run and finish up shorted processes quickly (Like I/O) even without prior knowledge of CPU bursts. Periodically reset the priority level to make sure even longer
+add a process we add it to the high priority queue. This helps us have an idea on which process is running for a longer time and which ones haven't. We run and finish up shorter processes quickly (Like I/O) even without prior knowledge of CPU bursts. Periodically reset the priority level to make sure even longer
 process gets some chance to run.
+
+Note that processes in lower priority queues are never done unless higher priority queues are empty. What to do if a process yields CPU just before its fair time is over?? Do you
+reset the time? Doing this would create a possible attack on the CPU resources wherea processes calls an empty IO just before its time slice is over thus remaining in the highest priority queue. We must
+account for the total time a process ran for to avoid this. 
 \end{enumerate}
 
 \newpage
@@ -829,7 +833,7 @@ a single queue which assigns the ready process to the first free CPU out of all 
 multiple queues for each CPU and choosing to put a process in one of these queues. This is due to the high cost and thus inability to switch queues once a process
 is assigned a queue in the multiqueue case.
 
-
+x
 \section{Inter Process Communication}
 Why do we need IPC\footnote{Interprocess Communication}? In real life systems it is not ideal or feasible to maintain all of the functionality in just a single
 process. Rather we 
@@ -869,9 +873,9 @@ publicise this binding address to enable clients to talk to them. The \texttt{cl
 
 
 How do processes use \textbf{sockets} to communicate?
-\begin{itemize}
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item \textbf{sendto():} is used to send a message from one socket to another connection-less socket. It takes its own socket's file descriptor, the message to be sent, the other socket's address as arguments
-    \item \textbf{recvfrom():} is used to recieve a message from a socket. It takes the its socket's file descriptor, a message buffer to copy the message into and a sockets address structure into which the recieving socket's
+    \item \textbf{recvfrom():} is used to recieve a message from a socket. It takes the its socket's file descriptor, a message buffer to copy the message into and a sockets address structure into which the sending socket's
     global address is filled. Now this process can use the address it just obtained to communicate back to the process which sent it a message. 
 \end{itemize}
 
@@ -889,7 +893,7 @@ is established between the client and server.
 
 
 The \texttt{accept()} syscall takes the file descriptor of a socket as an argument. This socket's address is what clients use to send a "request to connect".
-Once the \texttt{accept()} syscall is succesful it returns a \textbf{new file descriptor} to a socket which is connected to the client. 
+Once the \texttt{accept()} syscall is succesful it returns a \textbf{new file descriptor} to a socket which is connected to the client. This new socket is different from the \textit{listening socket}
 
 Hence it is important to note that there is a \textit{listening socket} corresponding to whose address requests are send to connect and there are (possibly multiple)
 \textit{connected sockets} explicitly connected to a client socket to enable communication between two unique processes. 
@@ -911,14 +915,14 @@ the message queue and send a message. The reciever opens a connection to the mes
 
 There are three main syscalls associated with a message queue:
 \begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
-    \item \texttt{msgget()}: syscall to get the id of a message queue. The parameters it takes are the key of the message queue . It returns the msg\_queue identifier on success and -1 on failure.
+    \item \texttt{msgget()}: syscall to get the id of a message queue. The parameters it takes are the key of the message queue . It returns the msg\_queue identifier (a file descriptor) on success and -1 on failure.
     \item \texttt{msgsnd()}: The parameters it takes are the msg\_queue identifier and the message to be sent and its size. It returns 0 on success and -1 on failure. 
     \item \texttt{msgrcv()}: The parameters it takes are the msg\_queue identifier, size of the message and the buffer to write the message into. It returns the number of bytes recieved on success and -1 on failure.
 \end{itemize}
 There can be several different message queues all with their own unique "keys". Also note that multiple processes can use the same message queue if they all have access to its key. Thus we need to be careful about which process's message is being recieved when \texttt{msgrcv()} is used.
 
 \subsection{Pipes}
-A pipe is a unidirectional FIFO channel into which writing is done on one end and reading from another end. The syscall \texttt{pipe()} is used to create a unidirectional pipe. It returns two file descriptors for 
+A pipe is a unidirectional FIFO channel into which writing is done on one end and reading from another end. The syscall \texttt{pipe()} is used to create au unnamed unidirectional pipe. Named pipes are made using \texttt{mkfifo()}. It returns two file descriptors for 
 the end points (one for write, other for read). A pointer to a \texttt{struct} of a pair of numbers are passed as a parameters of the pipe. Once a pipe is succesful this \texttt{struct} has both file descriptors. Why do we have access to both descriptors? This is because Pipes
 are frequently used for communication between a parent and a child. The data written into a pipe is stored in the buffer of the pipe channel until they are read. Obviously, bi-directional communication between two processes needs two pipes. 
 
@@ -986,7 +990,7 @@ the maximal address for the memory allocated in this memory image.
 
 
 
-Simple example: Let's take a small porgram as given hello
+Simple example: Let's take a small program as given hello
 
 \begin{lstlisting}
     void func(){
@@ -1021,7 +1025,7 @@ Paging is the mostly widely used system of memory Management today. We divide ou
 The memory allocation for each page is done at a fixed size (eg. 4kb). Since the pages are tightly packed we have no wasteage of size between pages (ie) no \textit{external fragmentation}. However inside the pages we could have some wasteage of space (ie) \textit{internal fragmentation}.
 
 What is the optimal page size? Why 4kb?
-\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+\begin{itemize}[topsep=-5mm, partopsep=0pt, itemsep=0pt, parsep=0pt]
     \item \textit{Large page size} \(\rightarrow\) larger amount of wastage inside individual pages.
     \item \textit{Small page size} \(\rightarrow\) OS has to keep track of huge number of pages which creates a large overhead.\footnote{Large processing power is needed to maintain page table}
 \end{itemize}
@@ -1060,7 +1064,7 @@ we want is same in both the Physical frame and the virtual page.
 
 \subsection*{Translation Lookaside Buffer(TLB)}
 An important point to note with paging is that one memory access has become two accesses now. One access to the page table and the one to the actual byte we want. This results in a significant
-slow down since memory accesses are very slow. This is the overhead associated with paging
+slow down since memory accesses are very slow. This is the overhead associated with paging.
 
 To reduce this overhead the MMU caches the most recent translations in translation lookaside buffer(TLB)\footnote{It is a fully associated cache}.
 TLB caches only the \textbf{page table entries} \footnote{the physical data in 32/64 bit addresses are cached by the actual cpu cache}. If we have
@@ -1228,7 +1232,7 @@ the maximum size of the usable physical address in xv6.
 Now, think about if it is necessary to have all the pages in the main memory? This is not necessary as a process can't use them at once. This is
 also not possible with larger address spaces. Modern operating systems provide only virtual memory. That is not all logical pages are assigned physical frames.
 Even those that are, are not permanently kept in main memory. Some pages are stored in disk and brought to main memory \textit{on demand}. This is called 
-\textbf{Demand paging}
+\textbf{Demand paging}. \footnote{Demand Paging is not present in xv6}
 
 \subsection*{Swap space}
 This is the special area in the disk to hold pages that do not fit in DRAM. Pages are pushed
@@ -1361,5 +1365,282 @@ Some of them are
     The OS also periodically wipes the access bits to 0 periodically. The OS also avoids choosing dirty pages as victim pages since we need more resources to write 
     into disk for them. 
 \end{itemize}
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 18}
+    \end{center}
+}
+\section{Memory Allocation Syscalls}
+During the creation of a process the OS assigns memory to store the memory image of a process. It stores the pages which it allocates in the main memory
+and gives the MMU the address of the outermost page table for the translation of addresses. 
+
+Since DRAM is limited the OS doesn't allocate physical memory for all virtual pages of a process initially. Rather only pages are stored in disk and brought to physical memory during memory access.
+How many pages do we initialise? 
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Too many pages allocated $\rightarrow$ Wastage of memory 
+    \item Too few allocated $\rightarrow$ We get page faults during memory access.
+\end{itemize}
+
+Note that memory allocation by the OS only happens in page granularity (ie) only as one or more pages.
+
+
+The address space of a process is created during fork, and exec changes the address space (exec program has a new address space).
+We do not need system calls to allocate memory that is already part of the address space. This is taken care as the case of a valid page not 
+being present in the DRAM which is handled as a page fault during the first memory access. Similarly the growth of stack also is taken care directly by 
+the OS and doesn't have any corresponding syscalls.\footnote {When stack pointer crosses a page then page fault}
+
+However we do need syscalls to add more pages in our virtual address. 
+Before seeing the syscalls lets understand what is a program break and the structure of the virtual address space.
+
+As we know the low virutal addresses are given to code, global variables, data.
+After this the base address of the heap is present. This is followed by the \textbf{program break} which is the last address of the heap. Then there is a region of unallocated memory
+between the \textbf{program break} and the \textbf{stack base address}. This gap has pages which are allocated to enable the stack and heap to grow towards each other. 
+After this we have the stack's top address followed by the stack's base. 
+
+% \begin{tikzpicture}
+%     % Draw the rectangle and center 
+%     \draw (6,0) rectangle (10,5); % Change the coordinates to adjust the size of the rectangle
+%     \draw (6,0) rectangle (10,3);
+%     \draw (6,0) rectangle (10,4);
+%     \draw (6,0) rectangle (10,2.5) ;
+%     \draw (6,0) rectangle (10,0.5);
+%     \filldraw[fill=gray!20] (6,3) rectangle (10,);
+%     \coordinate (center) at (2,3); % Define the cente of the rectangle
+    
+%     % Add nod
+%     \node at (8,4.5) {Program code/data};
+%     \node at (8,3.5) {Heap};
+%     \node at (8,0.25) {Stack};
+%     \node at (center) {Center}; % Node at the center f the rectangle
+    
+% \end{tikzpicture}
+
+
+
+
+% put image
+
+
+
+What are these syscalls to get new pages?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \texttt{sbrk()/brk():} It increases the program break to add pages. That is allocates more pages to be given to the heap. 
+    \item \texttt{mmap():} It adds virtual address at any given address. If given address is not available then some alternate address.
+\end{itemize}
+There are no syscalls() to allocate memory on the stack since it is done by the OS on it's own. It is not the responsibility of the user to allocate memory on the stack
+
+
+\subsection{\texttt{mmap()}}
+The \texttt{mmap()}  allocates new memory into the virutal address space of the process. 
+The OS allocates new valid pages to address space, preferably at the requested starting virtual addresses. However the starting address is mearly a suggestion
+and memory is not allocated there if it is already occupied. The syscall returns the starting virutal address of the allocated chunk and is used to read/write into memory.
+The memory allocated can be correspondingly unmapped by munmap system call (ie) When we munmap the content from file backed pages gets written to the file on the disk. 
+
+Note that all the starting addreses and the lengths are multiples of 4kb (page size) since we only work with pages and while the virtual addresses are continously allocated, physical addresses need not be.
+
+There are two types of pages we can make:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textit{Anonymous page:} A page initialised to zero (eg. page for the heap)
+    \item \textit{File backed page:} A page which is initialized with file contents (eg. Code page) 
+\end{itemize}
+
+The physical frames needed for each of these pages are no allocated until there is a memory access (demand paging). The anonymous pages can be 
+used as they are or in smaller chunks to store user data. File backed pages allocated with mmap can be used to read/write into files.
+
+
+\subsection{What are the arguments for \texttt{mmap()}?}
+Arguments used are:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Start:} preferred starting addreses
+    \item \textbf{Length:} Size of memory allocated (Number of pages * page size)
+    \item \textbf{Protocol:} The permission bits for the pages allocated
+    \item \textbf{Flags:} \textit{Shared or Private}. Shared means changes made in a process are visible to other processes in real time. This is not the case with private (ie) there are multiple copies of a file.
+    \item \textbf{File descriptor and offset(doubt?):} We denote the file we want to map into via the file descriptor. 
+\end{itemize}
+
+\subsection{Heap vs Stack}
+A program executable already allocates space for compile-time data (ie) the static variable, global variables.
+The local variables we write are stored on the stack. 
+
+Memory the user wants to allocate dynamically (during run time) is allocated using malloc (or new in c++).
+
+\subsubsection{\texttt{malloc()}}
+\texttt{Malloc()} is used to alllocate memory on the heap during runtime. \texttt{Malloc()} is \textbf{NOT} a syscall. It is just code in the C library that allocates a small chunk of the requested memory in the heap's pages. 
+If the heap does not have any pages with enough free space for this chunk then \texttt{malloc()} makes a syscall like \texttt{brk()} or \texttt{mmap()} to obtain new pages for the heap. Thus we need OS only to allocate pages, but the smaller memory chunks within pages are allocated by malloc
+
+So interestingly, the entire heap is managed by the C library code which is \textbf{NOT} \textit{OS} code but rather \textit{userspace} code.
+
+There is no convinient interface to get the address of the program break. The program break is managed by the C library code as part of managing the heap. Thus
+it is not advisable to play around with \texttt{brk()}. Rather it is convinient and ideal to use \texttt{mmap()} if the user needs to allocate a page for their use. 
+\subsubsection{\texttt{malloc() errors}}
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item The memory we use needs to be of the correct size else we will end up using unallocated memory resulting in a segfault\footnote{If we end up accesing an invalid page}
+    \item  We need to free up memory after its usage. If we fail to do this we will end up using more pages than necessary thus hurting efficiency\footnote{Recall Thrashing}. Some languages clean up free memory automatically, however it is good practice to 
+    clear them manually
+\end{itemize}
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 19}
+    \end{center}
+}
+\subsection{Memory allocators}
+We understand the need for a memory allocator from the above discussion. We need to allocate memory on user demand and deallocate it also. 
+Thus we need to keep track of all the occupied and unoccupied memory segments in the pages of a heap.
+
+Types of memory allocators:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{General variable size allocators:} These allocators can give the user any size of memory they request. Thus all possible sizes of free chunks are possible on allocation and deallocation. We need to 
+    maintain complex data structures to keep track of these chunks so that we can allocate memory on further demand. However a huge disadvantage with such systems is that lots of \texttt{malloc(),free()} sycalls or their equivalents slow the process significantly due to the large overhead of memory allocation
+    \item \textbf{Fixed size allocators:} This is a more optimal allocator that allocates memory as multiples of a few fixed size. Thus tracking free memory chunks is a lot easier. 
+\end{itemize}
+
+
+\subsection*{Variable size allocators}
+Our problem of external fragmentation in the OS memory allocation 
+has just been transferred to be dealt at a page level.
+We need to design a system to perform variable memory allocation. How do we track the free chunks inside a particular page of the heap? As told before this includes tracking all the free chunks accross the pages of the heap.
+We need to constantly update this structure for every allocation and deallocation. 
+\subsection{Free list}
+A linked list is the data structure used to track this metadata. It is ideal due to the ease of insertion and deletion of nodes in it which is essential due to the high frequency of updates. 
+
+Imagine a case where a large chunk of allocated memory has a small chunk freed in the middle of it. Now we have an extra free memory segment to be added to our list.
+Similarly imagine two adjacent chunks seperated by a small chnuk of memory in the middle which is freed later. Now those two chunks coalese. 
+
+
+% Put fig
+
+We may not find a node with the exact size of the memory chunk we want to allocate. We thus can take a node in our free list bigger than we desire and split it into a desired size chunk and use the new chunk.
+
+Now the next question that comes up is how to pick which node to use for creating the memory to be used.
+There are several memory allocation policies
+
+\subsubsection*{Memory allocation policies}
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+        \item \textbf{Best Fit:} We pick the chunk closest in size to the memory the user requests
+        \item \textbf{First Fit:} The first chunk found to be able to satisfy the requested size is used
+        \item \textbf{Worst Fit:} Memory chunk furthest in size (maximal difference) from the request is used
+\end{itemize}
+
+Where can we store out free list? We can allocate it seperate memory, but the free list is variable in size and predicting how much memory it needs is too difficult. Hence we would have to allocate a lot of memory which would be wasteful. To understand the solution to this problem lets look at headers.
+\subsection{Headers}
+Each allocated region apart from having the memory requested by the user also has a few bytes in the beginning of it reserved for metadata. This contains information about the allocated chunk itself like it's size.
+Why must we store the size? We must know how much memory to free when this memory chunk is freed. The header also contains a random "magic number". This is used to detect if a previously allocated memory chunk has overflown into this memory.
+
+Why can't we store the free list a header type structure in the corresponding free chunk itself. This idea also helps us save memory and saves the trouble of giving more memory to the free list as it grows, since if they free list is large the number of free chunks is also large.
+The first few bytes of a free chunk are used to store the size of the free chunk and the address of the next free chunk \footnote{not necessarily next address-wise but next chunk in the list}. This is refered to as an \textbf{embedded free list}.
+
+We can see that as we allocate and deallocate memory it is possible for our list to become extremely messy and store lots of small chunks. One idea to prevent this could be to periodically check for nodes which are adjacent and merge them together. We also could maintain different free lists for 
+each popularly used size to boost efficiency. There is no need to split/coalese here which helps with efficiency
+
+\subsection{Other allocators}
+The \textbf{slab allocator} is an allocator where there are slabs each of which have many chunks of the same size. So when memory is needed the OS checks if there is a chunk left in the approiately sized slab
+and uses it. Else a new slab with chunks of the same size is allocated and one of these chunks is used and the rest saved for the future.
+
+The \textbf{buddy allocator} splits our memory image into chunks of a particular power of 2. If a memory request is lesser than the chunk, it is split
+into two recursively up until our chunk is close to the size of the needed memory. When a chunk is split into two the two parts are called \textit{buddies}. When memory is 
+deallocated it is merged with it's buddy if the buddy is free. This is done recursively till a buddy is also occupied. This allocater has an adavntage of having a very low overhead to be maintained. 
+
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 20}
+    \end{center}
+}
+\section{Memory Management in xv6}
+How are these syscalls implemented in an OS like xv6? In the case of xv6 it maintains a list of free pages available in the DRAM.
+It is also important to note that xv6 does not have demand paging, so all the pages in Virtual address space are also present in DRAM. When a new process is to be given pages for it's memory image this 
+free list is updated and the page table of the new process points to these newly allocated pages.
+
+In general the OS also needs memory for it's own data structures. For larger allocation the OS just allocates a page for itself. When OS needs smaller chunk it uses its own implementation of a slab(for common data structures)/buddy allocator(variable allocations) due to their small overheads.
+Xv6 specifically has only page level allocations. All of its data structures are fixed in size.
+\subsection{Free pages in xv6 \texttt{kalloc()} and \texttt{kfree()}}
+After the OS boots up all the OS code and data are placed in physical frames. As told before xv6 maintains free
+pages in a linked list, infact an \textit{embedded} linked list. The kernel maintains a pointer to the head of this linked list. As need the list is updated and 
+pages are given to processes.
+
+For obtaining a free page we have a function \texttt{kalloc()}. It updates the head of the linked list stored by the OS and then returns the pointer
+to the page which was previously the head. Similarly \texttt{kfree()} is used to free up a page used by a process. It creates a next pointer in the page we are freeing to point to the current head of the list. After this the 
+page freed is made to be our new head.
+
+\texttt{kalloc()} is used by fork, exec to allocate memory. The function is called to obtain one page which is the outer page table for the new process. All the inner page tables with valid pages are also allocated and entries
+are added in the outer page table. The OS code/data's physical frames have their entries added to page table. There are some functions to perform this process of building the page table.
+\subsection{\texttt{setupkvm()}}
+\texttt{setupkvm()} adds all the kernel virtual address to physical address mappings to the page table after creating it. It returns the page directory\footnote{The outermost page table} after adding the kernel memory mappings to it.
+This procedure is common for every process since every process has the kernel code/data in a fixed location of its virtual memory. The array kmap[] stores the mappings of these chunks of kernel code/data. \texttt{setupkvm()} iterates
+over this array and allocates each memory chunk to the appropriate location in the page table. The function \texttt{mappages()} is used for this . The page directory is returned as a pointer by the function. So the user code/data mappings can be added after the kernel memory is setup.
+
+\textbf{NOTE:} In xv6 we have some predefined macros which help to perform some trivial conversions. For example PGGROUNDOWN() rounds down to the nearest starting page's address. These are defined as macros since macros\footnote{things of the form \#define} are replaced by the appropriate values during preprocessing.
+While writing these as function calls is possible our stack size is already extremely limited in xv6 and using the stack without reason is not ideal.
+\subsection{\texttt{mappages()}}
+\texttt{mappages()} can take a set of continuous virtual, physical addresses and maps them by adding entries in the page table of a process. It also takes the permissions to be given to the page table entries.
+It starts by obtaining the closest page to start and end of the virtual address. It finds the closest page for the start of physical address also.
+It then iterates over the virtual and physical pages to be mapped till the last page to be mapped it used. For each page it gets the corresponding page table entry using \texttt{walkpgdir()} and 
+creates the entry by appending the physical addresses permissions and also setting the present bit since the page is now present in DRAM. Thus all the mappings have been added to the page table
+\subsection{\texttt{walkpgdir()}}
+This function returns the page table entry corresponding to the virtual addreses passed as an argument. If the entry is non existent/the inner page table with the entry has not been allocated it does two things depending
+on another arugment(alloc) it takes. If alloc is set to 1, then it calls \texttt{kalloc()} to create a new page for the inner page table, sets all of the entries to zeros, gives appropriate values to this entry. Else it returns 0/NULL.
+This function returns a pointer to the desired page table entry on sucess. 
+
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 21}
+    \end{center}
+}
+\subsection{\texttt{fork()}}
+We have seen the fork syscall's implementation in a very abstract way before. Let's dive into the details about memory management in the fork syscall.
+In a fork the parent allocates a new process in the ptable and copies the parent into the child's process along with the trap frame. This copying is done when process is in kernel mode after \texttt{fork()} syscall.
+The eax/return value of the trapframe is changed and then the child is set to be RUNNABLE.
+
+How is the memory image of the parent copied?
+\subsubsection{\texttt{copyuvm()}}
+This function is called by the parent to copy the memory image of the parent page by page and give it to the child.
+A new page table is created for the child after which copying begins. 
+
+There is a for loop in the function. For each iteration of this for loop
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Fetch the PTE\footnote{Page table entry}, get the Physical address of the parent and get the permissions of that page.
+    \item Allocate a new physical frame for the child. Copy the contents of parent's page to the new page of a child. Note that the actual physical frame is copied.\footnote{New page is obtained by \texttt{kalloc()}}
+    \item Add the new PTE we have obtained by mapping a page of the child to a physical frame to the Page table of the parent. 
+\end{itemize}
+
+On sucess the function returns the page directory of the new process. Thus each page of the parent is copied and the copied pages are mapped to physical addresses and appropriate PTE are given to the child.
+
+In real systems however \textbf{copy on write} is more popular. During a fork the child and the parent point to the same physical frame and all the page table entries
+in both the parent and child are made read only. So when we try to write we get a page fault and at this point another copy of this \textit{particular} physical frame alone is made and given to child after which the write is performed. 
+
+\section{\texttt{sbrk} in xv6}
+As seen before sbrk is invoked by \texttt{malloc()} to increase the size of the heap. In xv6 \texttt{growproc()} is called to grow memory. Interestingly
+sbrk can also be given a negative value to decrease the size of the heap and return memory back to the OS. It uses \texttt{allocuvm()} for this purpose.
+
+
+\section{\texttt{allocuvm()}}
+This function is used to grow out virtual address space. Allocate the new frame and add a mapping to the new page table with suitable permissions. 
+\texttt{deallocuvm} is used to shrink the memory image and free up pages.
+
+Important to note that xv6 doesn't implement demand paging. So we allocate and deallocate physical frames alone with virtual pages. However when we have to do demand paging, we only assign 
+virtual pages and physical frames are allocated\footnote{Page fault handler} when these pages are accessed and we get a page fault and go to page fault handler.
+
+% \section{Maximum addressable memory in xv6}
+% Unlike real life operating systems which probe hardware to get information on the size of the DRAM and utilize them fully, xv6 has a variable called PHYSTOP. Xv6 only utilizes the DRAM upto PHYSTOP's size.
+
+% The Physical address of PHYSTOP is initially assigned at PHYSTOP + 2GB\footnote{KERNBASE} in the virtual address space and physical address 0 is mapped to KERNBASE. 
+% The entire physical address space is mapped to the OS code which is in virtual addresses from KERNBASE to PHYSTOP + KERNBASE. Kernel and user acceses the same memory/page using different addresses.
+% Any physical frame which is mapped to the user already has been mapped to the virtual address space of the OS. Thus each physical frame can have upto two virtual addresses pointing to it
+% \section{\texttt{exec()}}
+% Exec syscall reads the binary executable put in memory and create replace the old memory image with the new one.
+% However we don't start overwriting the old memory image immediately. What is the copying fails halfway? So we create a new page table and parallely build up the 
+% memory image of the executable given as an argument. If there is an error halfway through the process we just abandon the copying and return back to the old memory image and return from \texttt{exec()}
+% with an error code. 
+
+% The code involves a lot of disk I/O functions which are irrelevant for now. We use the functions established before to slowly build up the 
+% memory image of the executable. The executable is stored as an ELF binary file which is divided into segments. Each of these segements are copied into physical memory one by one.
+
+
+% \section{Linux Memory areas}
+% Linux organises virtual memory in terms of area 
 \end{document}
+
+
+
 
