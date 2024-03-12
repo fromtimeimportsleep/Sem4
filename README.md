@@ -2,17 +2,18 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Mar 10 (SUN), 11:59 PM** - CS 218 Programming Assignment
+- **Mar 21 (THU)** - CS 236 Lab quiz 2
 - **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), Class Hours** - CS 217 quiz 2
 - **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
+- **Apr 04 (THU), Class Hours** - CS 219 quiz 2
 - **Apr 21 (SUN), 2-5 PM** - CS 240 Endsem Lab Exam
 
 ### Compensation classes
 
-- **Mar 4 (MON), 11:30-12:30 PM** - CS 218 lecture (Replacing CS 208)
+- **Mar 14 (THU), 9:30-10:25 PM** - CS 208 lecture (Replacing CS 218)
 - **Mar 25 (SUN), 2-5 PM** - CS 240 Lab (Remote submissions allowed)
-- **Mar 9, Mar 30 (SAT), 11-12:30 PM** - CS 217 lectures
+- **Mar 30 (SAT), 11-12:30 PM** - CS 217 lecture
 
 # Weekly Recap
 
@@ -24,26 +25,27 @@ Summary of what happened (topics covered) in classes this week could go here
 
 ## Thursday
 
-- **CS 219** - Two-level page table, Address translation, Inner page table on demand and its worst case, Multi-level page tables
-- **CS 218** - Objective for Balanced Margin problem in latex, Solving using DP and its running time complexity
-- **CS 236** - Inter Process Communication(IPC) using Shared Memory, Unix Domain sockets, Pipes
+- **CS 219** - Memory management in xv6, kallac and kfree functions, struct kmap, setupkvm, mappages, walkpgdir functions
+- **CS 218 Lec 1** - Examples for problems in P and Not in P, Every Optimization problem as a Decision problem
+- **CS 218 Lec 2** - Equivalence in Problems, Reductions, SAT problem, Verification, Definition on NP, Examples for NP
+- **CS 236** - Dynamic memory management, Implementing malloc using mmap syscall
 
 ## Saturday
 
-- **CS 217** - Introduction to Neural Networks, extending LR, activation function, loss function, efficiently calculating gradient using chain rule
+- **CS 217** - Need of convolutional neural networks, convolution operation, filtering with horizontal, vertical edge detectors, padding, striding, maxpooling, the CNN architecture, backpropagation in CNN
 
 ## Monday
 
-- **CS 218 Lec 1** - Bipartite matching, Last Problem of midsem, Network flow, Maximum flow problem, Defining Constraints and Objective
-- **CS 219** - User point of view of Memory allocation, Variable sized allocation, brk and mmap, malloc library function, heap management
-- **CS 218 Lec 2** - (s,t) cut, Capacity constraint, Residual capacity graph, pushback edges, Algorithm for Max flow problem
-- **CS 240** - Neural Networks from scratch using numpy
+- **CS 208 Lec 1** - Pumping lemma, algorithm for verifying Infinite/Finite language, Counter example for Converse of Pumping => regular
+- **CS 219** - Memory allocatio to child in fork, copyuvm, Copy-on-write fork, growproc, allocuvm, PAS utilised in xv6 being half of VAS
+- **CS 208 Lec 2** - Indistisguishability as equivalence relation, algo for dividing into equivalent classes, min DFA from division
+- **CS 240** - Recurrent Neural Networks from scratch using numpy, using Pytorch library
 
 ## Tuesday
 
-- **CS 218 Lec 1** - Defining Residual graph, Proving termination and Correctness of Algorithm, Time complexity, Defining Strongly polynomial time
-- **CS 218 Lec 2** - No of iterations based on s,t path selection, Applications, Bipartite macthing, Taxi scheduling
-- **CS 219** - Fragmentation, Managing heap by free list, Splitting and Coalescing, Complexity in real life systems, Buddy allocation
+- **CS 208 Lec 1** - Correctness and Uniqueness of algo for min DFA, new equivalence relation ~, same no of equivalence classes
+- **CS 208 Lec 2** - Myhill-Nerode Theorem, Languages beyond regular, Using stack as memory device
+- **CS 219** - Memeory allocation in Exec, loaduvm, guard page, intro to Linux memory management, Next lab explanantion
 
 # Timetable
 
