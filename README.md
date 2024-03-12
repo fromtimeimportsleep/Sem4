@@ -11,7 +11,7 @@
 
 ### Compensation classes
 
-- **Mar 14 (THU), 9:30-10:25 PM** - CS 208 lecture (Replacing CS 218)
+- **Mar 14 (THU), 9:30-10:25 AM** - CS 208 lecture (Replacing CS 218)
 - **Mar 25 (SUN), 2-5 PM** - CS 240 Lab (Remote submissions allowed)
 - **Mar 30 (SAT), 11-12:30 PM** - CS 217 lecture
 
@@ -25,7 +25,7 @@ Summary of what happened (topics covered) in classes this week could go here
 
 ## Thursday
 
-- **CS 219** - Memory management in xv6, kallac and kfree functions, struct kmap, setupkvm, mappages, walkpgdir functions
+- **CS 219** - Memory management in xv6, kalloc and kfree functions, struct kmap, setupkvm, mappages, walkpgdir functions
 - **CS 218 Lec 1** - Examples for problems in P and Not in P, Every Optimization problem as a Decision problem
 - **CS 218 Lec 2** - Equivalence in Problems, Reductions, SAT problem, Verification, Definition on NP, Examples for NP
 - **CS 236** - Dynamic memory management, Implementing malloc using mmap syscall
