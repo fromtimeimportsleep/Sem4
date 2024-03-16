@@ -1604,7 +1604,7 @@ There is a for loop in the function. For each iteration of this for loop
     \item Add the new PTE we have obtained by mapping a page of the child to a physical frame to the Page table of the parent. 
 \end{itemize}
 
-On sucess the function returns the page directory of the new process. Thus each page of the parent is copied and the copied pages are mapped to physical addresses and appropriate PTE are given to the child.
+On success the function returns the page directory of the new process. Thus each page of the parent is copied and the copied pages are mapped to physical addresses and appropriate PTE are given to the child.
 
 In real systems however \textbf{copy on write} is more popular. During a fork the child and the parent point to the same physical frame and all the page table entries
 in both the parent and child are made read only. So when we try to write we get a page fault and at this point another copy of this \textit{particular} physical frame alone is made and given to child after which the write is performed. 
@@ -1621,24 +1621,88 @@ This function is used to grow out virtual address space. Allocate the new frame 
 Important to note that xv6 doesn't implement demand paging. So we allocate and deallocate physical frames alone with virtual pages. However when we have to do demand paging, we only assign 
 virtual pages and physical frames are allocated\footnote{Page fault handler} when these pages are accessed and we get a page fault and go to page fault handler.
 
-% \section{Maximum addressable memory in xv6}
-% Unlike real life operating systems which probe hardware to get information on the size of the DRAM and utilize them fully, xv6 has a variable called PHYSTOP. Xv6 only utilizes the DRAM upto PHYSTOP's size.
+\section{Maximum addressable memory in xv6}
+Unlike real life operating systems which probe hardware to get information on the size of the DRAM and utilize them fully, xv6 has a variable called PHYSTOP. Xv6 only utilizes the DRAM upto PHYSTOP's size.
 
-% The Physical address of PHYSTOP is initially assigned at PHYSTOP + 2GB\footnote{KERNBASE} in the virtual address space and physical address 0 is mapped to KERNBASE. 
-% The entire physical address space is mapped to the OS code which is in virtual addresses from KERNBASE to PHYSTOP + KERNBASE. Kernel and user acceses the same memory/page using different addresses.
-% Any physical frame which is mapped to the user already has been mapped to the virtual address space of the OS. Thus each physical frame can have upto two virtual addresses pointing to it
-% \section{\texttt{exec()}}
-% Exec syscall reads the binary executable put in memory and create replace the old memory image with the new one.
-% However we don't start overwriting the old memory image immediately. What is the copying fails halfway? So we create a new page table and parallely build up the 
-% memory image of the executable given as an argument. If there is an error halfway through the process we just abandon the copying and return back to the old memory image and return from \texttt{exec()}
-% with an error code. 
+The Physical address of PHYSTOP is initially assigned at PHYSTOP + 2GB\footnote{KERNBASE} in the virtual address space and physical address 0 is mapped to KERNBASE. 
+The entire physical address space is mapped to the OS code which is in virtual addresses from KERNBASE to PHYSTOP + KERNBASE. Kernel and user acceses the same memory/page using different addresses.
+Any physical frame which is mapped to the user already has been mapped to the virtual address space of the OS. Thus each physical frame can have upto two virtual addresses pointing to it. In real kernels however this 
+is dealt with better, the extra mappings are removed when we have a user mapping to a physical address
+\section{\texttt{exec()}}
+Exec syscall reads the binary executable put in memory and create replace the old memory image with the new one.
+However we don't start overwriting the old memory image immediately. What is the copying fails halfway? So we create a new page table and parallely build up the 
+memory image of the executable given as an argument. If there is an error halfway through the process we just abandon the copying and return back to the old memory image and return from \texttt{exec()}
+with an error code. The function \texttt{allocuvm} is used for the purpose of creating a new page table and allocating them physical frames. The function \texttt{loaduvm} reads the corresponding part of the executable from disk 
+into the frames we allocated. Each segment of the ELF binary is copied by repeatedly calling \texttt{allocuvm} and \texttt{loaduvm}. 
+ 
+The code involves a lot of disk I/O functions which are irrelevant for now. We use the functions established before to slowly build up the 
+memory image of the executable. The executable is stored as an ELF binary file which is divided into segments. Each of these segements are copied into physical memory one by one.
 
-% The code involves a lot of disk I/O functions which are irrelevant for now. We use the functions established before to slowly build up the 
-% memory image of the executable. The executable is stored as an ELF binary file which is divided into segments. Each of these segements are copied into physical memory one by one.
+
+\section{Linux Memory areas}
+Linux organises virtual memory in terms of areas. All the pages in an area have similar properties,permissions etc. 
+The \textit{task$\_$struct} for each process also contains a data structure with information about each of the areas.
 
 
-% \section{Linux Memory areas}
-% Linux organises virtual memory in terms of area 
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 21}
+    \end{center}
+}
+\part{Threading and concurrency}
+\section{Introduction}
+As of now a process is only being run as a single entity on a single CPU. Context swtiching happens only between two different processes.
+However we can thread a process and run a process as several ``threads``. A thread is a smaller segment of a process which can be run independently of the other thread. 
+Importantly the memory image of the many ``threads`` of a process are identical.
+
+Why would you want to thread a process?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Utilization of hardware. Different threads can be run on multiple CPU's and thus our process is run faster.
+    \item Blocking syscalls. When a process recieves a blocking syscall the entire process blocks. However if we have threads we need to only block the corresponding thread and parts of the process which still can be executed can run without wasting time
+\end{itemize}
+Instead of threading a process why do we not just create multiple processes executing each part of the process. The problem with this approach is that each segment will have its own memory image which will
+be wasteful. Further more importantly, if we have multiple process there is no convenient way to communicate across processes. IPC mechanisms are not very efficienct/user friendly. However in threading due to the fact
+that the memory image is shared among threads we have an extremely convenient way to communicate across threads. 
+
+Thus threading can be thought of as an efficient way to modularise a process such that each thread performs a different function.
+
+\subsection{What is in a thread?}
+Different threads of a process share the same code, global/static data and also the heap. However the stacks for each thread is different. 
+Obviously each thread has a seperate PC and it runs a different part of the code. Each thread also has a different CPU context for context swtiching.
+\subsection{Concurrency vs Parallelism}
+\textbf{Concurrency:} Multiple threads/process running at the same time, mabe even on the same CPU core by interleaving
+their execution. For example context switching is an example of concurrency.
+
+\textbf{Parallelism:} Running multiple threads/process over different cores at the same time parallely.
+Regardless of if we have multiple cores or a single core we have to worry about context switching and thus concurrency.
+
+\subsection{POSIX threads}
+The pthreads library allows the creation of multiple POSIX threads in a process. Each thread is given a start
+function as an argument which is where it starts executing. These threads execute independently apart from the parent after creation. A thread can be joined (ie) the 
+parent is made to wait till a thread's execution is over. This however is optional. So we have a way to thread a process using POSIX syscalls.
+
+\section{Scheduling of threads}
+Threads are scheduled independent of one another like seperate processes. The context of each thread is stored in a structure called the \textbf{Thread Control Block (TCB)}.
+Threads that can be scheduled independently like this are called Kernel threads. However some libraries provide user-level threads which are technically not capable of being
+scheduled independently but still are provided since they increase the ease of programming
+\section{Shared data in Threading}
+Take a process that creates two threads. These threads both take a global variable \texttt{count} (which was intitialized to 0 in outside the function) and runs a for loop to increment it 10 million times. Let's assume both
+threads are created and then join is called after they are both created. What will be the value of count if we print it after both threads are done? One would expect it to be 20 million logically. However this is not always the case. We end up geting values lesser 
+than 20 million. Why does it happen?
+
+So line of code to increment a variable is actually three different instructions. 
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Read:} The value of the variable is obtained and put in a register
+    \item \textbf{Increment:} The value in the register is incremented
+    \item \textbf{Write:} Register value written into memory 
+\end{itemize} 
+
+When two threads are executing (A and B).Let us assume the variable has value i at sometime. It is possible that A is in the increment step(has read i) when B is reading (also reads i). So A writes in i+1 into memory followed by B also writing i+1 into memory.
+We just double counted once. Such incidents can happen several time leading to the incorrect values. Such incorrect execution of code due to concurrency is called a \textit{race condition}. 
+
+These happen when there is a concurrent execution on shared data. Thus we need to be careful and establish \textit{mutual exclusion}\footnote{Access of a data only by one thread at a time} on 
+some user/OS code,data. Such sections of the program which need mutual exclusion are called critical sections. 
 \end{document}
 
 
