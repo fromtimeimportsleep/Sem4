@@ -3,6 +3,7 @@
 ### Quizzes/Deadline dates here, along with syllabus
 
 - **Mar 21 (THU)** - CS 236 Lab quiz 2
+- **Mar 24 (SUN)** - CS 208 Homework 3 submission
 - **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), Class Hours** - CS 217 quiz 2
 - **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
@@ -11,28 +12,12 @@
 
 ### Compensation classes
 
-- **Mar 14 (THU), 9:30-10:25 AM** - CS 208 lecture (Replacing CS 218)
 - **Mar 25 (SUN), 2-5 PM** - CS 240 Lab (Remote submissions allowed)
 - **Mar 30 (SAT), 11-12:30 PM** - CS 217 lecture
 
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
-
-## Wednesday
-
-- **CS 217** - Recurrent Neural Network, NLP example, different structures as one-many, many-many etc, Training NN, Backward Propagation, disadvantages
-
-## Thursday
-
-- **CS 219** - Memory management in xv6, kalloc and kfree functions, struct kmap, setupkvm, mappages, walkpgdir functions
-- **CS 218 Lec 1** - Examples for problems in P and Not in P, Every Optimization problem as a Decision problem
-- **CS 218 Lec 2** - Equivalence in Problems, Reductions, SAT problem, Verification, Definition on NP, Examples for NP
-- **CS 236** - Dynamic memory management, Implementing malloc using mmap syscall
-
-## Saturday
-
-- **CS 217** - Need of convolutional neural networks, convolution operation, filtering with horizontal, vertical edge detectors, padding, striding, maxpooling, the CNN architecture, backpropagation in CNN
 
 ## Monday
 
@@ -46,6 +31,21 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208 Lec 1** - Correctness and Uniqueness of algo for min DFA, new equivalence relation ~, same no of equivalence classes
 - **CS 208 Lec 2** - Myhill-Nerode Theorem, Languages beyond regular, Using stack as memory device
 - **CS 219** - Memeory allocation in Exec, loaduvm, guard page, intro to Linux memory management, Next lab explanantion
+
+## Wednesday
+
+- **CS 217** - Support Vector Machine, hard margin and soft margin classifiers, Lagrangian, introduction to kernelization
+
+## Thursday
+
+- **CS 219** - Threads and their advantages, shared memory in threads, Concurrency vs parallelism, POSIX threads and example, Race conditions, Critical sections
+- **CS 208 Lec 1** - Defenition of Push Down Automata, Example to construct PDA from Language, Acceptance by final state and Empty stack, one side of equivalence between them
+- **CS 208 Lec 2** - Other side of equivalence, DPDA and NPDA, no equivalencs and example,
+- **CS 236** - xv6 Memory management, demand paging with mmap system call, Copy-on-Write Fork
+
+## Friday
+
+- **CS 217** - Kernel functions and its uses in SVM, Unsupervised learning, K-means clustering, convergence and local optima proof
 
 # Timetable
 
