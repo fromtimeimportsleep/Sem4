@@ -7,7 +7,7 @@
 - **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2
 - **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
-- **Apr 09 (TUE), 11:35-12:30** (Class Hours) - CS 219 quiz 2
+- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2
 - **Apr 21 (SUN), 2-5 PM** - CS 240 Endsem Lab Exam
 
 ### Compensation classes
