@@ -2,7 +2,6 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Mar 21 (THU)** - CS 236 Lab quiz 2
 - **Mar 24 (SUN)** - CS 208 Homework 3 submission
 - **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2
