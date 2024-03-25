@@ -61,7 +61,32 @@
   most optimal way to exit $S$. So by the time we go to $v'$, and then we get from $v'$ to $v$, we can't have some bottleneck greater
   than just directly going to $v$. So we just keep adding vertices to our set $S$ till we finally take $t$ itself.
 
-  \item
+  \item Not sure how to think of this, just got this example online \emoji{grinning-face-with-sweat}.
+  
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{IrrationalCapacities.png}  
+  \end{figure}
+
+  $X$ here is some large number, take it as 100 or something, and $\phi$ is the golden ratio, $\frac{\sqrt{5} - 1}{2}$. 
+  There are 4 residual paths we will keep using, $A$, $B$ and $C$. 
+  Let's say the first path chosen is the top one, and the residual capacities in the 3 middle edges from left to right 
+  are now $1, 0, \phi$ respectively. We will inductively prove that they will be $\phi^{n-1}, 0, \phi^n$ after a series of operations. 
+  Now assume it's true for $n=k$, we'll get it to $n = k+2$.
+  
+  \begin{itemize}
+    \item Push along path $B$, adding $\phi^k$ flow. The capacities become $\phi^{k-1} + \phi^k = \phi^{k+1}, \phi^k, 0$
+    \item Push along path $C$, adding $\phi^k$ flow. The capacities become $\phi^{k+1}, 0, \phi^k$
+    \item Push along path $B$, adding $\phi^{k+1}$ flow. The capacities become $0, \phi^{k+1}, \phi^k + \phi^{k+1} = \phi^{k+2}$
+    \item Push along path $A$, adding $\phi^{k+1}$ flow. The capacities become $0, \phi^{k+1}, \phi^k + \phi^{k+1} = \phi^{k+2}$
+  \end{itemize}
+
+  So if we keep repeating the above operations, how much flow are we adding? Initially we had a flow of 1, total flow we get is 
+  
+  \[ 1 + \sum_{k=1}^\infty \phi^k + \phi^k = 1 + \frac{2}{1 - \phi} =  4 + \sqrt{5} \]
+
+  But this is clearly not the max flow, we could have just made a flow in the left most path and right most path, and path $B$, 
+  getting a flow of $2X + 1$ which for large $X$ is definitely more than $4 + \sqrt{5}$.
 
   \item As the hint says, we will first choose $\triangle = \sum_e c_e$. And since we want some logarithmic time complexity, at each 
   point where we can't increase the max flow, we will half the value of $\triangle$. So we will have some $\log(\sum_e c_e)$ iterations
@@ -119,6 +144,11 @@
   if and only if every $C_j t$ edge had flow $d_j$, and this is only possible if we found $d_j$ edges to $C_j$ with flow value 1 coming from different 
   TAs. Converse is easy to show, if we have a suitable TA allocation we can construct a flow equal to $d_1 + \dots + d_k$.
 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{TAallocation.png}  
+  \end{figure}
+
   Let $(A, B)$ be the minimum cut of this graph. Let $X, X'$ be the TA's in $A$, $B$ respectively. And $Y, Y'$ be the courses in $A$, $B$ 
   respectively. We are going to prove that $Y'$ is a set of courses for which the total number of TAs eligible for them is less than the demand.
   Let's see what all edges are in the cut. Firstly there are edges from $s$ to all of $X'$, so the capacities sum to $|X'|$. Then there are edges
@@ -154,7 +184,51 @@
     $k$, we'll also be able to find a matching greater than $n-k$, which is a contradiction. 
   \end{itemize}
 
-  \item
+  \item Let $(A,B)$ be some cut with capacity $n-k$. What we are first going to do is to modify our cut by adding more nodes to $A$, without increasing the 
+  capacity. Suppose $i < j$ i.e. $l_i r_j$ is an edge, with $l_i \in A$ and $r_j \in B$. We will just move $r_j$ to $A$ from $B$. How does our cut capacity 
+  change? We will gain the edge $r_j t$ but we are at least losing 1 edge, which is $l_i r_j$ itself. So overall our cut capacity can't really increase.
+  We just keep doing this, add as many $r_j$'s as we can, until none of the $l_i r_j$ edges are part of the cut. Now we claim that, the set of $i$ such that
+  $l_i \in A$ and $r_i \in B$ is an antichain. Can $i,j$ in this set be comparable? If $i<j$, $l_i r_j$ will be an edge. 
+  We know $l_i \in A, r_j \in B$. But we just extended $A$ such that none of these are part of the cut, so this isn't possible. Now what's the size of our
+  antichain? Let's think about the cut capacity which is the number of edges in the cut. $l_i, r_j$ type edges aren't part of the cut, so only possibilities
+  are $s, l_i$, and $r_i, t$ type edges. The only $i$ for which neither of them are an edge in the cut is if $l_i \in A$ and $r_i \in S$, which is exactly
+  the elements which aren't in our antichain. What about the case where both are in the cut? Doesn't matter, we are just saying there is at least 1 of these 
+  edges for every $i$ which isn't in our antichain i.e capacity is at least $n -$ (number of elements in antichain). We also have the fact that capacity is 
+  atmost $n-k$. So in the end we get an antichain of size at least $k$.
 
+  This actually proves Dilworth's theorem, as the number of chains we can partition into is exactly equal $n - maxflow = n - mincut$. 
+  Say the number of chains is $k$, then the maxflow, and mincut is equal to $n-k$
+  And if the mincut is equal to $n-k$, we can find an antichain of size at least $n - (n-k) = k$. We can't do better than $k$, else we'll pick 2 elements in
+  the same chain.
+
+  \item We first reverse all the edges of a graph i.e. we draw a directed edge from $i$ to $j$ if $j$ is a prerequisite for $i$. We also give it a capacity 
+  of $\infty$. The motivation for this is like follows, as we are reducing this question to a mincut question, we want to make sure that none of these edges 
+  are in the cut else we choose a project without its prerequisite, and infinite capacity edges won't ever be part of the mincut. Now we add a source $s$ and
+  a sink $t$. If $p_i$ is positive we connect $s$ to $i$ with capacity $p_i$. If $p_i$ is negative we connect $i$ to $t$ with capacity $-p_i$. Because of 
+  the infinite edges we know that the mincut will satisfy precedence constraints. 
+
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{ProjectSelection.png}  
+  \end{figure}
+
+  Now let's look at a random cut $(A,B)$ and try to see what is its capacity. There are $(s,i)$ type edges, whose sum is basically $\sum_{i \in B, p_i>0} c_{si}$.
+  There are also $(i,t)$ type edges whose sum will be $\sum_{i \in A, p_i<0} c_{it}$. No infinite type edges will be there in any $A$ which satisfies precedence 
+  constraints. The total capacity is hence
+  \begin{align*}
+    c(A,B) &= \sum_{i \in B, p_i>0} c_{si} + \sum_{i \in A, p_i<0} c_{it} \\
+    &= \sum_{i \in B, p_i>0} p_i + \sum_{i \in A, p_i<0} -p_i \\
+    &= \sum_{i, p_i>0} p_i - \sum_{i \in A, p_i>0} p_i - \sum_{i \in A, p_i<0} p_i \\
+    &= \sum_{i, p_i>0} p_i - \sum_{i \in A} p_i
+  \end{align*} 
+
+  The first term is a constant no matter what $A$ is, so if we minimize the cut, we maximize $\sum_{i \in A} p_i$, which is exactly what we want.
+
+  \item We want a conservative estimate i.e we want the maximum number of tigers that we're sure have to exist. Experts have distinguished many $l_i$'s 
+  and $r_j$'s, but any pair which isn't represented by an edge could potentially be the same. Since we want to give a conservative estimate, we try to 
+  maximise the pairings. First what we do is complement the edges i.e. connect $l_i$'s and $r_j$'s which the experts aren't sure are different. And then 
+  find the largest matching possible (can be done by max flow). Our answer is basically $k + m + n -$ (maximum number of matchings), as each matching 
+  will decrease the answer from $k+m+n$ by 1.
+  
   \end{enumerate}
 \end{document}
