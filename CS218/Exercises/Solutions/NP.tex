@@ -46,19 +46,19 @@
 \setlength{\parindent}{0pt}
 
 \begin{document}
-\subsection*{\Large\bfseries NetworkFlow}
+\subsection*{\Large\bfseries Network Flow}
 \begin{enumerate}[label=\textbf{\arabic*.}]
 
     \item
     \begin{itemize}
         \item Don't know, we know that vertex cover without the word `minimum' is in NP, but there's no clear way to show that a particular
-        $k$ is minimum, how would you even give a proof for that which isn't brute forcing everything.
+        $k$ is minimum, how would you even give a proof that there is no vertex cover of size $k-1$ without brute force.
         \item Yes, this is in NP. We can actually just solve this problem in Polynomial time, as done in Q4 in Network Flow. So to 
         verify that the answer is $k$, we just solve it using our network flow algorithm and check if we also get $k$.
         \item Don't know, there's no clear way to prove that 2 programs are the same itself.
         \item Don't know, even though a proof could be just 2 inputs where the programs give different outputs, verifying this will take
         exponential time, either because the inputs could be exponentially large, or the program could take exponential time itself.
-        \item Don't know. If we have some $n$ `for all''s, we could have $2^n$ different choices of variables for which we have to verify 
+        \item Don't know. If we have some $n$ `for all's, we could have $2^n$ different choices of variables for which we have to verify 
         the formula as true, so a brute force proof will take exponential time. There is also no clear way to provide a shorter proof 
         in general, for any boolean formula.
     \end{itemize}
@@ -83,9 +83,10 @@
     \item For the load balancing problem, one machine is going to get some subset of $\{t_1, \dots, t_n\}$, and the other machine will get
     the rest of the elements. Let the subset of loads be $S$. The loads in each machine are $\sum_{i|t_i \in S} t_i$ and 
     $\sum_{i|t_i \notin S} t_i = \sum_i t_i - \sum_{i|t_i \in S} t_i$. Both of these should be at most $T$, from which we get the following 
-    inequalitiies, $\sum_{i|t_i \in S} t_i \leq T$, and $\sum_{i|t_i \in S} t_i \geq \sum_i t_i - T$. The terms on the RHS of each inequality are 
+    inequalities, $\sum_{i|t_i \in S} t_i \leq T$, and $\sum_{i|t_i \in S} t_i \geq \sum_i t_i - T$. The terms on the RHS of each inequality are 
     constants no matter what $S$ is. So we can see that this is now very similar to the knapsack problem. So our motivation will be like this,
-    we are going to make sure $W_1, W_2$ add to sum of all the weights, so that we can reduce to load balancing. So let's do that.
+    we are going to make sure $W_1, W_2$ add to sum of all the weights (by adding a new weight $w'$), 
+    so that we can reduce to load balancing. So let's do that.
 
     Let $w'$ be such that $\sum_i w_i + w' = W_1 + W_2$ i.e. $w' = W_1 + W_2 - \sum_i w_i$, we are adding this new weight to our list of weights,
     and are now going to do load balancing with $T = w_2$. If we have a solution for this, choose the set of loads which don't have $w'$, and 
@@ -103,13 +104,13 @@
 
     \begin{align*}
         \sum_{i| w_i \in S} w_i &\geq W_1 \\
-        \sum_{i| w_i \in S} w_i + \sum_{i| w_i \notin S} w_i + W_2 &\geq W_1 + W_2 + \sum_{i| w_i \notin S} \\
-        \sum_i w_i + W_2 &\geq W_1 + W_2 + \sum_{i| w_i \notin S} \\
-        W_2 &\geq W_1 + W_2 - \sum_i w_i + \sum_{i| w_i \notin S} = w' + \sum_{i| w_i \notin S}
+        \sum_{i| w_i \in S} w_i + \sum_{i| w_i \notin S} w_i + W_2 &\geq W_1 + W_2 + \sum_{i| w_i \notin S} w_i \\
+        \sum_i w_i + W_2 &\geq W_1 + W_2 + \sum_{i| w_i \notin S} w_i \\
+        W_2 &\geq W_1 + W_2 - \sum_i w_i + \sum_{i| w_i \notin S} = w' + \sum_{i| w_i \notin S} w_i
     \end{align*}
 
     \item Each variable in our formula $\phi$ can be a variable in our linear equations. If $x_1, \dots, x_n$ are the variables, we put the 
-    constraints $0 \leq x_i \leq 1$ to ensure each variable is 0 or 1. Now how do we write clauses? Take the clause $x_1 \land \lnot x_2 \land x_4$.
+    constraints $0 \leq x_i \leq 1$ to ensure each variable is 0 or 1. Now how do we write clauses? Take the clause $x_1 \lor \lnot x_2 \lor x_4$.
     To satisfy this clause we need at least one of $x_1, \lnot x_2, x_4$ to be 1. This can be actually represented as $x_1 + (1 - x_2) + x_4 \geq 1$.
     So we'll have $2n + k$ different linear inequalities ($n$ for all $x_i \geq 0$, $n$ for all $x_i \leq 1$, $k$ for each clause).
 
@@ -128,7 +129,7 @@
     backtrack on any path because each vertex has to be visited exactly once, and each can correspond to some assignment.
 
     Now we have to bring in the clauses. We add a node for each clause, and need to make sure it is visited only if the clause is satisfied.
-    Let's say our first clause $C_1$ is $x_1 \lor x_2 \land \lor x_3$. So whenever $x_1$ is true i.e we move left to right in row 1, we should 
+    Let's say our first clause $C_1$ is $x_1 \lor x_2 \lor \lnot x_3$. So whenever $x_1$ is true i.e we move left to right in row 1, we should 
     be able to visit $C_1$. So what we do is add an edge from 1 in row1 to $C_1$, and an edge from $C_1$ to 2 in row 1. So instead of going straight
     from 1 to 2, we can divert to $C_1$ and come back. Since we have $\lnot x_3$, we need to be able to visit $C_1$ while going from right to left.
     So we add an edge from 2 in row 3 to $C_1$, and an edge from $C_1$ to 1 in row 3. We're only going to use the first and second nodes in each row 
@@ -157,7 +158,7 @@
     at least one variable assignment is there to make every clause true. Similarly, if we have a satisfying assignment we'll definitely have a
     Hamiltonian cycle. We can find out in which direction to move through each row from the assignment. Since the assignment is satisfying, there 
     will be at least 1 variable assignment making each clause true, and whatever that is, we can take a detour there and visit that clause. Since
-    allocated different sections for each variable connecting to each clause, this is feasible.
+    we allocated different sections for each variable connecting to each clause, this is feasible.
 
 
 \end{enumerate}
