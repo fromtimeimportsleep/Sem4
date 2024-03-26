@@ -138,7 +138,7 @@
   \item Say we have TAs $T_1, \dots, T_n$. And courses $C_1, \dots, C_k$ each demanding $d_1, \dots, d_k$ TAs. All $T_i$'s and $C_j$'s will be nodes 
   of our graph. We draw a directed edge from $T_i$ to $C_j$ with capacity 1 if TA $T_i$ is eligible to take course $C_j$ and its flow value will
   indicate if $T_i$ is assigned course $C_j$. We connect $C_j$ to a sink
-  $t$ with an edge of capacity $d_j$, and its flow will denote the number of TAs assigned to that course. We draw an edge from source $s$ to $C_i$
+  $t$ with an edge of capacity $d_j$, and its flow will denote the number of TAs assigned to that course. We draw an edge from source $s$ to $T_i$
   with capacity 1 to make sure that the TA takes maximum 1 course\footnote{KarGo \emoji{clown-face}}, and its flow value denotes if the TA has 
   been selected for some course. And that's it, we check the max flow from $s$ to $t$ and check if it's equal to $d_1 + \dots + d_k$. This is possible 
   if and only if every $C_j t$ edge had flow $d_j$, and this is only possible if we found $d_j$ edges to $C_j$ with flow value 1 coming from different 
