@@ -69,21 +69,21 @@
   \end{figure}
 
   $X$ here is some large number, take it as 100 or something, and $\phi$ is the golden ratio, $\frac{\sqrt{5} - 1}{2}$. 
-  There are 4 residual paths we will keep using, $A$, $B$ and $C$. 
+  For this version of golden ratio $1 - \phi = \phi^2$ There are 3 residual paths we will keep using, $A$, $B$ and $C$. 
   Let's say the first path chosen is the top one, and the residual capacities in the 3 middle edges from left to right 
   are now $1, 0, \phi$ respectively. We will inductively prove that they will be $\phi^{n-1}, 0, \phi^n$ after a series of operations. 
   Now assume it's true for $n=k$, we'll get it to $n = k+2$.
   
   \begin{itemize}
-    \item Push along path $B$, adding $\phi^k$ flow. The capacities become $\phi^{k-1} + \phi^k = \phi^{k+1}, \phi^k, 0$
+    \item Push along path $B$, adding $\phi^k$ flow. The capacities become $\phi^{k-1} - \phi^k = \phi^{k+1}, \phi^k, 0$
     \item Push along path $C$, adding $\phi^k$ flow. The capacities become $\phi^{k+1}, 0, \phi^k$
-    \item Push along path $B$, adding $\phi^{k+1}$ flow. The capacities become $0, \phi^{k+1}, \phi^k + \phi^{k+1} = \phi^{k+2}$
-    \item Push along path $A$, adding $\phi^{k+1}$ flow. The capacities become $0, \phi^{k+1}, \phi^k + \phi^{k+1} = \phi^{k+2}$
+    \item Push along path $B$, adding $\phi^{k+1}$ flow. The capacities become $0, \phi^{k+1}, \phi^k - \phi^{k+1} = \phi^{k+2}$
+    \item Push along path $A$, adding $\phi^{k+1}$ flow. The capacities become $\phi^{k+1}, 0, \phi^{k+2}$
   \end{itemize}
 
   So if we keep repeating the above operations, how much flow are we adding? Initially we had a flow of 1, total flow we get is 
   
-  \[ 1 + \sum_{k=1}^\infty \phi^k + \phi^k = 1 + \frac{2}{1 - \phi} =  4 + \sqrt{5} \]
+  \[ 1 + \sum_{k=1}^\infty (\phi^k + \phi^k) = 1 + \frac{2}{1 - \phi} =  4 + \sqrt{5} \]
 
   But this is clearly not the max flow, we could have just made a flow in the left most path and right most path, and path $B$, 
   getting a flow of $2X + 1$ which for large $X$ is definitely more than $4 + \sqrt{5}$.
@@ -192,7 +192,7 @@
   $l_i \in A$ and $r_i \in B$ is an antichain. Can $i,j$ in this set be comparable? If $i<j$, $l_i r_j$ will be an edge. 
   We know $l_i \in A, r_j \in B$. But we just extended $A$ such that none of these are part of the cut, so this isn't possible. Now what's the size of our
   antichain? Let's think about the cut capacity which is the number of edges in the cut. $l_i, r_j$ type edges aren't part of the cut, so only possibilities
-  are $s, l_i$, and $r_i, t$ type edges. The only $i$ for which neither of them are an edge in the cut is if $l_i \in A$ and $r_i \in S$, which is exactly
+  are $s, l_i$, and $r_i, t$ type edges. The only $i$ for which neither of them are an edge in the cut is if $l_i \in A$ and $r_i \in B$, which is exactly
   the elements which aren't in our antichain. What about the case where both are in the cut? Doesn't matter, we are just saying there is at least 1 of these 
   edges for every $i$ which isn't in our antichain i.e capacity is at least $n -$ (number of elements in antichain). We also have the fact that capacity is 
   atmost $n-k$. So in the end we get an antichain of size at least $k$.
@@ -228,7 +228,7 @@
   \item We want a conservative estimate i.e we want the maximum number of tigers that we're sure have to exist. Experts have distinguished many $l_i$'s 
   and $r_j$'s, but any pair which isn't represented by an edge could potentially be the same. Since we want to give a conservative estimate, we try to 
   maximise the pairings. First what we do is complement the edges i.e. connect $l_i$'s and $r_j$'s which the experts aren't sure are different. And then 
-  find the largest matching possible (can be done by max flow). Our answer is basically $k + m + n -$ (maximum number of matchings), as each matching 
+  find the largest matching possible (can be done by max flow). Our answer is basically $k + m + n \ -$ (maximum number of matchings), as each matching 
   will decrease the answer from $k+m+n$ by 1.
   
   \end{enumerate}
