@@ -155,7 +155,8 @@
   from $X$ to $Y'$, we don't know how many, and there are edges from $Y$ to $t$ which sum to $\sum_{i|C_i \in Y} d_i$. Let's think about how many TAs
   in $X$ and $X'$ are suitable for courses in $Y'$. So for each TA in $X$ suitable for some course in $Y'$ there will at least be 1 edge from the TA 
   to $Y'$. So we can say number of edges from $X$ to $Y'$ is $\geq$ number of TA in $X$ eligible for $Y'$. And trivially, number of TAs eligible for
-  $Y'$ in $X' \geq |X'|$. Now we are going to combine all these results.
+  $Y'$ in $X' \leq |X'|$. 
+  Now we are going to combine all these results.
   
   \begin{align*}
     c(A,B) &< maxflow = \sum_i d_i \\
