@@ -89,8 +89,8 @@
     so that we can reduce to load balancing. So let's do that.
 
     Let $w'$ be such that $\sum_i w_i + w' = W_1 + W_2$ i.e. $w' = W_1 + W_2 - \sum_i w_i$, we are adding this new weight to our list of weights,
-    and are now going to do load balancing with $T = w_2$. If we have a solution for this, choose the set of loads which don't have $w'$, and 
-    call this set $S$. We know that $\sum_{i|w_i \in S} w_i \leq T = w_2$, now let's write the inequality for the other set.
+    and are now going to do load balancing with $T = W_2$. If we have a solution for this, choose the set of loads which don't have $w'$, and 
+    call this set $S$. We know that $\sum_{i|w_i \in S} w_i \leq T = W_2$, now let's write the inequality for the other set.
 
     \begin{align*}
         \sum_{i|w_i \notin S} w_i + w' &\leq T = W_2 \\
