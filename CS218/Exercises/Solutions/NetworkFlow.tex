@@ -119,7 +119,7 @@
   $2m$ iterations, cause $flow + m \triangle$ is already bigger than maxflow. So we have a result that each iteration has a maximum of $2m$ inner
   iterations, which is a term independent of $\sum_e c_e$. So now we're done, we got a time complexity proportional to $\log(\sum_e c_e)$
   We don't have to worry about the inner iterations being depending on this summation, each one of them is just finding a path from $s$ to $t$,
-  actually our overall time complexity is $O(\sum_e c_e \times m \times m)$.
+  actually our overall time complexity is $O(\log(\sum_e c_e) \times m \times m)$.
 
   \item If the question was find minimum number of edges to disconnect, it becomes much easier. We just make each edge have a capacity of 1, and find
   the max flow. Why does this work? Firstly if the max flow was $k$, you have $k$ edge disjoint paths from $s$ to $t$. You need to delete at least 1 
