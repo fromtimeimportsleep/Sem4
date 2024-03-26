@@ -159,13 +159,13 @@
   Now we are going to combine all these results.
   
   \begin{align*}
-    c(A,B) &< maxflow = \sum_i d_i \\
+    c(A,B) = maxflow &< \sum_i d_i \\
     \sum_{e:s \rightarrow X'} c_e + \sum_{e:X \rightarrow Y'} c_e + \sum_{e:Y \rightarrow t} c_e &< \sum_{i|C_i \in Y} d_i + \sum_{i|C_i \in Y'} d_i \\
     |X'| + |\{e:X \rightarrow Y'\}| + \sum_{i|C_i \in Y} d_i &< \sum_{i|C_i \in Y} d_i + \sum_{i|C_i \in Y'} d_i \\
     |X'| + |\{e:X \rightarrow Y'\}| &< \sum_{i|C_i \in Y'} d_i
   \end{align*}
 
-  Since the first term is $\geq$ number of TAs in $X'$ eligible for $Y'$, and second term in $\geq$ number of TAs in $X$ eligible for $Y'$, in the end
+  Since the first term is $\geq$ number of TAs in $X'$ eligible for $Y'$, and second term is $\geq$ number of TAs in $X$ eligible for $Y'$, in the end
   we the fact that total number of TAs eligible for $Y'$ is less than demand of TAs for $Y'$.
 
   \item 
