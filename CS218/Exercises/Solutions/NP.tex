@@ -111,7 +111,54 @@
     \item Each variable in our formula $\phi$ can be a variable in our linear equations. If $x_1, \dots, x_n$ are the variables, we put the 
     constraints $0 \leq x_i \leq 1$ to ensure each variable is 0 or 1. Now how do we write clauses? Take the clause $x_1 \land \lnot x_2 \land x_4$.
     To satisfy this clause we need at least one of $x_1, \lnot x_2, x_4$ to be 1. This can be actually represented as $x_1 + (1 - x_2) + x_4 \geq 1$.
-    So we'll have $2n + k$ different linear inequalities.
+    So we'll have $2n + k$ different linear inequalities ($n$ for all $x_i \geq 0$, $n$ for all $x_i \leq 1$, $k$ for each clause).
+
+    \item We'd like to create a graph where there's a cycle corresponding to all of the $2^n$ possible assignments to variables $x_1, \dots, x_n$.
+    How we do this is as follows, we make a path for each $x_i$, which can be traversed forwards and backwards. If moving from left to right, it's
+    like assuming $x_i$ is 1, and right to left denotes assigning $x_i$ as 0. We will have connecting edges to move from 1 variable to the next,
+    and one source and sink vertex. The length of each path is going to be twice the number of clauses (we'll see why we need this length later,
+    just assume we choose some random length for now). Assume we have 4 variables, $x_1$ to $x_4$.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\textwidth]{Hamiltonian1.png}  
+    \end{figure}
+
+    In the above graph, there will be $2^4$ Hamiltonian cycles, because for each row, we can either go left to right, or right to left. We can't 
+    backtrack on any path because each vertex has to be visited exactly once, and each can correspond to some assignment.
+
+    Now we have to bring in the clauses. We add a node for each clause, and need to make sure it is visited only if the clause is satisfied.
+    Let's say our first clause $C_1$ is $x_1 \lor x_2 \land \lor x_3$. So whenever $x_1$ is true i.e we move left to right in row 1, we should 
+    be able to visit $C_1$. So what we do is add an edge from 1 in row1 to $C_1$, and an edge from $C_1$ to 2 in row 1. So instead of going straight
+    from 1 to 2, we can divert to $C_1$ and come back. Since we have $\lnot x_3$, we need to be able to visit $C_1$ while going from right to left.
+    So we add an edge from 2 in row 3 to $C_1$, and an edge from $C_1$ to 1 in row 3. We're only going to use the first and second nodes in each row 
+    for $C_1$, these are allocated for $C_1$. Similarly third and fourth nodes are for $C_2$, fifth and sixth nodes are for $C_3$. Why are we keeping
+    different nodes for each clause? This is because the same assignment can make multiple clauses true, maybe even all clauses so we want to have
+    the option of allowing an assignment to visit any number of clauses while moving along the row. Below is how the graph will look after filling
+    everything for $C_1$, and also we have the full graph if $C_2$ is $\lnot x_2 \lor x_3 \lor x_4$, and $C_3$ is $x_1 \lor \lnot x_2 \lor x_4$.
+
+    \begin{figure}[H]
+        \centering
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{C1Hamiltonian.png}
+            \caption*{After Clause 1}
+        \end{subfigure}
+        \hfill
+        \begin{subfigure}[b]{0.45\textwidth}
+            \centering
+            \includegraphics[width=\textwidth]{FinalHamiltonian.png}
+            \caption*{Final Graph}
+        \end{subfigure}
+    \end{figure}
+
+    Now if we find a Hamiltonian cycle in the graph, we can easily find out the assignment which works. Just see in which direction we move in 
+    each row, and correspondingly assign each variable. This will satisfy the assignment as the Hamiltonian cycle visits every clause, meaning 
+    at least one variable assignment is there to make every clause true. Similarly, if we have a satisfying assignment we'll definitely have a
+    Hamiltonian cycle. We can find out in which direction to move through each row from the assignment. Since the assignment is satisfying, there 
+    will be at least 1 variable assignment making each clause true, and whatever that is, we can take a detour there and visit that clause. Since
+    allocated different sections for each variable connecting to each clause, this is feasible.
+
 
 \end{enumerate}
 \end{document}
