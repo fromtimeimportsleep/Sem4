@@ -5,11 +5,13 @@
 \counterwithin*{section}{part}
 \usepackage{enumitem}
 \usepackage{listings}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{subfig}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{multicol}
 \usepackage{tcolorbox}
 \usepackage{xcolor}
 \lstset{language=C++,
@@ -381,7 +383,7 @@ However note that some signals like SIGKILL can't be overriden by a process's si
 \section{Trap handling}
 \label{section:trap}
 As we saw before the CPU can execute instructions in User mode or Kernel mode with differing level of privileges\footnote{Refer \ref{section:Isolation}}.
-The process of going to Kernel mode is called a "Trap" the CPU \textit{traps} into the OS code via the running process\footnote{read further to find out what a trap is}.
+The process of going to Kernel mode is called a ``Trap'' the CPU \textit{traps} into the OS code via the running process\footnote{read further to find out what a trap is}.
 The OS isn't a seperate processes it just runs in the same process which called it (by trapping the OS) just in the Kernel mode of the CPU.
 
 Note: Random doubt, How are interrupts and signals different. Interrupt is a message from a \textit{device} to the system which is handled by OS.
@@ -1662,7 +1664,7 @@ Why would you want to thread a process?
     \item Blocking syscalls. When a process recieves a blocking syscall the entire process blocks. However if we have threads we need to only block the corresponding thread and parts of the process which still can be executed can run without wasting time
 \end{itemize}
 Instead of threading a process why do we not just create multiple processes executing each part of the process. The problem with this approach is that each segment will have its own memory image which will
-be wasteful. Further more importantly, if we have multiple process there is no convenient way to communicate across processes. IPC mechanisms are not very efficienct/user friendly. However in threading due to the fact
+be wasteful. Further more importantly, if we have multiple process there is no convenient way to communicate across processes. IPC mechanisms are not very efficient/user friendly. However in threading due to the fact
 that the memory image is shared among threads we have an extremely convenient way to communicate across threads. 
 
 Thus threading can be thought of as an efficient way to modularise a process such that each thread performs a different function.
@@ -1698,13 +1700,315 @@ So line of code to increment a variable is actually three different instructions
     \item \textbf{Write:} Register value written into memory 
 \end{itemize} 
 
-When two threads are executing (A and B).Let us assume the variable has value i at sometime. It is possible that A is in the increment step(has read i) when B is reading (also reads i). So A writes in i+1 into memory followed by B also writing i+1 into memory.
+When two threads are executing (A and B). Let us assume the variable has value i at sometime. It is possible that A is in the increment step(has read i) when B is reading (also reads i). So A writes in i+1 into memory followed by B also writing i+1 into memory.
 We just double counted once. Such incidents can happen several time leading to the incorrect values. Such incorrect execution of code due to concurrency is called a \textit{race condition}. 
 
 These happen when there is a concurrent execution on shared data. Thus we need to be careful and establish \textit{mutual exclusion}\footnote{Access of a data only by one thread at a time} on 
 some user/OS code,data. Such sections of the program which need mutual exclusion are called critical sections. 
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 22}
+    \end{center}
+}
+\section{Locks}
+As seen before, \textit{race conditions} can mess up data structures very quickly. Imagine a linked list which is accessed by two threads. 
+The head of the list could be read by both threads for performing an insertion without either of them performing the instertion itself. So both threads have the same head and insert an element unaware of the other thread inserting an element before it and then an insertion could be done. After this due to a race condition we can 
+have a situation like below
+
+\begin{center}
+\begin{tikzpicture}
+    \centering
+    \draw (0,0) rectangle (1,1);
+    \node at (0.5,0.5) {Head};
+    \draw[->] (1,0.5)--(2,0.5);
+    \draw (2,0) rectangle (3,1);
+    \draw[->] (1,0.5)--(2,0.5);
+    \draw[->] (2.5,-1)--(2.5,0);
+    \node at (2.5,-1.5) {Head};
+    \draw (4,0) rectangle (5,1);
+    \draw[->] (3,0.5) -- (4,0.5);
+    \draw (2,-2) rectangle (3,-1);
+    \draw[->] (5,0.5) -- (6,0.5);
+    \draw (6,0) rectangle (7,1);
+    \draw[->] (7,0.5) -- (8,0.5);
+    \draw (8,0) rectangle (9,1);
+\end{tikzpicture}
+\end{center}
+
+A lock is a variable that enables use to prevent other threads from accessing a data structure which is being used by another thread.
+Locks enable us to protect critical sections of code. Thus locks are important to protect the integrity of our data sturctures. 
+
+What would we like to have in a lock?
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item \textbf{Mutual Exclusion:} The locks should ensure mutual exclusion
+    \item \textbf{Fairness:} A process must not be able to hold onto a lock indefinitely, it must release the lock once it's use is done to ensure fairness. 
+    \item \textbf{Low overhead:} Maintaining, locking and releasing locks should not have large overheads and hurt efficiency.  
+\end{itemize} 
+\subsection{How to implement a lock?}
+Let's say we have a flag to indicate that a section of code is locked. If a thread wants to execute a critical section it checks for the 
+lock flag and if it is set to one the code of the thread is not run. The flag is checked repeatedly and once it is set to 0 we start running the thread. 
+
+The problem with this approach is that there can be a race condition on setting this flag itself. That is, multiple threads read the flag at the the same time and all think they have access to critical code.
+This breaks mutual exclusion completely. Infact while there exists many implementations of software locks all of them share some sort of race condition which breaks them. Another
+solution could be to make the thread to communicate to the OS to not context switch it out until the lock is released. This however hands over the control of the CPU to the process, which is extremely undesirable.
+Such a method could enable the thread to completely monopolize the CPU. 
+
+So it is clear there must be a change at the hardware level.  
+\subsection{Spin Lock}
+\subsection*{Hardware Atomic instructions}
+The entire problem arises from the fact that multiple instructions are needed to perfrom a single operation and thus halfway through an operation,
+we can have a context switch. What if this operation can be performed by one instruction?
+
+\subsubsection*{test-and-set}
+Atomic instructions do exactly that. An operation is hard-coded into the CPU as a single instruction. 
+The \textit{test and set} instruction is an atomic instruction that enables the use of a lock. A variable called \texttt{islocked} 
+is maintained in the OS. When there is a need to acquire a lock pass the address of \texttt{islocked} and the value 1 as a parameter to the function. 
+The instruction returns 1 if the variable is already set to 1. If not it accquires the lock (ie)
+changes the value of the lock to 1 and returns 0 to the thread which executed that instruction. Thus when 1 is returned the thread waits and when 0 is returned, it has
+accquired the lock and can start executing relevant code. 
+\subsubsection*{compare-and-swap}
+This is also an atomic instruction. It takes in three parameters the address of the variable, expected old value, new value. 
+It checks if the value of the variable is the same as the expected value and if so it updates it to the new value and returns true.
+If the expected value is not correct then false is returned without swapping. CAS\footnote{compare-and-swap} can also be used to implement a lock
+
+These types of locks are called spinlocks. The threads loop around \textit{spinning} in a while loop constantly checking if the lock if free when they are scheduled in. Once they find that
+the lock is free the accquire it and start executing the relevant code. However the above implementations we saw do not guarantee fairness since which process accquires the lock is not deterministic and thus the same process could obtain it several times more 
+than others. Performance also is hurt badly since all the other processes(without the lock) do when they are context switched in is spin for their entire time slice. 
+
+\subsection{Mutex}
+Another option to have an implementation of a lock is a \textbf{sleeping mutex}. The thread can go to sleep while waiting for a lock.
+This is useful when critical sections are larger since the waiting for a lock is much worse than context swtiching. In shorter critical sections however, it maybe ideal to wait rather 
+than facing the overhead of context switching. 
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 23}
+    \end{center}
+}
+\subsection{Guidelines for locks}
+It is good practice to acquire and release locks for reading\footnote{Since reading data before it is updated by another thread is undesirable} and writing data. However using locks comes with an overhead thus we do not want to waste 
+resources by using them unnecessarily. 
+
+
+\section{Locks in xv6}
+There are no threads in xv6 and no two userspace programs 
+access the same memory image. However we have kernel data that is accessed by multiple processes in kernel mode, possibly concurrently.
+Thus we need locks while accessing data structures like the ptable.
+
+xv6 has an atomic instruction called \texttt{xchg} which is basically test-and-set. 
+In kernel mode locks however there is an important change. All interrupts are stopped when a process in kernel holds a lock
+for kerenel data structures. Why is this?
+
+\subsection{Deadlock}
+Take a case where a process is accessing the ptable(and thus has accquired the lock on the ptable) and gets an timer interrupt. The process is supposed to be context swtiched to another process. However the scheduler 
+also needs to access the ptable and thus needs to accquire the lock. It will now continue spinning for the lock. However for the lock to get released we need to make the old process run. This will never happen as the scheduler keeps waiting for 
+the lock to get released and thus never reschedules this process in so that it can release the lock. Thus the entire system is in a \textit{deadlock} unable to perform anything. 
+
+However unlike in user mode, giving the OS access to stop interrupts is not dangerous. Thus we can just block all interrupts when a lock is held to solve this issue.
+How is this implemented? Interrupts can't be reenabled every time a lock is released. There maybe multiple locks held by the OS at that point which all need to be released before interrupts are renabled. Thus we have a 
+counter which is updated everytime a lock is accquired and released. Only if the counter goes to zero the interrupts reenabled. This counter (ie) \texttt{mycpu()->ncli} is updated using \texttt{pushcli()} and \texttt{popcli()}\footnote{To increment and decrement ncli respectively}
+
+\subsection{Context switching}
+An interesting point about context switiching is to be noted now that we have an idea of locks. When a context swtich happens a process gives up control via the yield, exit or sleep functions. Each of these functions accquire the ptable lock before calling the scheduler. This lock cannot be released until after the
+scheduling is completely done. Otherwise there would have been race conditions on the ptable's data. So who ends up releasing the ptable lock? To understand this, we need to know where the process that was context switched in starts executing from. What was the last function called before being that process was context 
+switched out? It was either yield, exit or sleep. So before returning from these fucntions the ptable lock which was accquired but the process scheduled just before these processes is released. What if it was a newly created process? The OS 
+returns to \texttt{forkret} when the process is context switched in, and \texttt{forkret} is the one who releases the ptable lock. Infact this is the reason why the EIP value in the context structure is set to \texttt{forkret} instead of trapret and return to user mode directly.
+
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 24}
+    \end{center}
+}
+\section{Condition variables}
+In real life systems, threads are used to implement a master, worker model. There is a master thread taking in requests and sending them to any free worker to be executed.
+Now the problem is how does the worker know that a request is available? It could be checking for requests everytime it gets scheduled but that is wasteful. Rather we could make the master
+signal to a worker when we have a job to be done. Also it is important to note that the queue needs to be protected by locks to maintain mutual exclusion. 
+
+\textit{Conditional variables} exist for the purpose of this signalling.
+
+For example if there are two threads T1,T2 and we want T2 to run only after T1, we can use a conditional variable `v' and a normal variable `done' to indicate T1 is well..done . T1 can run and after it is done signal on the conditional variable.
+T2 can check if done is true and if not just wait on `v'. When T1 is done the signal sent on `v' will wake up T2 and upto that point T2 will wait. What is the point of `done' then? Incase T2 is only scheduled after T1, it would have missed the signal on `v' to wake up since it never waited on `v' upto that 
+point and would hence wait indefinitely. The condtional check makes sure that if T1 is already done T2 starts running.
+
+
+\subsection{Lock in conditional variables}
+Some points to note about conditional variables:
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item It is advisable to check for the condition that a thread has run in a while loop instead of an if condition, since in some cases we signal to a wait unintentionally before the corresponding thread to be completed it actually done. 
+    \item There could be race conditions on the check whether a thread has completed so we need to put the conditional check under a lock. Also our checking, waiting instructions must be atomic (ie) checking the condition to wait and then waiting must happen together before the other thread is executed. The lock ensures this by blocking the other thread till the thread which is supposed to wait releases the lock. This lock is shared between both the threads.
+    \item Usually a signal(`v') just wakes up one thread arbitrarily out of those which hold the corresponding conditional variable. A signal broadcast can be used to wake up all such threads. 
+\end{itemize}
+
+A problem with locking is that when T2 locks it can't unlock before calling wait as that could cause race conditions. For example T2 could check the condition to wait, but before waiting T1 can execute fully and even signal on `v'. Thus T2 will then wait and without getting the signal wait indefinitely.
+
+This is called the \textit{missed wakeup} problem and is the whole point of using locks to create atomicity. Thus the lock needs to be unlocked just before sleeping. This problem is solved by passing the lock as an argument to wait. The wait function unlocks the given lock 
+just before sleeping and reaccquires said lock just after waking up. The pseudo code for this mechanism is given below
+\begin{multicols}{2}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+\begin{verbatim}
+//Code in Thread 1//
+lock(&mutex)
+done = true
+signal(cv)
+//tell thread 2 to start//
+unlock(&mutex)
+\end{verbatim}
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black]
+\begin{verbatim}
+lock(&mutex)
+while(!done){
+    wait(cv, &mutex)
+}
+\\Code in Thread 2\\
+unlock(&mutex)
+\end{verbatim}
+\end{tcolorbox}
+\end{multicols}
+
+\newpage
+\noindent\tbox{
+    \begin{center}
+    \textbf{\Huge Lecture 25}
+    \end{center}
+}
+\subsection{Examples for using Conditional variables}
+The master worker model we stated before can have many models for how the worker should start executing corresponding to requests recieved. 
+\subsubsection{Producer and Consumer problem}
+In this model we have a producer thread and a consumer thread. They share data via a buffer of bounded size. The producer places items onto the buffer. The conusmer 
+reads from said buffer and performs the appropriate task. How to coordinate between threads?
+
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item The producer should block if the buffer is filled untill a data is used by consumer thus generating space for consumer. 
+    \item The consumer should block if the buffer is empty and wait for producer to write into it. 
+\end{itemize}
+
+How to we maintain this synchronization? We take two conditional variables `p' and `c' for waking up producer and consumer respectively. 
+When a request is given by producer it signals on `c' to wake up consumer for the request. Similarly before writing a request it waits if the buffer is full up untill the 
+consumer has read off the buffer and signals on `p' indicating it to write a request into buffer. The consumer waits as long as the buffer is empty, until it gets signalled by `c'.
+
+Thus we have synchronization between producer and consumer. 
+\begin{figure}[H]
+\begin{minipage}{.5\textwidth}
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+\begin{verbatim}
+    lock(&mutex)
+    while(!buffer.isfull){
+    wait(p, &mutex)
+    }
+    \\Code to write into buffer\\
+    signal(c)
+    //tell c to start reading//
+    unlock(&mutex)
+\end{verbatim}
+\end{tcolorbox}
+\caption{Producer Code}
+\end{minipage}
+\hspace{0.05\textwidth}
+\begin{minipage}{.5\textwidth}
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black]
+\begin{verbatim}
+    lock(&mutex)
+    while(!buffer.isempty){
+    wait(c, &mutex)
+    }
+    \\Code to read\\
+    signal(p)
+    //tell p to start writing//
+    unlock(&mutex)
+\end{verbatim}
+\end{tcolorbox}
+\caption{Consumer Code}
+\end{minipage}
+\end{figure}
+
+
+\subsubsection{Batch processing problem}
+This is similar to the producer consumer problem but is different in that the thread to service requests needs a batch of requests say `N' requests to run. 
+Thus our requesting thread must wait until a request it made is done. The servicing thread waits till it obtained N requests. 
+
+
+\begin{figure}[H]
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+    \begin{verbatim}
+    lock(&mutex)
+    count++
+    if(count == N){
+        signal(s)
+    }
+    while(!batch_start){
+        wait(r,&mutex)
+    }
+//Code after request service//
+    unlock(&mutex)
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Requesting Code}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black]
+    \begin{verbatim}
+    lock(&mutex)
+    while(count != N){
+    wait(s, &mutex)
+    }
+    \\Code to service\\
+    batch_done = true
+    signal_broadcast(r)
+\\Sending message to requests\\
+    unlock(&mutex)
+    
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Servicing Code}
+    \end{minipage}
+    \end{figure}
+   
+Note that here if the signal is sent after wait in requesting code, the Nth thread would never send a signal 
+and we would have a dealock. It is important to follow some guidelines to prevent issues like this. Such deadlocks are difficult to debug and 
+good programming practices to prevent them go a long way. 
+\vspace{0.5cm}
+\subsection{Tips for synchronization}
+\begin{itemize}[topsep=0pt, partopsep=0pt, itemsep=0pt, parsep=0pt]
+    \item Identify at what time each entity must wait and when it must get signalled.
+    \item For each wait work through the scenario where it gets signal. Make sure the signalling happens in the desired scenario. 
+    \item Ensure that the signal condition isn't blocked in anyway like waiting before signalling, bad if conditions. 
+    \item Update all the variables used in conditions correctly
+    \item Dry run possible exectution, signalling scenarios.  
+\end{itemize}
+
+Special care needs to be taken to avoid deadlocks. A couple of ways to ensure this are to make sure to have planned how a 
+thread is gonna be awoken whenever sleep is called. We must also prevent circular lock scenarios. Say locks A,B are present to be given to threads T1,T2. If 
+T1,T2 accquires lock A,B respectively both will wait for the other lock indefinitely. To prevent circular deadlocks, accquire locks in the same order in all threads.  
+
+
+\section{Sleep and wakeup in xv6}
+Even in xv6 we need to use a "wakeup" mechanism to wake up processes which have gone to sleep. Processes which have requested disk access go to sleep up 
+until the access is completed to optimize CPU usage and thus need to woken up once the request is serviced. 
+
+When the disk request is serviced the OS raises an interrupt. Assume process P1 requested disk access and P2 is the process running when the request has completed. 
+Now P2 goes to kernel mode to handle the interrupt and calls \texttt{wakeup()}. Wakeup marks P1 as runnable but does not context switch to it immediately. P1 is then scheduled later when the scheduler is 
+run
+
+A lock is maintained and is accquired when calling \texttt{sleep()} {and} \texttt{wakeup()} to have atomicity. How does P2 know which process to wake up? Analogous to condtional variables, xv6 has channels which 
+is a variable maintained in the \textit{struct proc} of a process. The channel is any value known to both process. For a disk access it could just be the address of the disk block which P2 can obtain since it was interrupted after 
+the disc access.
+
+\subsection{\texttt{wait()} in parent,child}
+When \texttt{wait} is called by the parent it is made to sleep and gives up CPU. In the \texttt{exit()} called by a child it 
+accquires the ptable lock (needed to call wakeup) and then calls \texttt{wakeup1()} giving struct proc of parent as an argument. Again we can reiterate that the 
+child cannot clean up it's own memory since all of the page table, kernel stack are all in use and they cannot be cleared till the process is taken off the CPU. 
+
+\subsection{\texttt{sleep(), wakeup()} in pipe}
+An example of the producer, consumer synchronization problem is pipes in xv6. When a pipe is full we need to call sleep on a call to write into the pipe up until there has been anothe read on the pipe. 
+Similarly up when the pipe is empty there is a sleep called on a read call which waits until there is write on the pipe. The address of the nwrite, nread\footnote{Number of bytes written, read from pipe respectively} variables are passed as channels for the sleep called on write, read respectively.
+
+
+As mentioned before the same lock needs to be held when calling sleep and wakeup to maintain atomicity of these instructions. When we call \texttt{wakeup()}, we also accquire the ptable lock so that 
+we can change a process's state to runnable. If the lock accquired for sleep also is ptable's lock, then wakeup1() can be directly called without mentioning the lock needed.  
 \end{document}
-
-
-
 
