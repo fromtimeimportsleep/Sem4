@@ -2,49 +2,45 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Mar 24 (SUN)** - CS 208 Homework 3 submission
-- **Mar 27 (WED)** - CS 218 quiz 2
 - **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2
-- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2
-- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2
-- **Apr 21 (SUN), 2-5 PM** - CS 240 Endsem Lab Exam
+- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2, **Syllabus** - Everything after Midsems
+- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2, **Syllabus** - Everything after Midsems
+- **Apr 14 (SUN), 11:59 PM** - CS 218 Programming assignment 2
+
+## Endsem Exams
+
+- **Apr 21 (SUN), 2-5 PM**  - CS 240
+- **Apr 22 (MON), 2-5 PM**  - CS 218
+- **Apr 26 (FRI), 2-5 PM**  - CS 219
+- **Apr 29 (MON), 2-5 PM**  - CS 208
+- **Apr 30 (TUE), 9-12 PM** - CS 236
+- **May 02 (TUE), 2-5 PM**  - CS 217
 
 ### Compensation classes
 
-- **Mar 25 (SUN), 2-5 PM** - CS 240 Lab (Remote submissions allowed)
 - **Mar 30 (SAT), 11-12:30 PM** - CS 217 lecture
+- **Apr 05 (FRI), 8:30-9:30 AM** - CS 208 lecture
 
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
 
-## Monday
-
-- **CS 208 Lec 1** - Pumping lemma, algorithm for verifying Infinite/Finite language, Counter example for Converse of Pumping => regular
-- **CS 219** - Memory allocatio to child in fork, copyuvm, Copy-on-write fork, growproc, allocuvm, PAS utilised in xv6 being half of VAS
-- **CS 208 Lec 2** - Indistisguishability as equivalence relation, algo for dividing into equivalent classes, min DFA from division
-- **CS 240** - Recurrent Neural Networks from scratch using numpy, using Pytorch library
-
 ## Tuesday
 
-- **CS 208 Lec 1** - Correctness and Uniqueness of algo for min DFA, new equivalence relation ~, same no of equivalence classes
-- **CS 208 Lec 2** - Myhill-Nerode Theorem, Languages beyond regular, Using stack as memory device
-- **CS 219** - Memeory allocation in Exec, loaduvm, guard page, intro to Linux memory management, Next lab explanantion
+- **CS 208** - CFL's closure and non-closure operations, Turing Machines (TM) definition, demo runs, accepting languages
+- **CS 218** - Linear Programming Formulation and Simplex
+- **CS 219** - Conditional Variables, Producer consumer problem
 
 ## Wednesday
 
-- **CS 217** - Support Vector Machine, hard margin and soft margin classifiers, Lagrangian, introduction to kernelization
+- **CS 217** - Sequential move games, games with partial information, games with no information, subgame and subgame perfection
 
 ## Thursday
 
-- **CS 219** - Threads and their advantages, shared memory in threads, Concurrency vs parallelism, POSIX threads and example, Race conditions, Critical sections
-- **CS 208 Lec 1** - Defenition of Push Down Automata, Example to construct PDA from Language, Acceptance by final state and Empty stack, one side of equivalence between them
-- **CS 208 Lec 2** - Other side of equivalence, DPDA and NPDA, no equivalencs and example,
-- **CS 236** - xv6 Memory management, demand paging with mmap system call, Copy-on-Write Fork
-
-## Friday
-
-- **CS 217** - Kernel functions and its uses in SVM, Unsupervised learning, K-means clustering, convergence and local optima proof
+- **CS 219** - Batched Processing, Sleep and Wakeup functions in xv6 and their usages in pipes, wait and exit syscalls
+- **CS 208** - Examples of TM, Acceptance by final state and by halting
+- **CS 218** - Min cost vertex cover problem, Greedy Aprox algo for ILP, Using corresponding LP to prove 
+- **CS 236** - Pthreads Synchronization, Using locks and Conditional Variables, Master-Worker Thread Pool
 
 # Timetable
 
@@ -93,7 +89,7 @@ Weightage of everything for grades
 
 ### Design and Analysis of Algorithms
 
-- 3 Homework Assignments - 5% each
+- 2 Homework Assignments - 5% each
 - 2 Quizzes - 10% each
 - Midsem - 25%
 - Endsem - 40%
