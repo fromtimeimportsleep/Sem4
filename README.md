@@ -2,9 +2,9 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2
-- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2, **Syllabus** - Everything after Midsems
-- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2, **Syllabus** - Everything after Midsems
+- **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2, **Syllabus** - Lecture 11 to 20
+- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2, **Syllabus** - Everything after Midsems untill quiz
+- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2, **Syllabus** - Everything after Midsems until Apr 1
 - **Apr 14 (SUN), 11:59 PM** - CS 218 Programming assignment 2
 
 ## Endsem Exams
@@ -18,7 +18,6 @@
 
 ### Compensation classes
 
-- **Mar 30 (SAT), 11-12:30 PM** - CS 217 lecture
 - **Apr 05 (FRI), 8:30-9:30 AM** - CS 208 lecture
 
 # Weekly Recap
@@ -41,6 +40,10 @@ Summary of what happened (topics covered) in classes this week could go here
 - **CS 208** - Examples of TM, Acceptance by final state and by halting
 - **CS 218** - Min cost vertex cover problem, Greedy Aprox algo for ILP, Using corresponding LP to prove 
 - **CS 236** - Pthreads Synchronization, Using locks and Conditional Variables, Master-Worker Thread Pool
+
+## Saturday
+
+- **CS 217** - Depth-limited search, Pruning for Sequential games, Reconnaissance Blind Chess, Simultaneous games and its equilibria
 
 # Timetable
 
