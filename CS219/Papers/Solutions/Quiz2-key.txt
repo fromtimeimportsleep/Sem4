@@ -1,0 +1,56 @@
+(1) 
+//arrive in exam hall
+lock(mutex)
+count_students_arrived++
+if(count_students_arrived==N) signal(cv_instructor1)
+wait(cv_students_arrived, mutex)
+unlock(mutex)
+//start receiving question paper
+lock(mutex)
+count_students_qp++
+if(count_students_qp==N) signal(cv_instructor2)
+wait(cv_students_qp, mutex)
+unlock(mutex)
+//start exam
+
+(2) Global variables needed: mutex, barrier_count = 0, barrier_cv
+
+Code: 
+
+lock(mutex);
+barrier_count++;
+if(barrier_count < N) wait(barrier_cv, mutex)
+else signal_broadcast(barrier_cv)
+unlock(mutex)
+return;
+
+OR 
+
+lock(mutex);
+barrier_count++;
+if(barrier_count < N) wait(barrier_cv, mutex)
+signal(barrier_cv)
+unlock(mutex)
+
+(3) 
+(a) Many answers possible. One of them is below.
+
+T1 runs n1->next = top and context switched out
+T2 runs n2->next = top
+T1 runs top = n1
+T2 runs top = n2
+
+So, now list has n2 on top, n2 is on the side, but not part of stack
+
+(b) This implementation with CAS will not cause race conditions. In the example above, the update to top will fail for one of the threads, because the old value of top will not match after another thread updates top. So the thread whose CAS fails will retry and push to stack correctly.
+
+(4) (a) BGADHE
+(b) AGHE
+
+(5)
+(a) F
+(b) T
+(c) F
+(d) F
+(e) T
+(f) F

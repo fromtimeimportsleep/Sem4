@@ -2,9 +2,6 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Apr 03 (WED), 11:05-12:30** (Class Hours) - CS 217 quiz 2, **Syllabus** - Lecture 11 to 20
-- **Apr 03 (WED), 21:00-23:30** - CS 208 quiz 2, **Syllabus** - Everything after Midsems untill quiz
-- **Apr 04 (THU), 08:30-09:25** (Class Hours) - CS 219 quiz 2, **Syllabus** - Everything after Midsems until Apr 1
 - **Apr 14 (SUN), 11:59 PM** - CS 218 Programming assignment 2
 
 ## Endsem Exams
@@ -16,34 +13,31 @@
 - **Apr 30 (TUE), 9-12 PM** - CS 236
 - **May 02 (TUE), 2-5 PM**  - CS 217
 
-### Compensation classes
-
-- **Apr 05 (FRI), 8:30-9:30 AM** - CS 208 lecture
-
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
 
 ## Tuesday
 
-- **CS 208** - CFL's closure and non-closure operations, Turing Machines (TM) definition, demo runs, accepting languages
-- **CS 218** - Linear Programming Formulation and Simplex
-- **CS 219** - Conditional Variables, Producer consumer problem
-
-## Wednesday
-
-- **CS 217** - Sequential move games, games with partial information, games with no information, subgame and subgame perfection
+- **CS 208** - Equivalence of non-deterministic and deterministic TMs, Equivalence of TM with Sigle ended and Two-side infinitely long tape, Equivalence of TM and Two stacks or Counters
+- **CS 218** - Continuing Radomized algo for 2D Linear Programming, 2 cases of subproblem, Probability of cases and Expected Runtime
+- **CS 219** - Semaphores, Semaphore as a lock and conditional variables, Solving problems using them
 
 ## Thursday
 
-- **CS 219** - Batched Processing, Sleep and Wakeup functions in xv6 and their usages in pipes, wait and exit syscalls
-- **CS 208** - Examples of TM, Acceptance by final state and by halting
-- **CS 218** - Min cost vertex cover problem, Greedy Aprox algo for ILP, Using corresponding LP to prove 
-- **CS 236** - Pthreads Synchronization, Using locks and Conditional Variables, Master-Worker Thread Pool
+- **CS 208** - Counter machines, 3-counter machine with 2 counters, A computer by a Turing machine
+- **CS 218** - Simplex Algorithm, Defining Corner or Basic feasible solution, Standard form of LP, Geometric interpretation of simplex
 
-## Saturday
+## Friday
 
-- **CS 217** - Depth-limited search, Pruning for Sequential games, Reconnaissance Blind Chess, Simultaneous games and its equilibria
+- **CS 208** - Recursively enumerable languages, TM's and strings as Natural numbers, Proving existance of non-recursively enumerable languages
+- **CS 217** - Normal form game representation, String and Weak Dominant strategy, Pure and Mixed Nash equilibria
+
+## Monday
+
+- **CS 218** - Alzebra in CS, modular arithmetic Features of QR code, Error correction algorithm in QR codes
+- **CS 219** - I/O subsystem, I/O instructions and Memory mapped I/O, Interrupt handler, Direct Memory Access (DMA)
+- **CS 208** - Revision of Friday's class, Reccursive Languages, Notion of Undecidability
 
 # Timetable
 
