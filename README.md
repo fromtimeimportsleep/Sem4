@@ -2,7 +2,8 @@
 
 ### Quizzes/Deadline dates here, along with syllabus
 
-- **Apr 14 (SUN), 11:59 PM** - CS 218 Programming assignment 2
+- **Apr 19 (FRI), 11:59 PM** - CS 218 Programming assignment 2
+- **Apr 20 (SAT), 11:59 PM** - CS 208 Homework assignment 4
 
 ## Endsem Exams
 
