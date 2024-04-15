@@ -7,12 +7,12 @@
 
 ## Endsem Exams
 
-- **Apr 21 (SUN), 2-5 PM**  - CS 240
-- **Apr 22 (MON), 2-5 PM**  - CS 218
-- **Apr 26 (FRI), 2-5 PM**  - CS 219
-- **Apr 29 (MON), 2-5 PM**  - CS 208
-- **Apr 30 (TUE), 9 - 12**  - CS 236 [MORNING EXAM]
-- **May 02 (TUE), 2-5 PM**  - CS 217
+- **Apr 21 (SUN), 2-5 PM**     - CS 240
+- **Apr 22 (MON), 2-5 PM**     - CS 218
+- **Apr 26 (FRI), 2-5 PM**     - CS 219
+- **Apr 29 (MON), 2-5 PM**     - CS 208
+- **Apr 30 (TUE), 9-12 NOON**  - CS 236 [MORNING EXAM]
+- **May 02 (THU), 2-5 PM**     - CS 217
 
 # Weekly Recap
 
