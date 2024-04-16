@@ -14,6 +14,20 @@
 - **Apr 30 (TUE), 9-12 NOON**  - CS 236 [MORNING EXAM]
 - **May 02 (THU), 2-5 PM**     - CS 217
 
+## Syllabus for Endsems
+
+- **CS 218** - Lecture 1-35 (the last one by Akash not included), with more emphasis on the post-midsem part
+- **CS 219** - Lecture Slides 1-19
+- **CS 240** - Labs 1-13 (at least 30% marks from the content before midsem)
+- **CS 208** - 
+- **CS 236** - <br>
+
+        5 marks - testing the basics of writing a shell using fork/exec/wait system calls.
+        5 marks - a simple question testing the basics of using pthreads, locks, condition variables. 
+        7 marks - a more challenging problem on multithreading
+        8 marks - a question based on the filesystems lab
+- **CS 217** - Week 1-12 or Lectures 1-24
+
 # Weekly Recap
 
 Summary of what happened (topics covered) in classes this week could go here
