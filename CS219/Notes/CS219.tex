@@ -970,7 +970,6 @@ provides it to MMU.
 Why do we need the MMU? Why not the OS? This is primarily since we don't want to trap into the kernel for every memory access. The OS does the background work
 of allocating memory for processes and maintaing the virtual address $\rightarrow$ physical address mapping and simply passes on the information to the MMU.
 The MMU deals with translation of virtual memory to real memory. During Bootup the OS starts on the MMU and starts giving it translation information.
-
 \begin{figure}
     \begin{center}
         \includegraphics[width = 6cm]{memory_allocation.png}
@@ -2010,5 +2009,181 @@ Similarly up when the pipe is empty there is a sleep called on a read call which
 
 As mentioned before the same lock needs to be held when calling sleep and wakeup to maintain atomicity of these instructions. When we call \texttt{wakeup()}, we also accquire the ptable lock so that 
 we can change a process's state to runnable. If the lock accquired for sleep also is ptable's lock, then wakeup1() can be directly called without mentioning the lock needed.  
+
+
+\section{Semaphore}
+It is a synchronization primitive like a conditional variable. It can be used to achieve synchronization like a conditional variable. 
+The \textit{Semaphore} is a variable with an underlying counter\footnote{There is also an underlying lock not accessible to us}. Note that this variable's counter cannot be accessed directly.
+
+The operations performed on a semaphore are:
+\begin{itemize}[topsep = 0cm, partopsep =  0cm, parsep = 0cm, itemsep = 0cm]
+    \item \textbf{Init}: Initialises a semaphore to the given value
+    \item \textbf{Down/Wait}: The counter is decremented by one, the calling thread is blocked if the counter is negative
+    \item \textbf{Up/Post}: The counter is incremented and it wakes up one thread that was blocked on a semaphore before
+\end{itemize}
+
+Regardless of what the exact value is when we call \texttt{Up()} on a semaphore it wakes up a thread, unlike a \texttt{down()} which 
+only blocks when the counter is negative after a decrement. 
+
+\subsection{How to use Semaphores?}
+Assume a semaphore `sem' is initialized to 1. Multiple threads can use the semaphore for mutual exclusion. When `sem' is 0, any 
+further downs make it block. Else if the semaphore is set to a positive number any down will not block and any up will unlock a process. 
+
+Such semaphores used as locks are called binary semaphores. 
+
+
+A semaphore can be used by calling down on it before a thread starts running the critical section and after the critical section an up is called.
+
+Example:  T1 must run after T2
+
+The semaphore is initialised to 0. Ater runnning its critical section, T1 calls an \texttt{up()} on the semaphore. T2 calls \texttt{down} on the semaphore and then \texttt{up} after it runs it's critical section. 
+Only after the \texttt{up()} is called by T1 can the thread T2 run its critical section. Else it will be made to wait since the counter becomes neagtive. 
+
+Note that a semaphore used for signalling would not guarantee mutual exclusion and thus we must use additional locks or binary semaphores. 
+\subsection{Examples}
+\subsection*{Producer and Consumer}
+The same problem we solved using conditional variables before can also be solved using semaphores.
+Instead of maintaining a counter for the size of the buffer externally, due to the fact that the semaphore has an underlying counter it can be directly used. 
+Before the producer runs just decrement the `semempty' semaphore and after it is done with accepting the request increment the `semfilled' semaphore. 
+Similarly for the consumer call decrement on `semfilled' and after a request is processed increment the `semempty' semaphore.
+
+
+
+\begin{figure}[H]
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+    \begin{verbatim}
+    //Producer 
+    down(sem_empty)//initally N
+    //code to produce item//
+    up(sem_filled)
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Producer Code}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black]
+    \begin{verbatim}
+//Consumer
+down(sem_filled)//initially 0
+//code to consume item//
+up(sem_empty)
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Consumer}
+    \end{minipage}
+    \end{figure}
+
+
+
+
+
+When the `semempty' semaphore blocks then the buffer is full and if the `semfilled' blocks the semaphore is empty. 
+Note that a semaphore doesn't implement a lock to prevent two producers from interleaving their executions. That is multiple producer threads can interleave their execution of the critical section. Thus there is a need to 
+use an additional binary semaphore to lock the critical section. 
+
+
+\subsection*{Batched Processing}
+Again the same problem has been solved with conditional variables. How to use semaphores for this problem?
+
+A semaphore `mutex' initialised to 1 is used as a lock to protect the counter. The semaphores `sem\_batch\_processor',`sem\_request' are initialised to 0.
+The batch processor waits on `sem\_batch\_processer' up until there is an up called on it when the Nth request is recieved. Similarly all the requests wait on 
+`sem\_request' till up is called on them n times by the batch processor. 
+
+
+
+\subsection{Guidelines for semaphores}
+Semaphores can be used to perform similar operations as a conditional variable. There cannot bea direct access to the semaphore
+
+
+
+
+\newpage
+\part{Devices}
+
+
+
+\section{Simple Device Model}
+
+There a many models using which devices are designed. Block devices store a set of numbered blocks\footnote{Example harddisks}. Character devices produce/consume a stream of bytes\footnote{Example keyboards}.
+These devices are interfaced with memory registers. There are three types of registers.\
+\begin{enumerate}
+    \item \textbf{Current Status of Device:} It tells us about the status of the device. For example the disk status register tells whether it can transfer data at the moment.
+    \item \textbf{Command Registers:}
+    \item \textbf{Data transfer Register:}
+\end{enumerate} 
+
+How does the OS communicate with these devices? The OS communicates with a device using the interface registers by reading/writing into/from them. These
+registers are completely owned by the devices and not a part of the CPU registers. 
+There are explicit IO instructions which can only be executed in kernel mode\footnote{These are called \texttt{in} and \texttt{out} in xv6 }.
+
+Another common way to do this is 
+to memory map a part of the memory available to the OS to the interface registers. The OS can simply read and write into this \textit{special memory locations} to read and write from 
+the interface registers. Note that this memory has no physical pages corresponding to their virtual addresses and are directly mapped to the interface registers. The hardware takes care of routing the 
+memory from here to the interface registers 
+
+\subsection{Simple IO requests}
+To write from a device made using this model, first the status register is read to make sure the device is not busy. 
+Then data is written into the transfer register and then a command is written into the command register and executed. After execution of the
+command the status register is periodically checked to make sure the writing is completed. 
+
+Now it is easy to see that checking whether the device is completed with the given requests is 
+wasteful. This is called \textbf{polling}. There is no reason to wait long periods for the completion of the request. 
+Thus we can use interrupts. An interrupt is raised when a given request is completed. Before the interrupt is raised the OS blocks the process which needed the IO request
+after which it runs other processes. Once the disk IO is done the interrupt is raised which make the OS mark the old process as RUNNABLE\footnote{It is not necessary that the old process is context swtiched to immediately}.
+
+\subsection{Direct Memory Access (DMA)}
+Even after using interrupts there is a wastage of time in copying data from the data transfer register of the device into the OS memory. 
+To prevent this wastage there is a seperate entity called the \textbf{DMA engine}. It copies from the main memory to device and vice versa without involving the CPU. 
+The CPU is interrupted only after the DMA engine also has copied the data. So the when the process is made RUNNABLE, it is absolutely read and done with its IO request is done. It is important to 
+understand that all devices are not DMA compatible but most modern devices are.  
+
+
+Thus the general flow of an IO request is like this. 
+A process P1 makes an IO requests. 
+
+
+\begin{tikzpicture}[node/.style={rectangle, draw, minimum size=0.8cm}]
+    \node[node] (n1) at (0,0) {1};
+    \node[node] (n2) at (1.5,0) {2};
+    \node[node] (n3) at (3,0) {3};
+    \node[node] (n4) at (4.5,0) {4};
+    
+    \draw[->] (n1.east) -- (n2.west);
+    \draw[->] (n2.east) -- (n3.west);
+    \draw[->] (n3.east) -- (n4.west);
+\end{tikzpicture}
+
+
+
+\section{File Abstractions}
+
+Some defintions to be known:
+\begin{itemize}
+    \item\textbf{File:} is a sequence of stored persistently/permanently on disk.
+    \item 
+    \item \textbf{Device Driver:} Part of the OS code that talks to a specific device, gives commands, handles interrupts\ldots etc. Most OS code abstracts out the 
+    device-specific details. A device also comes with a device driver code that enales us to communicate with it. 
+\end{itemize}
+
+The file system code is built as layers. There are syscalls, block read/write, 
+
+\begin{tikzpicture}[
+    every node/.style={circle, draw},
+    level 1/.style={sibling distance=3cm},
+    level 2/.style={sibling distance=1.5cm}
+  ]
+    \node {\texttt{root}}
+      child { node {2}
+        child { node {4} }
+        child { node {5} }
+      }
+      child { node {3}
+        child { node {6} }
+        child { node {7} }
+      };
+  \end{tikzpicture}
+
 \end{document}
 
