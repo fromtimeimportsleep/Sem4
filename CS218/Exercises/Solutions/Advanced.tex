@@ -196,5 +196,94 @@
     have to find the optimal point, which is just our 2D problem. If we use our 2D algorithm for this, the expected time to get the 
     new point is $O(i)$.
 
+    \item We change the constraints to $x_1, x_2, x_3, x_4 \geq 0$, and the equations are $x_1 + x_3 = 1, x_1 + x_2 + x_4 = 2$.
+    In the simplex algorithm, we like to keep the basic variables on one side of equality, in the equations, so let's write it 
+    as $x_3 = 1 - x_1$, and $x_4 = 2 - x_1 - x_2$. To find the values of the basic variables, you just look at the constant 
+    term in each equation, the other variables are 0 anyway. So $x_3 = 1$ and $x_4 = 2$.
+
+    Let's say we decide to increase $x_1$, and make it basic. The first equation can't increase $x_1$ more than 1, and the 
+    second one can't increase $x_1$ more than 2. So we choose the first equation as it's a stronger constraint. Rewriting it,
+    we get $x_1 = 1 - x_3$ and subbing this in the second equation, $x_4 = 1 + x_3 - x_2$. The point of this is that for each 
+    equation, the LHS should be only basic variables and RHS should be only non-basic variables.
+    The basic feasible solution is now $x_1 = 1, x_4 = 1$.
+    Now we also have to rewrite our objective function with basic variables. So $2x_1 + x_2 = 2 - 2x_3 + x_2$. 
+
+    Now we increase $x_2$. It's only part of the second equation, and it can be increased maximum to 1. So we rewrite it as 
+    $x_2 = 1 + x_3 - x_4$. Our basic feasible solution is now $x_1 = 1, x_2 = 1$.
+    Our objective function is now $2 - 2x+3 + (1 + x_3 - x_4) = 3 - x_3 - x_4$. Since all coefficients are negative now, we 
+    stop.
+
+    \item If we are at a point where our objective function is of the form $k - c_1 x_1 - c_2 x_2 - \dots - c_n x_n$, where 
+    all the $c_i$'s and $x_i$'s are non negative, clearly the objective function can't be more than $k$. But we have actually
+    achieved a value of $k$ as in our simplex method, the variables in the objective function are non-basic i.e. $0$. So 
+    this has to be the optimal solution.
+
+    \item If LP1 has a feasible solution, those same values of $x_i$'s will work for LP2, keeping all the $z_i$'s as $0$.
+    Which would mean that the value of the objective function is also $0$. And we clearly can't do better, as the $z_i$'s 
+    are supposed to be non negative. If LP2 has the optimal value as $0$, it has to be the case that all $z_i$'s are $0$ 
+    in the optimal solution, as they are non-negative. But if they are $0$, the LHS of all equations are 0, which means 
+    that the $x_i$'s satisfy LP1.
+    
+    \item Euclid's gcd algorithm gives us a way to find for any 2 integers $a, b$, some suitable $x, y$ such that $ax + by = \gcd(a,b)$.
+    If $a$ is a non-zero number mod $p$, $gcd(a,p) = 1$ (can't be anything else, as $p$ has to be divisible by the gcd).
+    This means we can find integers $x, y$ such that $ax + py = 1$ or $ax = 1 - py$. But this would just mean that $x$ 
+    is the multiplicative inverse of $a$ as $ax$ is 1 plus a multiple of $p$.
+    
+    \item Firstly if the leading coefficient isn't 1, we can just divide the whole polynomial by that coefficient to make 
+    it 1, clearly that doesn't change the roots. We'll prove this by induction, base case being constant polynomial obviously
+    having $0$ roots, which is atmost $0$. Now take polynomial of degree $d$. If it has no roots, our statement is true.
+    So assume it has a root $\alpha$. We can show that our polynomial is divisible by $x - \alpha$. If we do long division
+    by the term $x - \alpha$, $P(x) = (x - \alpha)Q(x) + c$ ($c$ is the 0 degree remainder). Subbing $P(\alpha) = 0$, we get that 
+    $c = 0$, so $P(x) = (x - \alpha)Q(x)$, where $Q(x)$ has to have degree $d-1$, with leading coefficient 1. We can now see 
+    that any other root of $P(x)$ has to be a root of $Q(x)$. As if $P(\alpha') = 0$, $(\alpha' - \alpha)Q(\alpha') = 0$. As
+    $\alpha' \neq \alpha$, $Q(\alpha') = 0$. But from our induction assumption, $Q(x)$ has atmost $d-1$ roots, which would mean 
+    $P(x)$ has at most $d$ roots, which are the roots of $Q(x)$ along with $\alpha$.
+
+    Actually the same idea holds if you work modulo $p$, where $p$ is prime. The starting of the proof is the same, let's 
+    proceed from $P(x) = (x - \alpha)Q(x) + c$. $P(\alpha) = 0 \mod p$ means $c = 0 \mod p$, so since we're working modulo $p$, 
+    we can ignore $c$. Now for any other root $\alpha'$ of $P(x)$, we get $(\alpha' - \alpha)Q(\alpha') = 0$, since $\alpha 
+    \neq \alpha' \mod p$, we can actually multiply by its multplicative inverse of $(\alpha' - \alpha)$ on both sides to get that 
+    $Q(\alpha') = 0$. So again, every otehr root of $P(x)$ is a root of $Q(x)$. By our induction assumption, since $Q(x)$ 
+    has degree $d-1$ and leading coefficient 1, it has atmost $d-1$ roots. So $P(x)$ has atmost $d$ roots, which are the roots 
+    of $Q(x)$ and $\alpha$.
+
+    Note that we did use the fact that $p$ is prime while multiplying by the multiplicative inverse. The whole factor theorem
+    idea only works if we have facts like $ab = 0$ implies $a = 0$ or $b = 0$. In fact if $p$ wasn't prime our statement is 
+    false. For example $x^2 - 1 = 0 \mod 8$ has 4 distinct roots - $1, 3, 5, 7$.
+
+    \item Assuming none of the points have the same x coordinate, and the question means degree atmost $d$.
+    
+    It's easy to prove that there can be atmost 1 curve. Assume there are 2 distinct curves of degree atmost $d$ which pass through
+    all the points. But then their polynomial difference would evaluate to 0 at all these points. This would mean we have a polynomial
+    of degree atmost $d$ has $d+1$ roots, which isn't possible unless the polynomial is literally 0, meaning the curves were
+    the same all along.
+
+    Now to show that there exists such a curve. Let the points it has to pass through be the following:
+    $(x_1, y_1), (x_2, y_2), \dots, (x_d, y_d)$. We'll try to find a polynomial of degree atmost $d-1$ which passes through all 
+    these points.
+
+    Think about the term $c_1(x - x_2)(x - x_3)\dots(x - x_d)$ where $c_1$ is some parameter. By tweaking $c_1$, note that the value 
+    of the term changes at only $x = x_1$ but stays equal to 0 at every other point $x_2, x_3, \dots, x_d$. In fact if we keep 
+    \[c_1  = \frac{y_1}{\prod_{j = 2}^n (x_1 - x_j)} \]
+    the term will evaluate to $y_1$ at $x_1$. If we just add such terms which only affect the values at $x_2, \dots, x_d$ we'll be 
+    done. So we have the following equation for $P(x)$:
+
+    \[P(x) = \sum_{i=1}^d c_i \left(\prod_{j \neq i} (x - x_j)\right) = \sum_{i=1}^d \frac{y_i}{\prod_{j \neq i} (x_i - x_j)} \left(\prod_{j \neq i} (x - x_j)\right) \]
+
+    If we think about it, when we evaluate $P(x_i)$, the $i^{th}$ term is the only non-zero term in the summation, and $c_i$ has been 
+    chosen specifically such that $P(x_i) = y_i$. This is clearly a polynomial with degree atmost $d-1$ which satisfies our conditions
+    so we have proven our claim. This polynomial construction is known as Lagrange interpolation.
+    
+    \item Using the idea above, let's construct $P(x)$ like the following:
+
+    \[ P(x) = c_1(x-1)(x-2)(x-5) + c_2(x)(x-2)(x-5)+ c_3(x)(x-1)(x-5) + c_4(x)(x-1)(x-2) \]
+
+    By substituting $x = 0,1,2,5$, we get $c_1 = -3/10, c_2 = 1/2, c_3 = -1/3, c_4 = 1/60$. So that's our 3rd degree polynomial.
+
+    \item If we choose some random 68 points, we know that a maximum of 32 can be modified points, so we'll get a minimum of 36 unaltered 
+    points. There's only a unique curve of degree at most 35 passing through these 36 points, and we know our original curve that 
+    we started has degree atmost 35 and passes through these 36 points. So our original curve is the only curve which passes 
+    through these 36 points, and hence has to be the only curve which passes through the 68 points.
+    
 \end{enumerate}
 \end{document}
