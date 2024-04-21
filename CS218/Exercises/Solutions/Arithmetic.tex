@@ -253,7 +253,7 @@
     \end{align*}
 
     The coefficients look like they are going in a sliding window, and whenever you see this, think of convolutions. Observe the convolution
-    of the arrays: $[q_0, q_1, q_2, q_3]$ and $[-1/3^2, -1/2^2, -1/1^2, 0, 1/1^2, 1/2^2, 1/3^2]$. In general if the first row has $n$ charges,
+    of the arrays: $[q_0, q_1, q_2, q_3]$ and \\ $[-1/3^2, -1/2^2, -1/1^2, 0, 1/1^2, 1/2^2, 1/3^2]$. In general if the first row has $n$ charges,
     the second array has $2n-1$ terms. The convolution will have $n + (2n-1) - 1 = 3n - 2$ terms. If you just ignore the first and last $n-1$ 
     terms, the middle of the convolution array is going to be your answer. And since both arrays are $O(n)$, convolution will take $O(n \log n)$
     time.
