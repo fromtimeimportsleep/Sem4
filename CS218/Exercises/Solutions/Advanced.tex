@@ -187,7 +187,7 @@
     pyramid (since this solid has only plane faces, it can be the feasible region of a linear program). The corner is part of 4 planes, 
     and none of them are redundant. But for this question we will move the planes a bit such that no 4 planes intersect at a corner.
 
-    After we introduce the $i^{th}$ the optimal point is going to be part of exactly 3 of the planes, so the proability that the final
+    After we introduce the $i^{th}$ constraint, the optimal point is going to be part of exactly 3 of the planes, so the probability that the final
     plane has the optimal point is $3/i$, so the probability the optimal point doesn't change is $1 - 3/i$. Suppose the optimal point 
     changes, we know that it's going to be part of the new plane, by a similar proof as in the 2D case.
 
@@ -243,7 +243,7 @@
     proceed from $P(x) = (x - \alpha)Q(x) + c$. $P(\alpha) = 0 \mod p$ means $c = 0 \mod p$, so since we're working modulo $p$, 
     we can ignore $c$. Now for any other root $\alpha'$ of $P(x)$, we get $(\alpha' - \alpha)Q(\alpha') = 0$, since $\alpha 
     \neq \alpha' \mod p$, we can actually multiply by its multplicative inverse of $(\alpha' - \alpha)$ on both sides to get that 
-    $Q(\alpha') = 0$. So again, every otehr root of $P(x)$ is a root of $Q(x)$. By our induction assumption, since $Q(x)$ 
+    $Q(\alpha') = 0$. So again, every other root of $P(x)$ is a root of $Q(x)$. By our induction assumption, since $Q(x)$ 
     has degree $d-1$ and leading coefficient 1, it has atmost $d-1$ roots. So $P(x)$ has atmost $d$ roots, which are the roots 
     of $Q(x)$ and $\alpha$.
 
