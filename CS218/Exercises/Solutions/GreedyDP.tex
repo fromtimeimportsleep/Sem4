@@ -392,7 +392,7 @@
   fixed. This is intuitive right, as at some point you have to reach row $i$ when moving from $(0,0)$ to $(m,n)$, and let's say you reach it at column $j$. The optimal solution is just going to be the shortest path to $(i,j)$ from $(0,0)$,
   and then shortest path to $(m,n)$ from $(i,j)$. This is $\min_j (f(i,j) + g(i,j))$. The same thing can be done by fixing $j$ and varying $i$.
 
-  Now we have a divide and conquer algo. Find $i$ which minimizes $f(i,n/2)$ and $g(i,n/2)$. Let's say the paths for both of these are stores on some global list. Just iterate over all $i$, find which of them minimizes this sum and store the 
+  Now we have a divide and conquer algo. Find $i$ which minimizes $f(i,n/2) + g(i,n/2)$. Let's say the paths for both of these are stores on some global list. Just iterate over all $i$, find which of them minimizes this sum and store the 
   sequence of nodes we traverse to get these. To get the list of nodes from the list given by $f(i,n/2)$ and $g(i,n/2)$, we just concatenate the lists. At any point, our only we use are these global lists, which store only $O(m+n)$ nodes.
   The main point is that we work only on one recursive call i.e. one value of $i$ at a time, and reuse our memory for different values of $i$. If we ensure this for all recursive calls, only then is the space complexity $O(m+n)$. Interestingly
   at every point in our recursion, our list will store some path from $(0,0)$ to $(m,n)$, holding $O(m+n)$ edges. We can also have another global list to store the best path we have so far.
@@ -402,7 +402,7 @@
   $c \times (i \times n/2 + (m-i) \times n/2)$. This doesn't really look good right, the time complexity is going above $O(mn)$. Is there a way to do this without iterating over all $i$ like this?
 
   There's actually another way to do our normal dp idea, using $O(m)$ space. Since in our dp our first row only depends on the array entries of the previous row, it's enough to store just the latest 2 rows. This acutally solves our whole question
-  in $O(mn)$ time and $O(m)$ space but the problem is that we can't backtrack and find the path itself, as we are deleting the old rows. But this can help in actually finding the $i$ which minimizes $f(i,n/2)$ and $g(i,n/2)$. We can do our $O(m)$
+  in $O(mn)$ time and $O(m)$ space but the problem is that we can't backtrack and find the path itself, as we are deleting the old rows. But this can help in actually finding the $i$ which minimizes $f(i,n/2) + g(i,n/2)$. We can do our $O(m)$
   space efficient dp to get $f(i,n/2)$ for all $i$, this is just the last row. We can also do backward space efficient dp to get $g(i,n/2)$ for all $i$. With the values of these 2 arrays, we can directly find the best $i$ from both of these arrays.
   So we don't have to call our divide and conquer algo for all $i$, just for the best one. 
 
