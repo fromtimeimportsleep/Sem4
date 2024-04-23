@@ -2055,7 +2055,9 @@ Similarly for the consumer call decrement on `semfilled' and after a request is 
     \begin{verbatim}
     //Producer 
     down(sem_empty)//initally N
+    down(mutex)
     //code to produce item//
+    up(mutex)
     up(sem_filled)
     \end{verbatim}
     \end{tcolorbox}
@@ -2067,13 +2069,15 @@ Similarly for the consumer call decrement on `semfilled' and after a request is 
     \begin{verbatim}
 //Consumer
 down(sem_filled)//initially 0
+down(mutex)
 //code to consume item//
+up(mutex)
 up(sem_empty)
     \end{verbatim}
     \end{tcolorbox}
     \caption{Consumer}
     \end{minipage}
-    \end{figure}
+    \end{figure}    
 
 
 
@@ -2084,6 +2088,7 @@ Note that a semaphore doesn't implement a lock to prevent two producers from int
 use an additional binary semaphore to lock the critical section. 
 
 
+Another important observation is that putting the mutex semaphores to cover the scope of the whole code would create deadlocks. The producer can call down on the mutex and not wait and then go in and call down on `semempty' and wait for it. Then consumer could run and call down on mutex and wait. Thus producer waits for up to be called on `semempty' by consumer, who is waiting for up to be called on mutex. Thus we have a deadlock. 
 \subsection*{Batched Processing}
 Again the same problem has been solved with conditional variables. How to use semaphores for this problem?
 
@@ -2092,9 +2097,48 @@ The batch processor waits on `sem\_batch\_processer' up until there is an up cal
 `sem\_request' till up is called on them n times by the batch processor. 
 
 
+\begin{figure}[H]
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=red!5!white,colframe=red!75!black]
+    \begin{verbatim}
+    //requests
+    down(mutex)
+    count++
+    if(count == N)
+        up(batch_processor)
+    down(requests)
+    up(requests)
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Requests Code}
+    \end{minipage}
+    \hspace{0.05\textwidth}
+    \begin{minipage}{.5\textwidth}
+    \begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black]
+    \begin{verbatim}
+//Batch_processor
+down(batch_processor)
+//code batch processor//
+up(requests)
+    \end{verbatim}
+    \end{tcolorbox}
+    \caption{Batch processor}
+    \end{minipage}
+    \end{figure}    
+
+
 
 \subsection{Guidelines for semaphores}
-Semaphores can be used to perform similar operations as a conditional variable. There cannot bea direct access to the semaphore
+Semaphores can be used to perform similar operations as a conditional variable. Waiting on a condtional varibable is equivalent to calling down on a positive semaphore. Similarly signalling on a conditional varible 
+is equivalent to calling up on any semaphore. There is no equivalent for a signal broadcast on a semaphore. 
+
+Extra care needs to be taken for deadlocks on semaphores since they can be non obvious. Restricting the scope of locking/binary semaphores to be as small as possible helps. When a down is called on multiple semaphores in sequence one must carefully analyse what happens during a possible 
+sleep on any of those semaphores.
+
+Another point to note is that unlike in condition variables the lock is not released when a thread waits on a semaphore. 
+
+
+The semaphore can also act as a counter variable on its own. However there cannot be a direct access to the semaphore.
 
 
 
@@ -2105,18 +2149,19 @@ Semaphores can be used to perform similar operations as a conditional variable. 
 
 
 \section{Simple Device Model}
+The CPU and memory of a system are connected by a high speed bus, which is a wire carrying signals. IO devices are connected to CPU via an \textit{IO bus} and these connection points are called \textit{ports}.
 
 There a many models using which devices are designed. Block devices store a set of numbered blocks\footnote{Example harddisks}. Character devices produce/consume a stream of bytes\footnote{Example keyboards}.
 These devices are interfaced with memory registers. There are three types of registers.\
-\begin{enumerate}
+\begin{enumerate}[topsep = 0cm, parsep = 0cm, itemsep = 0cm]
     \item \textbf{Current Status of Device:} It tells us about the status of the device. For example the disk status register tells whether it can transfer data at the moment.
-    \item \textbf{Command Registers:}
-    \item \textbf{Data transfer Register:}
+    \item \textbf{Command Registers:} Instructions/commands are placed in this register and then the device executes said instruction.
+    \item \textbf{Data transfer Register:} This is the register that finally gives the output requested via the command put in the command register. 
 \end{enumerate} 
 
 How does the OS communicate with these devices? The OS communicates with a device using the interface registers by reading/writing into/from them. These
 registers are completely owned by the devices and not a part of the CPU registers. 
-There are explicit IO instructions which can only be executed in kernel mode\footnote{These are called \texttt{in} and \texttt{out} in xv6 }.
+There are explicit IO instructions which can only be executed in kernel mode\footnote{These are called \texttt{in} and \texttt{out} in xv6 } to perform actions with these devices (ie) placing inputs into their interface registers. 
 
 Another common way to do this is 
 to memory map a part of the memory available to the OS to the interface registers. The OS can simply read and write into this \textit{special memory locations} to read and write from 
@@ -2145,14 +2190,22 @@ A process P1 makes an IO requests.
 
 
 \begin{tikzpicture}[node/.style={rectangle, draw, minimum size=0.8cm}]
-    \node[node] (n1) at (0,0) {1};
-    \node[node] (n2) at (1.5,0) {2};
-    \node[node] (n3) at (3,0) {3};
-    \node[node] (n4) at (4.5,0) {4};
+    \node[node] (n1) at (0,0) {Process makes syscall to read data};
+    \node[node] (n2) at (8,0) {OS gives a command to the disk register};
+    \node[node] (n3) at (8,-1.5) {OS switches to process P2, blocks P1};
+    \node[node] (n4) at (0,-1.5) {Disk completes request raises interrupt};
+    \node[node] (n5) at (0,-3) {OS handles interrupt marks P1 as ready};
+    \node[node] (n6) at (8,-3){P1 runs at a later time};
+
+
     
     \draw[->] (n1.east) -- (n2.west);
-    \draw[->] (n2.east) -- (n3.west);
-    \draw[->] (n3.east) -- (n4.west);
+    \draw[->]  (n2.south) -- (n3.north);
+    \draw[->]   (n3.west) -- (n4.east);
+    \draw[->]   (n4.south) -- (n5.north);
+    \draw[->]   (n5.east) -- (n6.west);
+    % \draw[->] (n2.east) -- (n3.west);
+    % \draw[->] (n3.east) -- (n4.west);
 \end{tikzpicture}
 
 
@@ -2160,30 +2213,72 @@ A process P1 makes an IO requests.
 \section{File Abstractions}
 
 Some defintions to be known:
-\begin{itemize}
+\begin{itemize}[topsep = 0cm, parsep = 0cm, itemsep = 0cm]
     \item\textbf{File:} is a sequence of stored persistently/permanently on disk.
-    \item 
+    \item \textbf{Directory:} is a container for files and other sub-directories. 
+    \item \textbf{File System:} is the OS subsystem that stores all files and directories on a secondary device like a harddisk, provides interface to them via syscalls. It is bulit upon as layers. The syscalls use the generic block interface, which uses the device driver for specific functions to actually communicate with the device.
     \item \textbf{Device Driver:} Part of the OS code that talks to a specific device, gives commands, handles interrupts\ldots etc. Most OS code abstracts out the 
     device-specific details. A device also comes with a device driver code that enales us to communicate with it. 
 \end{itemize}
 
-The file system code is built as layers. There are syscalls, block read/write, 
+\subsection{Directory Tree}
+As seen a directory is a special file that stores the mappings between filenames and something called their \textbf{inode} number. 
+It can be visualised as a tree like structure since there is an underlying hierarchy as a dircetory stores other dircetories `beneath it'.
+The parent dircetory which is not contained in any other dircetory is usually called the `root'.
 
+A branch of the tree terminates in a non-directory file which cannot contain any other files in it. It can also terminate on an empty directory. 
+\begin{figure}[H]
+    \centering
 \begin{tikzpicture}[
-    every node/.style={circle, draw},
+    every node/.style={circle, draw,minimum size =0.5cm},
     level 1/.style={sibling distance=3cm},
     level 2/.style={sibling distance=1.5cm}
   ]
     \node {\texttt{root}}
-      child { node {2}
-        child { node {4} }
-        child { node {5} }
+      child { node {foo}
+        child { node {bar} }
+        child { node {ran} }
       }
-      child { node {3}
-        child { node {6} }
-        child { node {7} }
+      child { node {i}
+        child { node {bad} }
       };
   \end{tikzpicture}
+
+  \caption{Example of a directory structure}
+\end{figure}
+Each file has a path from the root. This is called the `path' of a file. It is a represented as a string where the directories on the path are seperated by a /. 
+For example the path of bad is ``root/i/bad''.
+
+\subsection{Reading and writing a file}
+In order for a process to access a file it needs to be opened by the process. That is the process creates a structure which maintains information about the file and obtaines a pointer to the file. These `file structures' are maintained in an array and the index corresponding to a particular file is called its \textbf{file descriptor}.
+
+Inorder to perform read/write operations on a file we can use syscalls which take its file descriptor as a parameter. The \texttt{read()} syscall reads a particular number of bytes into a user defined buffer a pointer to whom is passed as a parameter. Similarly the \texttt{write()} syscall 
+writes a particular number of bytes from a user-define buffer into a file.
+
+Both read and write syscalls alter the \textit{offset} of a file. Initially the offset of a file is set to 0\footnote{For a reading operation} (or) the beginning of a file. As we read the offset gets updated and the next read happens at the (n+1)\(^\text{th}\) byte. This offset can also be updated by the user using the \texttt{seek()} syscall. 
+Note that the same file can be opened multiple times by a process and each instance has a different file descriptor, offset etc\dots
+
+\subsection{Directories, Sockets and pipes}
+Even opening a socket or a pipe returns a file descriptor. These objects are treated exactly the same as files. Infact almost everything on a system is treated as a file. 
+When a process is created by default it has three file descriptors corresponding to the stdin, stdout, stderr streams. All these I/O streams are also exactly treated as files. 
+
+The directory is a special files that maps the filename to its \textit{inode number} as mentioned before. The indode number is used to uniquely identify a file in a disk. The \texttt{ls} command infact just opens the current directory file and displays all of its contents.
+
+\section{File system}
+
+How are these files organised on a disk?
+The disk offers us blocks\footnote{512 bytes size usually} of memory that can be used. The files are organised in these blocks according to the file system. Metadata data are stored in various data structures in these blocks. The system calls extract or insert data into the appropriate blocks associated with a file.
+There are two types of blocks, Inode blocks and data blocks
+\subsection{Inode Node}
+Files are variable sized but are broken into some number of the blocks offered by the disk and stored non continguosly. This is very similar to paging done by the OS. 
+
+
+How are the blocks associated with a file known? Each file has a block allocated to store metadata about it. This block in which an inode is stored is called the Inode block. All permissions, file size, last access time...etc are stored on the Inode. Most importantly the 
+Inode has a certain number of bytes to store pointers to the blocks which contain the actual data of the file itself. These blocks which store data are the data blocks. 
+
+
+The first set of blocks of the disk is allocated to store inodes of the files present on the disk. Thus there is a restriction on the number of the files that can be stores on the disk.
+
 
 \end{document}
 
