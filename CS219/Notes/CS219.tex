@@ -2267,18 +2267,192 @@ The directory is a special files that maps the filename to its \textit{inode num
 \section{File system}
 
 How are these files organised on a disk?
-The disk offers us blocks\footnote{512 bytes size usually} of memory that can be used. The files are organised in these blocks according to the file system. Metadata data are stored in various data structures in these blocks. The system calls extract or insert data into the appropriate blocks associated with a file.
+The disk offers us blocks\footnote{512 bytes size usually} of memory that can be used. These blocks are numbered and the number can be used as a pointer to the block. The files are organised in these blocks according to the file system. Metadata data are stored in various data structures in these blocks. The system calls extract or insert data into the appropriate blocks associated with a file.
 There are two types of blocks, Inode blocks and data blocks
 \subsection{Inode Node}
 Files are variable sized but are broken into some number of the blocks offered by the disk and stored non continguosly. This is very similar to paging done by the OS. 
 
 
-How are the blocks associated with a file known? Each file has a block allocated to store metadata about it. This block in which an inode is stored is called the Inode block. All permissions, file size, last access time...etc are stored on the Inode. Most importantly the 
+How are the blocks associated with a file known? Each file has a block allocated to store metadata about it. This block in which an inode is stored is called the Inode block. The number corresponding to this block is its \textit{Inode number}. All permissions, file size, last access time...etc are stored on the Inode. Most importantly the 
 Inode has a certain number of bytes to store pointers to the blocks which contain the actual data of the file itself. These blocks which store data are the data blocks. 
 
 
+\subsection{Disk structure}
 The first set of blocks of the disk is allocated to store inodes of the files present on the disk. Thus there is a restriction on the number of the files that can be stores on the disk.
+There is also a bit map on the disk showing which all blocks are used and which ones are free. 
 
+The very first block called the \textbf{SuperBlock} stores information about which blocks are inode, which ones are data etc. This structure of the disk is imposed when a disk is formatted with a file system. 
+
+\subsection{Inode structure}
+
+Is the space on a single inode block sufficient to store all the pointers to the data blocks corresponding to a file?
+Obviously not else our file size will be extremely restricted. What if the the inode wants to store pointers to more data blocks?
+
+Like in mulitlevel paging, here the inode stores a pointer to a block whose sole purpose is to store all the pointers of the data blocks of that file. If this indirect block is full 
+then there is a another level of indirect blocks. However unlike in paging the system isn't symmetric, ie the first few pointer of an inode directly point to a data block of the file. These are called direct blocks. 
+Next few pointers point to single indirect blocks which can have pointers to data blocks, or they have pointers to double indirect blocks, which further points to blocks which have pointers to data blocks. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 9cm]{inode_pointer.png}
+    \caption{Structure of Inode pointers}
+\end{figure}
+
+It is each to see that the maximum file size is restricted to the maximum number of data blocks an inode can point to. Assume there are K direct blocks, one single indirect and one double indirect blocks and each indirect block points to N blocks.
+The size of a file is restricted to \((k + N + N^2)*(512)\) bytes. These limits depend on the structure of the inode and thus the file system. 
+
+\subsection{Directory Inodes}
+The inode structure also has a field indicating if a file is a normal file or a directory. The 
+mappings between filename and inode numbers for files under a directory are stored in the corresponding directorie`s data blocks. 
+This data can be stored as an array or a linked list. It can even be stored in a complicated data structure like a binary search tree. 
+
+How to get the inode number of a file given its directory and its filename. Fetch the inode of the directory, locate its data blocks and read them. After this scan the data for obtaining the mapping. 
+
+The inode number of a file is required to perform any operation on it. The location of a file is usually given by its path starting from the root. How do we obtain its inode from its path?
+This can be done recursively. The inode number of the root is known, thus obtain and search its data to find the inode of the next dictionary in the path. This is done recursively till the inode number of the file is obtained. 
+
+\section{Operations on a file}
+\subsection{\texttt{open()}}
+Why is there a need to open a file before using it? This is done to have the inode readily available to perform the appropriate actions on it. 
+The inode structure is copied into main memory and a pointer to it is stored in the file descriptor array and the index corresponding to this file is the file descriptor. 
+
+Now read, write syscalls can use the file descriptor to access the pointer and thus the inode structure itself. To get the inode of a process it's path is taken as input and the above defined recursive procedure is used. 
+Incase open is used to create a new file, the new inode is created and the mapping between this inode's number and its filename is added in the corresponding directory. 
+
+
+
+\subsection{In-memory data structures}
+How are these file structures saved? It is unnecessary to copy an inode each time a process needs it. Rather across all processes a global structure can be maintained to track all open files and each process can be given a pointer to this table. 
+This global table is called the \textbf{open file table}. As mentioned this table is shared across processes. The pointer to the open file table which is given to a process is the pointer which is stored in its file descriptor array. The file descriptor array and thus these pointers are a part of the PCB(Process Control Block).  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width = 12cm]{open_file_table.png}
+    \caption{Structure of file descriptors}
+\end{figure}
+
+The \texttt{close()} syscall deletes the pointer in the file descriptor table and the corresponding open file table entry. Note that the same file opened twice will have different entries in the open file table since the offsets for reading and writing can be different. 
+
+Interestingly when a process is forked the parent and child point to the same entry in the open file table. A reference count is maintained for each entry in the table to account for this. Usually one of the process closes its file descriptor to prevent issues. 
+The \texttt{dup2()} syscall is used to create duplicate file descriptors into an old file descriptor given as an input. This is used for IO redirection to and from a file. As an example a file descriptor pointing to a file is copied into the 1st entry of the file descriptor array to redirect output.    
+
+\subsection{Disk buffer cache}
+The \textbf{Disk buffer cache} holds the data read from harddisk for sometime. Any changes made to the file is also written into the disk cache buffer rather than directly into the disk. 
+
+There are two ways to deal with data written into the cache:
+\begin{itemize}
+    \item \textbf{Write-through cache:} Any changes into disk data is written directly into memory. 
+    \item \textbf{Write-Back cache:} Changes are accumulated in the cache and written into disk with some delay. Has better performance but risk of losing data if power failure happens before data is updated. 
+\end{itemize}
+
+Most OS allocate unused physical memory to be used by disk buffer cache. 
+
+
+\subsection{\texttt{read()}}
+The input is the file descriptor of the file to be read, amount of data to be read, buffer to be read into. 
+
+The file descriptor is used to obtain the entry from the \textit{open file table} and thus the \textit{inode}. Based on the offset of the file it identifies the data blocks to be read. 
+Then the disk cache buffer is checked for the required data blocks. 
+\begin{itemize}[itemsep = 0cm, topsep = 0cm, parsep = 0cm]
+    \item If there is a cache miss, then the device driver issues command to the disk via command register. The process is blocked untill the request is completed and the OS context switches to a new process. 
+    \item When the read is completely the DMA is signalled and it copies the data from the \textit{data transfer register} into main memory (ie) disk cache buffer. 
+    \item After copying is done an interrupt is raised and the OS handles the interrupt by marking the old process as RUNNABLE.   
+\end{itemize}
+
+Once the old process starts running again the data is copied from the disk cache buffer and into the user buffer. The number of bytes read is returned in the syscall. 
+
+\subsection{\texttt{write()}}
+The input is the file descriptor of the file to be written into, amount of data to be written, buffer having the data to be written. 
+
+The file descriptor is used to obtain the entry from the \textit{open file table} and thus the \textit{inode}. Based on the offset of the file it identifies the location to be written into. If the size of file available after offset is less than the required
+new data blocks are allocated for the file. The new data block numbers are added to the inode.  
+Then the disk cache buffer is checked for the required data blocks. 
+\begin{itemize}[itemsep = 0cm, topsep = 0cm, parsep = 0cm]
+    \item If there is a cache miss, then the device driver issues command to the disk via command register. The process is blocked untill the request is completed and the OS context switches to a new process. 
+    \item When the read is completely the DMA is signalled and it copies the data from the \textit{data transfer register} into main memory (ie) disk cache buffer. 
+    \item After copying is done an interrupt is raised and the OS handles the interrupt by marking the old process as RUNNABLE.   
+\end{itemize}
+Once the data blocks are obtained they are marked as dirty. The writes are done into the data blocks in cache. The writing into disk is done at different times depending on if the cache is a \textit{write-back cache} {or a} \textit{write-through cache}
+The user process starts running immediately if it is a asynchronous write, else with some delay for a synchronous write. 
+
+
+\subsection{Memory mapping a file}
+Apart from using \texttt{read()} and \texttt{write()} syscalls another way to write into files is using memory mapping. Files can be entirely memory mapped into the 
+virtual address space of the OS and just accessed like any other data structure in the process's memory. With demand paging these files are allocated physical pages only when accessed. 
+
+Files can be mapped in shared or private mode. In shared mode the changes made to a file are immediately visible to all process. In private mode, changes are updates only after the pages are unmapped from memory. 
+
+\subsubsection{Memory mapping vs \texttt{read(),write()}}
+mmap can be used for both file-backed and anonymous pages. Memory mapping avoids having multiple copies of a page, pages are directly copied into virtual memory. In read, write pages are copied into disk buffer cache (ie) kernel memory and then subsequently to user's buffer. 
+Memory mapping helps us read files in large page sized chunks. However it is not so useful to read smaller files or smaller chunks of files. 
+
+As an example when an executable is run the code it contains is memory mapped into the new process's memory space. 
+
+\subsection{Linking, Unlinking}
+
+The same file can be linked from different directories with different filenames with the link syscall. When a file is created it is mapped to it's parent directory. It can also be mapped to other dircetories. 
+Why is this useful? When we multiple file systems instead of having multiple copies of the file, we can just link the file to a new directory. 
+
+There are three linking operations:
+\begin{itemize}
+    \item \textbf{Hard Link}: The inode number of a file is actually mapped to a new filename in the directory. If the file was deleted from old pathname, it can be obtained from the other path. A link count is maintained in the inode to track such links
+    \item \textbf{Soft Link}: The old filename is mapped to the new filename. If the old file is deleted from old path, then the soft link is `broken'.
+    \item \textbf{Unlink}: It removes the directory entry for a file name from a particular directory. If this is the last link to the file, then it is removed from the disk. 
+\end{itemize}
+
+
+
+\section{Crash consitency}
+Every syscall updates multiple blocks. All of these changes are first done in DRAM/main memory before being written into the disk to be saved persistently. If power failure happens in the middle of a syscall, the memory changes will be lost and the disk will be partially updated. 
+This can cause inconsitencies in the file system.
+
+For example data could have been written into a data block but inode could not been completely added yet. Thus that data is lost forever. How to make sure our file system is consitent even after a crash?
+
+
+
+\subsection{File system checkers}
+A programming tip for crash consistency is to always update data blocks on disk first
+before updating metadata blocks. It is better to write data block and not link from inode (lost data), rather than link from inode first
+and fail to update data block (garbage in file). Even with above tip, inconsistency can still occur, especially when multiple
+metadata blocks need to be updated
+
+
+Example: bitmap updated to mark data block as used, inode updated to add pointer to data
+block, which metadata change to write to disk first?
+
+
+There are File system checking tools (e.g., fsck) which check inconsistencies in metadata blocks
+after reboot and fix the blocks to make them consistent.
+Example: data block marked as used in bitmap, but not present in any inode, so mark as free
+There is thus a need for atomicity (all changes pertaining to a system call happen all at once
+together or none happens at all). If our operations were atomic, then consitency would be maintained
+
+\subsection{Logging / journaling}
+Logging/journaling is a common technique for atomicity in systems.
+ 
+How to add logging to any file system?
+\begin{itemize}[itemsep = 0cm, topsep = 0cm, parsep = 0cm]
+\item All changes to be made to disk blocks are first written to a log on disk, original
+disk blocks are not touched
+\item  After all changes are logged to disk, a special commit entry written to log
+\item  Next, changes are applied to the original disk blocks, after which the log entries cleared
+\item  If crash happens before log is committed, then no changes are made to any
+disk block, it is as if system call never happened
+\item If crash happens after log is committed, but before changes applied to original
+disk blocks, then we have the log of all changes. These changes are made when a reboot is done and our system is consitent again. 
+
+
+\end{itemize}
+\subsection{Virtual File system}
+Different file systems can have different implementations of system calls. For example, a file system using logging/journaling may write to log first whereas a different directory implementation (fixed size records vs linked list) will lead to a
+different lookup function.
+
+However we want the same sycalls to be given to the user regardless of the underlying implementation. How to do this?
+
+There is a virutal file system which defines files, directories, inodes etc as objects. It also defines the operations that can be performed on these objects. 
+A specific file system implements a file system on these objects and provides pointers to functions that can be invoked by OS to access these functions. 
+
+This abstraction enable the OS file system code to be modularised and built in layers. The layers are as follows VFS, filesystem
+implementation, disk buffer cache, device driver.
 
 \end{document}
-
