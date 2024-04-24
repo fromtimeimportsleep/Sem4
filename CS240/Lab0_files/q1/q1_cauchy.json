@@ -1,6 +1,0 @@
-{
-  "distribution" : "cauchy", 
-  "num_samples": 100,
-  "peak_x": 0,
-  "gamma": 1
-}

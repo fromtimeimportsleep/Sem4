@@ -1,0 +1,6 @@
+w=[10.55,0.717]
+
+Your output will look as follows 
+
+10.550
+0.717

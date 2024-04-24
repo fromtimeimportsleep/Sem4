@@ -24,3 +24,11 @@
 ## Memory management in xv6
 
 <https://github.com/CS236-2023-2-LabSolutions/xv6-memory>
+
+## Pthreads
+
+<https://github.com/CS236-2023-2-LabSolutions/pthreads>
+
+## Filesystems
+
+<https://github.com/CS236-2023-2-LabSolutions/fs>

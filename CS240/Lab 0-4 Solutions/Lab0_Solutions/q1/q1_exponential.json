@@ -1,0 +1,5 @@
+{
+  "distribution" : "exponential",
+  "num_samples": 10000,
+  "lambda": 2
+}
